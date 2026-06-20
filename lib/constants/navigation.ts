@@ -1,0 +1,36 @@
+import type { AppRole } from "./roles";
+
+// Public navigation. `key` indexes the "nav" message namespace; `href` is a
+// locale-agnostic path (the i18n <Link> adds the locale prefix).
+export const mainNav = [
+  { key: "stories", href: "/stories" },
+  { key: "podcast", href: "/podcast" },
+  { key: "resources", href: "/resources" },
+  { key: "reports", href: "/reports" },
+  { key: "about", href: "/about" },
+  { key: "submit", href: "/submit" },
+] as const;
+
+export const footerNav = [
+  { key: "stories", href: "/stories" },
+  { key: "podcast", href: "/podcast" },
+  { key: "resources", href: "/resources" },
+  { key: "reports", href: "/reports" },
+  { key: "contact", href: "/contact" },
+] as const;
+
+// Admin sidebar. Labels are English-first (internal staff tool); each item is
+// gated by role to match the RLS/permission model.
+export const adminNav: { href: string; label: string; roles: AppRole[] }[] = [
+  { href: "/admin/moderation", label: "Moderation", roles: ["moderator", "editor", "administrator"] },
+  { href: "/admin/stories", label: "Stories", roles: ["editor", "administrator"] },
+  { href: "/admin/podcast", label: "Podcast", roles: ["editor", "administrator"] },
+  { href: "/admin/resources", label: "Resources", roles: ["editor", "administrator"] },
+  { href: "/admin/newsletter", label: "Newsletter", roles: ["editor", "administrator"] },
+  { href: "/admin/reports", label: "Reports", roles: ["editor", "administrator"] },
+  { href: "/admin/partnerships", label: "Partnerships", roles: ["administrator"] },
+  { href: "/admin/users", label: "Users", roles: ["administrator"] },
+  { href: "/admin/audit", label: "Audit Log", roles: ["administrator"] },
+  { href: "/admin/founder", label: "Founder Dashboard", roles: ["administrator"] },
+  { href: "/admin/settings", label: "Settings", roles: ["administrator"] },
+];

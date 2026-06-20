@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "title": "Muriyar Ta",
+    "description": "Amplifier la voix des filles par le récit anonyme, les médias numériques et le plaidoyer."
+  },
+  "nav": {
+    "stories": "Récits",
+    "podcast": "Podcast",
+    "resources": "Ressources",
+    "reports": "Rapports",
+    "about": "À propos",
+    "submit": "Partager votre récit",
+    "contact": "Contact"
+  },
+  "a11y": {
+    "skipToContent": "Aller au contenu principal",
+    "language": "Langue"
+  },
+  "crisis": {
+    "getHelp": "Obtenir de l'aide"
+  },
+  "footer": {
+    "crisisLabel": "Ressources d'urgence",
+    "crisisHeading": "En danger immédiat ?",
+    "crisisBody": "Cette plateforme examine les récits de manière asynchrone et ne peut pas répondre aux urgences. Si vous êtes en danger, contactez les services d'urgence locaux ou une organisation de soutien.",
+    "crisisLink": "Voir les ressources d'urgence",
+    "mission": "Un espace sûr et anonyme où les filles et les jeunes femmes peuvent partager leur récit, être entendues et contribuer au changement.",
+    "explore": "Explorer",
+    "contactTitle": "Devenir partenaire",
+    "contactBody": "ONG, chercheurs, éducateurs et décideurs sont invités à nous contacter.",
+    "rights": "Tous droits réservés.",
+    "tagline": "Inspirer le plaidoyer et le changement par les expériences vécues."
+  },
+  "errors": {
+    "title": "Une erreur est survenue",
+    "body": "Une erreur inattendue s'est produite. Veuillez réessayer.",
+    "retry": "Réessayer",
+    "notFoundTitle": "Page introuvable",
+    "notFoundBody": "La page que vous recherchez n'existe pas.",
+    "home": "Retour à l'accueil"
+  }
+}
