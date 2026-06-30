@@ -3,6 +3,60 @@
     "title": "Muriyar Ta",
     "description": "Amplifier la voix des filles par le récit anonyme, les médias numériques et le plaidoyer."
   },
+
+  "podcast": {
+  "metaTitle": "Podcast",
+  "metaDescription": "Récits anonymes, conversations d'experts, et les sujets dont on parle peu à voix haute.",
+  "eyebrow": "Écouter · Muriyar Ta",
+  "heroTitle": "Le podcast Muriyar Ta",
+  "heroBody": "Des récits anonymes de filles et de jeunes femmes, accompagnés de voix expertes, de conversations qui brisent les tabous, et de tables rondes avec la nouvelle génération — au Niger et en Afrique de l'Ouest.",
+  "featuredEyebrow": "À la une",
+  "featuredTitle": "Pour commencer",
+  "featuredEmptyTitle": "Un épisode à la une apparaîtra bientôt ici",
+  "featuredEmptyBody": "Lorsque les premiers épisodes seront publiés, l'un d'eux sera mis en avant ici comme point de départ.",
+  "seriesEyebrow": "Parcourir",
+  "seriesTitle": "Par série",
+  "seriesDescription": "Quatre séries éditoriales, chacune avec sa propre vocation.",
+  "themesEyebrow": "Parcourir",
+  "themesTitle": "Par thème",
+  "themesDescription": "Les sujets explorés par le podcast. De nouveaux thèmes apparaissent ici au fur et à mesure des publications.",
+  "themesEmpty": "Les thèmes apparaîtront ici au fil des publications.",
+  "languagesEyebrow": "Parcourir",
+  "languagesTitle": "Par langue",
+  "languagesDescription": "Écoutez dans la langue qui vous parle le plus.",
+  "latestEyebrow": "Nouveau",
+  "latestTitle": "Derniers épisodes",
+  "latestEmptyTitle": "Les épisodes apparaîtront bientôt ici",
+  "latestEmptyBody": "Lorsque les premiers épisodes seront publiés, ils s'afficheront ici, du plus récent au plus ancien.",
+  "comingSoon": "Bientôt",
+  "episodeComingSoon": "Page de l'épisode bientôt disponible",
+  "minutes": "min",
+  "advisoryStrong": "Contenu sensible",
+  "advisoryMild": "Sujets adultes",
+  "series": {
+    "anonymous-voices": {
+      "name": "Voix anonymes",
+      "tagline": "Un récit anonyme, dans ses propres mots.",
+      "description": "Notre série phare. Chaque épisode raconte un récit anonyme, soigneusement anonymisé et partagé avec consentement."
+    },
+    "beyond-the-story": {
+      "name": "Au-delà du récit",
+      "tagline": "Un récit anonyme, éclairé par des experts.",
+      "description": "Chaque épisode débute par un récit anonyme, puis réunit psychologues, juristes, enseignants, chercheurs et activistes pour comprendre — et agir."
+    },
+    "breaking-the-silence": {
+      "name": "Briser le silence",
+      "tagline": "Conversations sur les sujets dont on parle peu à voix haute.",
+      "description": "Mariage d'enfants, menstruations, consentement, santé mentale, image corporelle, puberté, violences domestiques, amitiés — abordés ouvertement, avec soin."
+    },
+    "youth-voices": {
+      "name": "Voix de la jeunesse",
+      "tagline": "Des jeunes en conversation.",
+      "description": "Tables rondes entre jeunes sur l'éducation, le leadership, l'université, le mariage, les réseaux sociaux, les rêves et le changement communautaire."
+    }
+  }
+},
+
   "nav": {
     "stories": "Récits",
     "podcast": "Podcast",
@@ -38,5 +92,85 @@
     "notFoundTitle": "Page introuvable",
     "notFoundBody": "La page que vous recherchez n'existe pas.",
     "home": "Retour à l'accueil"
-  }
+  },
+  "stories": {
+    "listTitle": "Récits",
+    "listSubtitle": "Des expériences réelles, soigneusement anonymisées et partagées avec consentement.",
+    "emptyTitle": "Aucun récit pour l'instant",
+    "emptyBody": "Lorsque des récits seront publiés, ils apparaîtront ici.",
+    "back": "Retour aux récits",
+    "backToList": "Retour aux récits",
+    "authoredBy": "Partagé par {author}",
+    "notFoundTitle": "Récit introuvable",
+    "notFoundBody": "Ce récit a peut-être été retiré ou n'est pas encore publié."
+  },
+
+  "resources": {
+  "listTitle": "Ressources",
+  "listSubtitle": "Un annuaire d'appuis pour les filles et les jeunes femmes — éducation, santé, aide juridique et urgence.",
+  "allCategories": "Toutes",
+  "searchLabel": "Rechercher des ressources",
+  "searchPlaceholder": "Rechercher par nom ou description…",
+  "searchSubmit": "Rechercher",
+  "visitWebsite": "Visiter le site",
+  "verified": "Vérifié",
+  "lastVerified": "Dernière vérification",
+  "region": "Région",
+  "languages": "Langues",
+  "featured": "À la une",
+  "crisisHeading": "Besoin d'aide maintenant ?",
+  "crisisLink": "Voir les ressources d'urgence",
+  "crisisTitle": "Ressources d'urgence",
+  "crisisSubtitle": "Un soutien immédiat, joignable maintenant. En cas de danger, contactez les services d'urgence locaux.",
+  "crisisEmptyTitle": "Les ressources d'urgence apparaîtront bientôt ici",
+  "crisisEmptyBody": "Nous vérifions des appuis d'urgence. En attendant, contactez les services d'urgence locaux.",
+  "backToAll": "Retour à toutes les ressources",
+  "emptyTitle": "Aucune ressource pour l'instant",
+  "emptyBody": "Les ressources vérifiées apparaîtront ici une fois ajoutées.",
+  "emptyBodySearch": "Aucune ressource ne correspond à « {q} ». Essayez un autre terme ou effacez la recherche."
+},
+
+"backToPodcast": "Retour au podcast",
+"metaSeries": "Série",
+"metaLanguage": "Langue",
+"metaDuration": "Durée",
+"metaPublished": "Publié",
+"playerUnavailableTitle": "L'audio est en cours de préparation",
+"playerUnavailableBody": "Cet épisode n'a pas encore de source audio jouable. La transcription ci-dessous est la version de référence.",
+"playerDownload": "Télécharger l'audio",
+"transcriptHeading": "Transcription",
+"transcriptEmptyTitle": "Une transcription est en cours de préparation",
+"transcriptEmptyBody": "Les transcriptions font partie intégrante de Muriyar Ta. La transcription de cet épisode apparaîtra ici dès qu'elle sera prête.",
+"transcriptStatusLabel": "Transcription",
+"transcriptStatusAuto": "Générée automatiquement",
+"transcriptStatusHuman": "Vérifiée par un éditeur",
+"transcriptStatusNone": "Transcription indisponible pour le moment",
+"aboutEyebrow": "À propos",
+"aboutTitle": "À propos de cet épisode",
+"relatedStoryEyebrow": "Récit anonyme",
+"relatedStoryHeading": "Inspiré d'un récit anonyme",
+"relatedStoryDescription": "Cet épisode part d'un récit anonyme partagé sur Muriyar Ta. Découvrez-le dans les mots de la contributrice.",
+"relatedStoryCta": "Lire le récit",
+"relatedResourcesEyebrow": "Soutien",
+"relatedResourcesHeading": "Ressources liées à cet épisode",
+"relatedResourcesDescription": "Des appuis sélectionnés autour des thèmes de cet épisode.",
+"relatedResourcesVisit": "Visiter le site",
+"seriesRecsEyebrow": "Plus",
+"seriesRecsHeading": "Plus dans {series}",
+"themeRecsEyebrow": "Plus",
+"themeRecsHeading": "Plus sur ce thème",
+"notFoundTitle": "Épisode introuvable",
+"notFoundBody": "Cet épisode a peut-être été retiré, archivé, ou n'est pas encore publié.",
+"notFoundCta": "Retour au podcast",
+
+"podcastEyebrow": "Écouter",
+"podcastHeading": "Écouter le podcast",
+"podcastDescription": "Ce récit a inspiré une ou plusieurs conversations sur le podcast Muriyar Ta.",
+"resourcesEyebrow": "Soutien",
+"resourcesHeading": "Trouver du soutien",
+"resourcesDescription": "Des organisations sélectionnées autour des thèmes de ce récit.",
+"resourcesVisit": "Visiter le site",
+"minutes": "min",
+"advisoryStrong": "Contenu sensible",
+"advisoryMild": "Sujets adultes"
 }

@@ -3,6 +3,60 @@
     "title": "Muriyar Ta",
     "description": "Amplifying girls' voices through anonymous storytelling, digital media, and advocacy."
   },
+
+  "podcast": {
+  "metaTitle": "Podcast",
+  "metaDescription": "Anonymous stories, expert conversation, and the topics communities rarely discuss aloud.",
+  "eyebrow": "Listen · Muriyar Ta",
+  "heroTitle": "The Muriyar Ta Podcast",
+  "heroBody": "Anonymous stories from girls and young women, brought together with expert voices, taboo-breaking conversations, and roundtables with the next generation — across Niger and West Africa.",
+  "featuredEyebrow": "Featured",
+  "featuredTitle": "Start here",
+  "featuredEmptyTitle": "A featured episode will appear here soon",
+  "featuredEmptyBody": "When the first episodes are published, one will be highlighted here as a starting point.",
+  "seriesEyebrow": "Browse",
+  "seriesTitle": "Browse by series",
+  "seriesDescription": "Four editorial series, each with a distinct purpose.",
+  "themesEyebrow": "Browse",
+  "themesTitle": "Browse by theme",
+  "themesDescription": "Topics the podcast explores. New themes appear here as episodes are tagged.",
+  "themesEmpty": "Themes will appear here as episodes are published.",
+  "languagesEyebrow": "Browse",
+  "languagesTitle": "Browse by language",
+  "languagesDescription": "Listen in the language closest to home.",
+  "latestEyebrow": "New",
+  "latestTitle": "Latest episodes",
+  "latestEmptyTitle": "Episodes will appear here soon",
+  "latestEmptyBody": "When the first episodes are published, they'll show up here, newest first.",
+  "comingSoon": "Coming soon",
+  "episodeComingSoon": "Episode page coming soon",
+  "minutes": "min",
+  "advisoryStrong": "Sensitive content",
+  "advisoryMild": "Mature themes",
+  "series": {
+    "anonymous-voices": {
+      "name": "Anonymous Voices",
+      "tagline": "One anonymous story, in her own words.",
+      "description": "Our flagship series. Each episode tells one anonymous story, carefully de-identified and shared with consent."
+    },
+    "beyond-the-story": {
+      "name": "Beyond the Story",
+      "tagline": "An anonymous story, with experts to help us understand.",
+      "description": "Each episode begins with an anonymous story, then brings together psychologists, lawyers, teachers, researchers, and activists to ask why this happens — and what we can do."
+    },
+    "breaking-the-silence": {
+      "name": "Breaking the Silence",
+      "tagline": "Conversations on topics communities rarely discuss aloud.",
+      "description": "Child marriage, menstruation, consent, mental health, body image, puberty, domestic violence, friendship — talked about openly, with care."
+    },
+    "youth-voices": {
+      "name": "Youth Voices",
+      "tagline": "Young people, in conversation.",
+      "description": "Roundtables between young people on education, leadership, university, marriage, social media, dreams, and community change."
+    }
+  }
+},
+
   "nav": {
     "stories": "Stories",
     "podcast": "Podcast",
@@ -38,5 +92,85 @@
     "notFoundTitle": "Page not found",
     "notFoundBody": "The page you are looking for does not exist.",
     "home": "Back to home"
-  }
+  },
+  "stories": {
+    "listTitle": "Stories",
+    "listSubtitle": "Real experiences, carefully de-identified and shared with consent.",
+    "emptyTitle": "No stories yet",
+    "emptyBody": "When stories are published, they'll appear here.",
+    "back": "Back to stories",
+    "backToList": "Back to stories",
+    "authoredBy": "Shared by {author}",
+    "notFoundTitle": "Story not found",
+    "notFoundBody": "This story may have been removed or is not yet published."
+  },
+
+  "resources": {
+  "listTitle": "Resources",
+  "listSubtitle": "A curated directory of support for girls and young women — across education, health, legal aid, and crisis services.",
+  "allCategories": "All",
+  "searchLabel": "Search resources",
+  "searchPlaceholder": "Search by name or description…",
+  "searchSubmit": "Search",
+  "visitWebsite": "Visit website",
+  "verified": "Verified",
+  "lastVerified": "Last verified",
+  "region": "Region",
+  "languages": "Languages",
+  "featured": "Featured",
+  "crisisHeading": "Need help now?",
+  "crisisLink": "View crisis resources",
+  "crisisTitle": "Crisis resources",
+  "crisisSubtitle": "Immediate support reachable now. If you are in danger, please contact local emergency services.",
+  "crisisEmptyTitle": "Crisis resources will appear here soon",
+  "crisisEmptyBody": "We are curating verified crisis support. In the meantime, please contact your local emergency services.",
+  "backToAll": "Back to all resources",
+  "emptyTitle": "No resources yet",
+  "emptyBody": "Verified resources will appear here once they are added.",
+  "emptyBodySearch": "No resources match “{q}”. Try a different term or clear the search."
+},
+
+"backToPodcast": "Back to podcast",
+"metaSeries": "Series",
+"metaLanguage": "Language",
+"metaDuration": "Duration",
+"metaPublished": "Published",
+"playerUnavailableTitle": "Audio is being prepared",
+"playerUnavailableBody": "This episode does not yet have a playable audio source. The transcript below is the canonical version of the episode.",
+"playerDownload": "Download audio",
+"transcriptHeading": "Transcript",
+"transcriptEmptyTitle": "A transcript is being prepared",
+"transcriptEmptyBody": "Transcripts are an essential part of Muriyar Ta. This episode's transcript will appear here as soon as it is ready.",
+"transcriptStatusLabel": "Transcript",
+"transcriptStatusAuto": "Auto-generated",
+"transcriptStatusHuman": "Reviewed by an editor",
+"transcriptStatusNone": "Transcript not yet available",
+"aboutEyebrow": "About",
+"aboutTitle": "About this episode",
+"relatedStoryEyebrow": "Anonymous story",
+"relatedStoryHeading": "Inspired by an anonymous story",
+"relatedStoryDescription": "This episode begins with an anonymous story shared on Muriyar Ta. Read it in the contributor's own words.",
+"relatedStoryCta": "Read the story",
+"relatedResourcesEyebrow": "Support",
+"relatedResourcesHeading": "Resources related to this episode",
+"relatedResourcesDescription": "Curated support connected to the themes of this episode.",
+"relatedResourcesVisit": "Visit website",
+"seriesRecsEyebrow": "More",
+"seriesRecsHeading": "More from {series}",
+"themeRecsEyebrow": "More",
+"themeRecsHeading": "More on this theme",
+"notFoundTitle": "Episode not found",
+"notFoundBody": "This episode may have been removed, archived, or is not yet published.",
+"notFoundCta": "Back to podcast",
+
+"podcastEyebrow": "Listen",
+"podcastHeading": "Listen to the podcast",
+"podcastDescription": "This story has inspired one or more conversations on the Muriyar Ta podcast.",
+"resourcesEyebrow": "Support",
+"resourcesHeading": "Find support",
+"resourcesDescription": "Curated organizations connected to the themes of this story.",
+"resourcesVisit": "Visit website",
+"minutes": "min",
+"advisoryStrong": "Sensitive content",
+"advisoryMild": "Mature themes"
 }

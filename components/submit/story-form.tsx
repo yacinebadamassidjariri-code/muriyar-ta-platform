@@ -120,13 +120,13 @@ export function StoryForm({ copy, locale }: { copy: SubmitCopy; locale: string }
         </p>
       ) : null}
 
-      <Button
-        type="submit"
-        size="lg"
-        disabled={isPending || !consent || count < STORY_MIN}
-      >
-        {isPending ? copy.form.submitting : copy.form.submit}
-      </Button>
+<button
+  type="submit"
+  disabled={isPending || !consent || count < STORY_MIN}
+  className="w-full rounded-md bg-black px-4 py-3 text-white disabled:opacity-50"
+>
+  {isPending ? copy.form.submitting : copy.form.submit}
+</button>
 
       <p className="flex flex-wrap items-center gap-2 text-sm text-ink-soft">
         <LifeBuoy className="h-4 w-4 text-danger" aria-hidden="true" />

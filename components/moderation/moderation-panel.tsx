@@ -108,12 +108,30 @@ export function ModerationPanel({
               className="mt-1.5"
             />
           </div>
-
+          <p>TEST APPROVE BUTTON SHOULD BE BELOW</p>
           <div className="flex flex-wrap items-end gap-3">
-            <Button onClick={onApprove} disabled={pending}>
-              {copy.panel.approve}
+            
+            <Button
+              variant="primary"
+              size="md"
+              onClick={onApprove}
+              disabled={pending}
+            >
+              APPROVE
             </Button>
 
+            <button
+              style={{
+                background: "green",
+                color: "white",
+                padding: "12px",
+                border: "1px solid black",
+              }}
+              onClick={onApprove}
+            >
+              APPROVE TEST
+            </button>
+            
             <div className="flex items-end gap-2">
               <div>
                 <Label htmlFor="reason">{copy.panel.reason}</Label>
@@ -145,9 +163,16 @@ export function ModerationPanel({
                   {copy.panel.reject}
                 </Button>
               ) : (
-                <Button type="button" variant="danger" onClick={onReject} disabled={pending}>
-                  {copy.panel.confirmReject}
+
+                <Button
+                  type="button"
+                  variant="danger"
+                  onClick={() => setConfirmReject(true)}
+                  disabled={pending}
+                >
+                  REJECT
                 </Button>
+
               )}
             </div>
           </div>

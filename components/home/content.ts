@@ -1,14 +1,13 @@
 import type { Locale } from "@/lib/i18n/routing";
 
 /**
- * Page-scoped marketing copy for the homepage. Kept here (not in the shared
- * next-intl message catalogs) so the homepage can be enriched without modifying
- * the i18n configuration or shared messages. English and French are authored;
- * Hausa and Zarma fall back to English pending professional translation, matching
- * the convention in messages/ha.json and messages/zar.json.
+ * Page-scoped, localized copy for the homepage. Lives here (not in the shared
+ * next-intl catalogs) so the homepage can evolve without touching i18n config.
+ * EN/FR authored; HA/ZAR fall back to EN until professional translation —
+ * matching the platform-wide convention.
  *
- * Statistics are the figures cited in the approved Muriyar Ta proposal/PRD — not
- * fabricated. No invented stories, episodes, or testimonials appear here.
+ * This version intentionally contains NO global statistics. The mission
+ * speaks for itself; numbers will live on the future Data & Insights page.
  */
 export type HomeCopy = {
   hero: {
@@ -17,10 +16,23 @@ export type HomeCopy = {
     subhead: string;
     safety: string;
   };
+  trust: {
+    anonymous: string;
+    reviewed: string;
+    noAccount: string;
+  };
   mission: {
     eyebrow: string;
     title: string;
     pillars: { title: string; body: string }[];
+  };
+  latest: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    viewAll: string;
+    emptyTitle: string;
+    emptyBody: string;
   };
   share: {
     title: string;
@@ -28,32 +40,20 @@ export type HomeCopy = {
     points: string[];
     noAccount: string;
   };
-  featured: {
+  resourcesPreview: {
     eyebrow: string;
     title: string;
     description: string;
-    note: string;
-    topics: string[];
-  };
-  podcast: {
-    eyebrow: string;
-    title: string;
-    description: string;
+    categories: { title: string; body: string }[];
     note: string;
   };
-  resources: {
+  partner: {
     eyebrow: string;
     title: string;
-    description: string;
-    categories: string[];
+    body: string;
+    audiences: string[];
+    cta: string;
   };
-  insights: {
-    eyebrow: string;
-    title: string;
-    description: string;
-    stats: { value: string; label: string; source: string }[];
-  };
-  partner: { eyebrow: string };
 };
 
 const en: HomeCopy = {
@@ -61,8 +61,13 @@ const en: HomeCopy = {
     eyebrow: "Her Voice · Muriyar Ta",
     headline: "Every girl has a story worth hearing.",
     subhead:
-      "A safe, anonymous space where girls and young women across Niger and West Africa share their experiences — and turn them into awareness, advocacy, and change.",
+      "A safe, anonymous space where girls and young women across the World share their experiences and turn them into awareness, advocacy, and change.",
     safety: "In immediate danger?",
+  },
+  trust: {
+    anonymous: "Anonymous",
+    reviewed: "Reviewed before publication",
+    noAccount: "No account required",
   },
   mission: {
     eyebrow: "Our mission",
@@ -77,14 +82,24 @@ const en: HomeCopy = {
         body: "Stories can be shared in Hausa, Zarma, French, or English — in a contributor's own words.",
       },
       {
-        title: "Podcast advocacy",
-        body: "Selected stories become episodes that reach wider audiences and challenge harmful norms.",
+        title: "Care, not metrics",
+        body: "Stories are treated as lived experiences, not data points — with consent, context, and dignity.",
       },
       {
         title: "Evidence for change",
-        body: "Aggregated insights support NGOs, researchers, educators, and policymakers.",
+        body: "Over time, anonymized insights help NGOs, researchers, educators, and policymakers act.",
       },
     ],
+  },
+  latest: {
+    eyebrow: "Stories",
+    title: "Latest stories",
+    description:
+      "Real experiences, carefully de-identified and shared with consent.",
+    viewAll: "View all stories",
+    emptyTitle: "Stories will appear here soon",
+    emptyBody:
+      "When the first stories are published, they'll appear right here. In the meantime, you can learn what the platform is for and how to contribute.",
   },
   share: {
     title: "Share your story — safely and anonymously.",
@@ -96,66 +111,38 @@ const en: HomeCopy = {
     ],
     noAccount: "No sign-up required.",
   },
-  featured: {
-    eyebrow: "Stories",
-    title: "Featured stories",
-    description:
-      "Real experiences, carefully de-identified and shared with consent. Explore by the issues they illuminate.",
-    note: "Stories are published only after careful review to protect contributors.",
-    topics: [
-      "Child marriage",
-      "Barriers to education",
-      "Gender-based violence",
-      "Harmful social norms",
-      "Health & wellbeing",
-      "Resilience & empowerment",
-    ],
-  },
-  podcast: {
-    eyebrow: "Listen",
-    title: "The podcast",
-    description:
-      "Lived experiences brought to a wider audience — humanizing the issues behind the statistics.",
-    note: "New episodes are released during the pilot phase.",
-  },
-  resources: {
+  resourcesPreview: {
     eyebrow: "Support",
-    title: "Find resources",
+    title: "Support girls and young women can turn to",
     description:
-      "A curated directory connecting girls and young women with education, health, legal, and crisis support.",
+      "Muriyar Ta will gather a directory of trustworthy support across Niger and West Africa. These are the kinds of help we intend to surface — a dedicated Resources page is being built next.",
     categories: [
-      "Education & scholarships",
-      "Mental health",
-      "Legal support",
-      "GBV support",
-      "Helplines & crisis",
-    ],
-  },
-  insights: {
-    eyebrow: "Evidence",
-    title: "Data & insights",
-    description:
-      "We turn lived experiences into grassroots evidence for NGOs, researchers, educators, and policymakers.",
-    stats: [
       {
-        value: "76%",
-        label: "of girls in Niger are married before the age of 18.",
-        source: "Niger",
+        title: "Helplines & crisis support",
+        body: "Immediate, confidential help reachable by phone in moments of risk.",
       },
       {
-        value: "~1 in 3",
-        label:
-          "women worldwide have experienced physical or sexual violence.",
-        source: "UN Women",
+        title: "Education & scholarships",
+        body: "Programs and grants that help girls stay in or return to school.",
       },
       {
-        value: "32%",
-        label: "child-marriage rate across Sub-Saharan Africa.",
-        source: "Sub-Saharan Africa",
+        title: "Mental health support",
+        body: "Counseling and emotional-support services for survivors and contributors.",
+      },
+      {
+        title: "Legal support",
+        body: "Free or low-cost legal aid for girls, women, and their advocates.",
       },
     ],
+    note: "A dedicated Resources page is coming soon.",
   },
-  partner: { eyebrow: "Collaborate" },
+  partner: {
+    eyebrow: "Collaborate",
+    title: "Partner with Muriyar Ta",
+    body: "Organizations, researchers, educators, and journalists are welcome to reach out — to amplify stories, support contributors, or use anonymized insights for advocacy and research.",
+    audiences: ["NGOs", "Researchers", "Educators", "Journalists", "Policymakers"],
+    cta: "Get in touch",
+  },
 };
 
 const fr: HomeCopy = {
@@ -165,6 +152,11 @@ const fr: HomeCopy = {
     subhead:
       "Un espace sûr et anonyme où les filles et les jeunes femmes du Niger et d'Afrique de l'Ouest partagent leurs expériences — et les transforment en sensibilisation, en plaidoyer et en changement.",
     safety: "En danger immédiat ?",
+  },
+  trust: {
+    anonymous: "Anonyme",
+    reviewed: "Examiné avant publication",
+    noAccount: "Aucun compte requis",
   },
   mission: {
     eyebrow: "Notre mission",
@@ -179,14 +171,24 @@ const fr: HomeCopy = {
         body: "Les récits peuvent être partagés en haoussa, zarma, français ou anglais.",
       },
       {
-        title: "Plaidoyer par le podcast",
-        body: "Des récits sélectionnés deviennent des épisodes qui touchent un public plus large.",
+        title: "Du soin, pas des indicateurs",
+        body: "Les récits sont des expériences vécues, pas des données — partagés avec consentement, contexte et dignité.",
       },
       {
         title: "Des preuves pour agir",
-        body: "Les enseignements agrégés soutiennent ONG, chercheurs, éducateurs et décideurs.",
+        body: "Avec le temps, des enseignements anonymisés aident ONG, chercheurs, éducateurs et décideurs.",
       },
     ],
+  },
+  latest: {
+    eyebrow: "Récits",
+    title: "Récits récents",
+    description:
+      "Des expériences réelles, soigneusement anonymisées et partagées avec consentement.",
+    viewAll: "Voir tous les récits",
+    emptyTitle: "Les récits apparaîtront bientôt ici",
+    emptyBody:
+      "Lorsque les premiers récits seront publiés, ils s'afficheront ici. En attendant, vous pouvez en apprendre davantage sur la plateforme et sur la façon de contribuer.",
   },
   share: {
     title: "Partagez votre récit — en toute sécurité et anonymement.",
@@ -198,72 +200,38 @@ const fr: HomeCopy = {
     ],
     noAccount: "Aucune inscription requise.",
   },
-  featured: {
-    eyebrow: "Récits",
-    title: "Récits à la une",
-    description:
-      "Des expériences réelles, soigneusement anonymisées et partagées avec consentement. Explorez par thème.",
-    note: "Les récits ne sont publiés qu'après un examen attentif pour protéger les contributrices.",
-    topics: [
-      "Mariage d'enfants",
-      "Obstacles à l'éducation",
-      "Violences basées sur le genre",
-      "Normes sociales néfastes",
-      "Santé et bien-être",
-      "Résilience et autonomisation",
-    ],
-  },
-  podcast: {
-    eyebrow: "Écouter",
-    title: "Le podcast",
-    description:
-      "Des expériences vécues portées à un public plus large — pour humaniser les enjeux derrière les chiffres.",
-    note: "De nouveaux épisodes paraissent durant la phase pilote.",
-  },
-  resources: {
+  resourcesPreview: {
     eyebrow: "Soutien",
-    title: "Trouver des ressources",
+    title: "Des appuis vers lesquels se tourner",
     description:
-      "Un annuaire sélectionné reliant les filles et les jeunes femmes à un soutien éducatif, sanitaire, juridique et d'urgence.",
+      "Muriyar Ta réunira un annuaire d'appuis fiables au Niger et en Afrique de l'Ouest. Voici les types d'aide que nous prévoyons de référencer — une page Ressources dédiée est en préparation.",
     categories: [
-      "Éducation et bourses",
-      "Santé mentale",
-      "Aide juridique",
-      "Soutien VBG",
-      "Lignes d'écoute et urgence",
-    ],
-  },
-  insights: {
-    eyebrow: "Preuves",
-    title: "Données et enseignements",
-    description:
-      "Nous transformons les expériences vécues en données de terrain pour les ONG, chercheurs, éducateurs et décideurs.",
-    stats: [
       {
-        value: "76 %",
-        label: "des filles au Niger sont mariées avant l'âge de 18 ans.",
-        source: "Niger",
+        title: "Lignes d'écoute et urgence",
+        body: "Une aide immédiate et confidentielle, joignable par téléphone en cas de risque.",
       },
       {
-        value: "~1 sur 3",
-        label:
-          "des femmes dans le monde ont subi des violences physiques ou sexuelles.",
-        source: "ONU Femmes",
+        title: "Éducation et bourses",
+        body: "Programmes et bourses pour permettre aux filles de poursuivre l'école.",
       },
       {
-        value: "32 %",
-        label: "taux de mariage des enfants en Afrique subsaharienne.",
-        source: "Afrique subsaharienne",
+        title: "Santé mentale",
+        body: "Soutien psychologique et accompagnement pour les survivantes et contributrices.",
+      },
+      {
+        title: "Aide juridique",
+        body: "Conseil et représentation, gratuits ou à faible coût, pour les filles, les femmes et leurs défenseurs.",
       },
     ],
+    note: "Une page Ressources dédiée sera disponible prochainement.",
   },
-  partner: { eyebrow: "Collaborer" },
+  partner: {
+    eyebrow: "Collaborer",
+    title: "Devenez partenaire de Muriyar Ta",
+    body: "ONG, chercheurs, éducateurs et journalistes sont invités à nous contacter — pour amplifier les récits, soutenir les contributrices, ou s'appuyer sur les enseignements anonymisés.",
+    audiences: ["ONG", "Chercheurs", "Éducateurs", "Journalistes", "Décideurs"],
+    cta: "Nous contacter",
+  },
 };
 
-// Hausa & Zarma fall back to English placeholders (see note above).
-export const homeCopy: Record<Locale, HomeCopy> = {
-  en,
-  fr,
-  ha: en,
-  zar: en,
-};
+export const homeCopy: Record<Locale, HomeCopy> = { en, fr, ha: en, zar: en };

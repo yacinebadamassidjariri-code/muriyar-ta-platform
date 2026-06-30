@@ -1,90 +1,116 @@
 import {
   ArrowRight,
   ArrowUpRight,
-  BarChart3,
   BookOpen,
   Check,
   HeartHandshake,
   LifeBuoy,
-  Mic,
   PenLine,
+  ShieldCheck,
+  UserRound,
 } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import { type Locale } from "@/lib/i18n/routing";
+import { listPublishedStories } from "@/lib/data/stories";
+import { StoryCard } from "@/components/stories/story-card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Section } from "@/components/ui/section";
-import { Stat } from "@/components/ui/stat";
 import { homeCopy } from "@/components/home/content";
 
-/**
- * Muriyar Ta homepage. Server component rendered inside the (public) layout
- * container and the locale layout's <main>. Section CTAs and the mission /
- * partner / crisis copy reuse existing next-intl keys; richer marketing copy
- * comes from the page-scoped, localized content module. No routing, middleware,
- * auth, Supabase, i18n, layout, or config files are modified.
- */
+// Stays cacheable like the rest of the public surface; will be refreshed by the
+// existing revalidate window when new stories are published.
+export const revalidate = 300;
+
 export default async function HomePage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  setRequestLocale(locale); // keep statically renderable per locale
+  setRequestLocale(locale);
   const t = await getTranslations();
   const c = homeCopy[locale as Locale] ?? homeCopy.en;
 
+  // Three newest stories for the active locale, via the existing data layer.
+  const latest = await listPublishedStories(locale, 3);
+
   return (
     <>
-      {/* ---------------- Hero ---------------- */}
-      <section
-        aria-labelledby="hero-heading"
-        className="overflow-hidden rounded-2xl bg-gradient-to-br from-brand-700 via-brand-600 to-brand-500 px-6 py-12 text-white shadow-sm md:px-12 md:py-16"
-      >
-        <p className="text-sm font-semibold uppercase tracking-wider text-brand-100">
+      {/* ---------------- Hero (calm, white surface) ---------------- */}
+      <section aria-labelledby="hero-heading" className="py-14 md:py-20">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
           {c.hero.eyebrow}
         </p>
         <h1
           id="hero-heading"
-          className="mt-3 max-w-3xl text-3xl font-bold leading-tight text-white md:text-5xl"
+          className="mt-4 max-w-3xl text-4xl font-bold leading-tight text-ink md:text-5xl"
         >
           {c.hero.headline}
         </h1>
-        <p className="mt-4 max-w-2xl text-base text-brand-50/90 md:text-lg">
+        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">
           {c.hero.subhead}
         </p>
-        <div className="mt-7 flex flex-wrap items-center gap-3">
-          <Button asChild className="bg-white text-brand-700 hover:bg-brand-50">
+
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <Button asChild size="lg">
             <Link href="/submit">
               <PenLine className="h-4 w-4" aria-hidden="true" />
               {t("nav.submit")}
             </Link>
           </Button>
-          <Button
-            asChild
-            variant="ghost"
-            className="border border-white/40 text-white hover:bg-white/10"
-          >
+          <Button asChild size="lg" variant="secondary">
             <Link href="/stories">
+              <BookOpen className="h-4 w-4" aria-hidden="true" />
               {t("nav.stories")}
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </Button>
         </div>
-        <p className="mt-6 flex flex-wrap items-center gap-2 text-sm text-brand-50">
-          <LifeBuoy className="h-4 w-4" aria-hidden="true" />
-          <span className="font-semibold">{c.hero.safety}</span>
-          <Link href="/resources" className="font-semibold text-white underline">
+
+        {/* Subtle trust indicators directly below the CTAs */}
+        <ul
+          aria-label="Platform commitments"
+          className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-ink-soft"
+        >
+          <li className="flex items-center gap-2">
+            <UserRound className="h-4 w-4 text-brand-600" aria-hidden="true" />
+            {c.trust.anonymous}
+          </li>
+          <li className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-brand-600" aria-hidden="true" />
+            {c.trust.reviewed}
+          </li>
+          <li className="flex items-center gap-2">
+            <Check className="h-4 w-4 text-brand-600" aria-hidden="true" />
+            {c.trust.noAccount}
+          </li>
+        </ul>
+
+        {/* Crisis Resources link — intentional, long-term part of navigation */}
+        <p className="mt-6 flex flex-wrap items-center gap-2 text-sm">
+          <LifeBuoy className="h-4 w-4 text-danger" aria-hidden="true" />
+          <span className="font-semibold text-ink">{c.hero.safety}</span>
+          <Link
+            href="/resources"
+            className="font-semibold text-brand-700 underline"
+          >
             {t("footer.crisisLink")}
           </Link>
         </p>
       </section>
 
       {/* ---------------- Mission ---------------- */}
-      <Section id="mission-heading" eyebrow={c.mission.eyebrow} title={c.mission.title}>
-        <p className="-mt-2 max-w-3xl text-lg text-ink-soft">{t("footer.mission")}</p>
+      <Section
+        id="mission-heading"
+        eyebrow={c.mission.eyebrow}
+        title={c.mission.title}
+      >
+        <p className="-mt-2 max-w-3xl text-lg text-ink-soft">
+          {t("footer.mission")}
+        </p>
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {c.mission.pillars.map((p) => (
             <li key={p.title}>
@@ -95,6 +121,50 @@ export default async function HomePage({
             </li>
           ))}
         </ul>
+      </Section>
+
+      {/* ---------------- Latest Stories ---------------- */}
+      <Section
+        id="latest-stories-heading"
+        eyebrow={c.latest.eyebrow}
+        title={c.latest.title}
+        description={c.latest.description}
+      >
+        {latest.length === 0 ? (
+          <Card className="flex flex-col items-center gap-3 p-10 text-center">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+              <BookOpen className="h-6 w-6" aria-hidden="true" />
+            </span>
+            <h3 className="text-xl font-semibold text-ink">
+              {c.latest.emptyTitle}
+            </h3>
+            <p className="max-w-md text-ink-soft">{c.latest.emptyBody}</p>
+            <Button asChild variant="secondary" className="mt-2">
+              <Link href="/submit">
+                <PenLine className="h-4 w-4" aria-hidden="true" />
+                {t("nav.submit")}
+              </Link>
+            </Button>
+          </Card>
+        ) : (
+          <>
+            <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {latest.map((story) => (
+                <li key={story.story_id}>
+                  <StoryCard story={story} locale={locale} />
+                </li>
+              ))}
+            </ul>
+            <div className="mt-6">
+              <Button asChild variant="secondary">
+                <Link href="/stories">
+                  {c.latest.viewAll}
+                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </Button>
+            </div>
+          </>
+        )}
       </Section>
 
       {/* ---------------- Share Your Story CTA ---------------- */}
@@ -109,7 +179,10 @@ export default async function HomePage({
               <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink">
                 {c.share.points.map((point) => (
                   <li key={point} className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-brand-600" aria-hidden="true" />
+                    <Check
+                      className="h-4 w-4 text-brand-600"
+                      aria-hidden="true"
+                    />
                     {point}
                   </li>
                 ))}
@@ -130,113 +203,57 @@ export default async function HomePage({
         </Card>
       </section>
 
-      {/* ---------------- Featured Stories ---------------- */}
-      <Section
-        id="stories-heading"
-        eyebrow={c.featured.eyebrow}
-        title={c.featured.title}
-        description={c.featured.description}
-      >
-        <div className="flex flex-wrap gap-2">
-          {c.featured.topics.map((topic) => (
-            <Badge key={topic}>{topic}</Badge>
-          ))}
-        </div>
-        <p className="mt-4 text-sm text-ink-soft">{c.featured.note}</p>
-        <div className="mt-5">
-          <Button asChild variant="secondary">
-            <Link href="/stories">
-              <BookOpen className="h-4 w-4" aria-hidden="true" />
-              {t("nav.stories")}
-            </Link>
-          </Button>
-        </div>
-      </Section>
-
-      {/* ---------------- Podcast ---------------- */}
-      <Section
-        id="podcast-heading"
-        eyebrow={c.podcast.eyebrow}
-        title={c.podcast.title}
-        description={c.podcast.description}
-      >
-        <Card className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
-              <Mic className="h-6 w-6" aria-hidden="true" />
+      {/* ---------------- Resources Preview (informational only, now links) ---------------- */}
+<Section
+  id="resources-preview-heading"
+  eyebrow={c.resourcesPreview.eyebrow}
+  title={c.resourcesPreview.title}
+  description={c.resourcesPreview.description}
+>
+  <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    {c.resourcesPreview.categories.map((cat) => (
+      <li key={cat.title}>
+        <Link
+          href="/resources"
+          className="block h-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+        >
+          <Card className="group h-full p-5 transition hover:border-brand-300 hover:shadow-md">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+              <HeartHandshake className="h-5 w-5" aria-hidden="true" />
             </span>
-            <p className="text-sm text-ink-soft">{c.podcast.note}</p>
-          </div>
-          <Button asChild variant="secondary">
-            <Link href="/podcast">
-              {t("nav.podcast")}
-              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-          </Button>
-        </Card>
-      </Section>
-
-      {/* ---------------- Resources ---------------- */}
-      <Section
-        id="resources-heading"
-        eyebrow={c.resources.eyebrow}
-        title={c.resources.title}
-        description={c.resources.description}
-      >
-        <div className="flex flex-wrap gap-2">
-          {c.resources.categories.map((cat) => (
-            <Badge key={cat} className="border-brand-100 bg-brand-50 text-brand-800">
-              {cat}
-            </Badge>
-          ))}
-        </div>
-        <div className="mt-5 flex flex-wrap items-center gap-3">
-          <Button asChild variant="secondary">
-            <Link href="/resources">
-              <HeartHandshake className="h-4 w-4" aria-hidden="true" />
-              {t("nav.resources")}
-            </Link>
-          </Button>
-          <Link
-            href="/resources"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-danger underline"
-          >
-            <LifeBuoy className="h-4 w-4" aria-hidden="true" />
-            {t("crisis.getHelp")}
-          </Link>
-        </div>
-      </Section>
-
-      {/* ---------------- Data & Insights ---------------- */}
-      <Section
-        id="insights-heading"
-        eyebrow={c.insights.eyebrow}
-        title={c.insights.title}
-        description={c.insights.description}
-      >
-        <ul className="grid gap-4 sm:grid-cols-3">
-          {c.insights.stats.map((s) => (
-            <li key={s.label}>
-              <Stat value={s.value} label={s.label} source={s.source} />
-            </li>
-          ))}
-        </ul>
-        <div className="mt-5">
-          <Button asChild variant="secondary">
-            <Link href="/reports">
-              <BarChart3 className="h-4 w-4" aria-hidden="true" />
-              {t("nav.reports")}
-            </Link>
-          </Button>
-        </div>
-      </Section>
+            <p className="mt-3 font-semibold text-ink group-hover:text-brand-700">
+              {cat.title}
+            </p>
+            <p className="mt-1.5 text-sm text-ink-soft">{cat.body}</p>
+          </Card>
+        </Link>
+      </li>
+    ))}
+  </ul>
+  <p className="mt-5 text-sm italic text-ink-soft">
+    {c.resourcesPreview.note}
+  </p>
+</Section>
 
       {/* ---------------- Partner With Us ---------------- */}
-      <Section id="partner-heading" eyebrow={c.partner.eyebrow} title={t("footer.contactTitle")}>
-        <Card className="flex flex-col items-start gap-4 p-6 md:flex-row md:items-center md:justify-between">
-          <p className="max-w-2xl text-ink-soft">{t("footer.contactBody")}</p>
-          <Button asChild>
-            <Link href="/contact">{t("nav.contact")}</Link>
+      <Section
+        id="partner-heading"
+        eyebrow={c.partner.eyebrow}
+        title={c.partner.title}
+      >
+        <Card className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between md:p-8">
+          <div className="max-w-2xl">
+            <p className="text-ink-soft">{c.partner.body}</p>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {c.partner.audiences.map((a) => (
+                <li key={a}>
+                  <Badge>{a}</Badge>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <Button asChild size="lg">
+            <Link href="/contact">{c.partner.cta}</Link>
           </Button>
         </Card>
       </Section>
