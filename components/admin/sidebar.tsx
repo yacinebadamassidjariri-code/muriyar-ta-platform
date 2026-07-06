@@ -9,6 +9,7 @@ export function AdminSidebar({ role }: { role: AppRole }) {
   const pathname = usePathname();
   const items = adminNav.filter((item) => item.roles.includes(role));
 
+  
   return (
     <nav
       aria-label="Admin"
@@ -35,4 +36,5 @@ export function AdminSidebar({ role }: { role: AppRole }) {
       </ul>
     </nav>
   );
+
 }

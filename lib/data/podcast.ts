@@ -149,18 +149,51 @@ export async function listPodcastThemes(
 // ---------------------------------------------------------------------------
 
 /**
- * One episode by slug. Until a `slug` column lands on podcast_episodes, the
- * route param resolves against episode_id (uuid). Swap the `.eq` field later
- * with no other change to callers.
+ * Strict UUID v1–v5 shape check. Used only to decide which column to query
+ * first. Slugs in this project are constrained to ^[a-z0-9-]+$ (migration 0017
+ * CHECK), so the two namespaces never collide.
+ */
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function looksLikeUUID(identifier: string): boolean {
+  return UUID_RE.test(identifier);
+}
+
+/**
+ * One episode by either its slug or its UUID. During the migration window,
+ * both forms of public URL are accepted so existing bookmarked UUID links
+ * keep working while new slug URLs roll out. Both branches read exclusively
+ * from `podcast_episodes_public` (which filters status='published' and omits
+ * internal columns), so drafts/archived/private data can never surface.
+ *
+ * Performance: at most one query for the common case (slug or known-UUID);
+ * two queries only when the identifier is UUID-shaped but does not match
+ * any row, in which case we fall through to a slug lookup.
+ *
+ * Behavior is intentionally unchanged when nothing matches: returns null.
  */
 export async function getEpisodeBySlug(
-  episodeSlug: string,
+  identifier: string,
 ): Promise<PodcastEpisodeDetail | null> {
   const supabase = await createClient();
+
+  if (looksLikeUUID(identifier)) {
+    const { data, error } = await supabase
+      .from("podcast_episodes_public")
+      .select(DETAIL_COLS)
+      .eq("episode_id", identifier)
+      .maybeSingle();
+    if (!error && data) {
+      return data as PodcastEpisodeDetail;
+    }
+    // Fall through: UUID-shaped but no row — try slug as a last resort.
+  }
+
   const { data, error } = await supabase
     .from("podcast_episodes_public")
     .select(DETAIL_COLS)
-    .eq("episode_id", episodeSlug)
+    .eq("slug", identifier)
     .maybeSingle();
   if (error || !data) return null;
   return data as PodcastEpisodeDetail;
