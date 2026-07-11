@@ -94,7 +94,7 @@ export async function listLatestEpisodes(
     .order("published_at", { ascending: false })
     .limit(limit);
   if (error || !data) return [];
-  return data as PodcastEpisode[];
+  return data as unknown as PodcastEpisode[];
 }
 
 export async function getFeaturedEpisode(
@@ -109,7 +109,7 @@ export async function getFeaturedEpisode(
     .limit(1)
     .maybeSingle();
   if (error || !data) return null;
-  return data as PodcastEpisode;
+  return data as unknown as PodcastEpisode;
 }
 
 export async function listPodcastThemes(
@@ -185,7 +185,7 @@ export async function getEpisodeBySlug(
       .eq("episode_id", identifier)
       .maybeSingle();
     if (!error && data) {
-      return data as PodcastEpisodeDetail;
+      return data as unknown as PodcastEpisodeDetail;
     }
     // Fall through: UUID-shaped but no row — try slug as a last resort.
   }
@@ -196,7 +196,7 @@ export async function getEpisodeBySlug(
     .eq("slug", identifier)
     .maybeSingle();
   if (error || !data) return null;
-  return data as PodcastEpisodeDetail;
+  return data as unknown as PodcastEpisodeDetail;
 }
 
 /** Themes attached to one episode, ordered by name. */
@@ -236,7 +236,7 @@ export async function getRelatedStoriesForEpisode(
   if (error || !data) return [];
 
   type Row = { published_stories_public: RelatedStory | RelatedStory[] };
-  return (data as Row[])
+  return (data as unknown as Row[])
     .map((r) =>
       Array.isArray(r.published_stories_public)
         ? r.published_stories_public[0]
@@ -265,7 +265,7 @@ export async function listSeriesEpisodes(
     .order("published_at", { ascending: false })
     .limit(limit + (excludeEpisodeId ? 1 : 0));
   if (error || !data) return [];
-  const rows = data as PodcastEpisode[];
+  const rows = data as unknown as PodcastEpisode[];
   return excludeEpisodeId
     ? rows.filter((e) => e.episode_id !== excludeEpisodeId).slice(0, limit)
     : rows.slice(0, limit);
@@ -304,7 +304,7 @@ export async function listThemeEpisodes(
     .order("published_at", { ascending: false })
     .limit(limit);
   if (error || !data) return [];
-  return data as PodcastEpisode[];
+  return data as unknown as PodcastEpisode[];
 }
 
 /**
@@ -339,4 +339,67 @@ export async function listRelatedResources(
     .limit(limit);
   if (error || !data) return [];
   return data as RelatedResource[];
+}
+
+import { createServiceRoleClient } from "@/lib/supabase/service-role";
+
+/**
+ * Signed URL TTL for public media playback. One hour is long enough to
+ * cover a listen session and short enough that an unpublish invalidates
+ * within an acceptable window.
+ */
+const PLAYBACK_URL_TTL_SECONDS = 3600;
+
+export type MediaPlayback = {
+  signedUrl: string;
+  mimeType: string;
+  sizeBytes: number;
+  durationSeconds: number | null;
+};
+
+/**
+ * Public-side playback URL for a media asset (audio or artwork). Enforces:
+ *   - episode is published
+ *   - referenced asset is 'ready' and of the requested kind
+ * via the SECURITY DEFINER RPC `get_podcast_media_playback_url`, then
+ * generates a signed download URL from Storage.
+ *
+ * Returns null for anything the RPC gates out (draft, missing, wrong kind).
+ * Never throws on ordinary "not visible" cases.
+ */
+export async function getPodcastPlaybackUrl(
+  episodeId: string,
+  kind: "audio" | "artwork",
+): Promise<MediaPlayback | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.rpc("get_podcast_media_playback_url", {
+    p_episode_id: episodeId,
+    p_kind: kind,
+  });
+  if (error || !data) return null;
+
+  const row = data as {
+    storage_bucket: string;
+    storage_path: string;
+    mime_type: string;
+    size_bytes: number;
+    duration_seconds: number | null;
+  };
+
+  // The RPC returns storage coordinates; the signed URL is created from
+  // Supabase Storage. This service-role call is scoped to a single-file
+  // signed URL, bound to a path the RPC already validated as safe to expose.
+  const service = createServiceRoleClient();
+  const { data: signed, error: signErr } = await service.storage
+    .from(row.storage_bucket)
+    .createSignedUrl(row.storage_path, PLAYBACK_URL_TTL_SECONDS);
+  if (signErr || !signed?.signedUrl) return null;
+
+  return {
+    signedUrl: signed.signedUrl,
+    mimeType: row.mime_type,
+    sizeBytes: row.size_bytes,
+    durationSeconds: row.duration_seconds,
+  };
 }

@@ -47,7 +47,7 @@ export function PodcastRelatedResources({
               {r.contact_phone ? (
                 <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-ink-soft">
                   <Phone className="h-4 w-4" aria-hidden="true" />
-                  
+                  <a
                     href={`tel:${r.contact_phone}`}
                     className="hover:text-brand-700"
                   >
@@ -58,7 +58,7 @@ export function PodcastRelatedResources({
               {r.website_url ? (
                 <div className="mt-auto pt-2">
                   <Button asChild variant="secondary" size="sm">
-                    
+                    <a
                       href={r.website_url}
                       target="_blank"
                       rel="noopener noreferrer"

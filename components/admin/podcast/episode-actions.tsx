@@ -9,15 +9,10 @@ type Labels = {
   save: string;
   publish: string;
   unpublish: string;
-  publishHint: string;     // shown next to disabled publish
-  unpublishHint: string;   // shown next to disabled unpublish
+  publishHint: string;
+  unpublishHint: string;
 };
 
-/**
- * Three submit buttons inside the parent form. Each carries its own
- * formAction so the same form payload routes to the correct server action.
- * State-gated by the episode's current status (matches the RPC's gates).
- */
 export function EpisodeActions({
   status,
   labels,
@@ -29,35 +24,33 @@ export function EpisodeActions({
   const canUnpublish = status === "published";
 
   return (
-    <div className="flex flex-wrap items-center gap-3 border-t border-line pt-6">
-      <Button type="submit" formAction={saveDraftAction}>
-        <Save className="h-4 w-4" aria-hidden="true" />
-        {labels.save}
-      </Button>
+  <div className="flex flex-wrap items-center gap-3 border-t border-line pt-6">
+    <Button type="submit" formAction={saveDraftAction}>
+      <Save className="h-4 w-4" aria-hidden="true" />
+      {labels.save}
+    </Button>
 
-      <Button
-        type="submit"
-        formAction={publishAction}
-        variant="secondary"
-        disabled={!canPublish}
-        aria-disabled={!canPublish}
-        title={canPublish ? undefined : labels.publishHint}
-      >
-        <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-        {labels.publish}
-      </Button>
+    <Button
+      type="submit"
+      formAction={publishAction}
+      variant="secondary"
+      disabled={!canPublish}
+      title={canPublish ? undefined : labels.publishHint}
+    >
+      <CheckCircle2 className="h-4 w-4" />
+      {labels.publish}
+    </Button>
 
-      <Button
-        type="submit"
-        formAction={unpublishAction}
-        variant="secondary"
-        disabled={!canUnpublish}
-        aria-disabled={!canUnpublish}
-        title={canUnpublish ? undefined : labels.unpublishHint}
-      >
-        <RotateCcw className="h-4 w-4" aria-hidden="true" />
-        {labels.unpublish}
-      </Button>
-    </div>
-  );
+    <Button
+      type="submit"
+      formAction={unpublishAction}
+      variant="secondary"
+      disabled={!canUnpublish}
+      title={canUnpublish ? undefined : labels.unpublishHint}
+    >
+      <RotateCcw className="h-4 w-4" />
+      {labels.unpublish}
+    </Button>
+  </div>
+);
 }

@@ -55,6 +55,7 @@ function payloadFromForm(formData: FormData): Record<string, unknown> {
   for (const key of ALLOWED_KEYS as readonly AllowedKey[]) {
     if (!formData.has(key)) continue;
     const raw = formData.get(key);
+    console.log("FIELD", key, "=", raw);
 
     if (key === "is_featured") {
       out.is_featured = raw === "on" || raw === "true";
@@ -109,11 +110,16 @@ export async function publishAction(formData: FormData): Promise<void> {
   const id = episodeId as string;
   const supabase = await createClient();
   const p_payload = payloadFromForm(formData);
+console.log("PUBLISH PAYLOAD");
+console.log(JSON.stringify(p_payload, null, 2));
 
-  const { error } = await supabase.rpc("publish_podcast_episode", {
-    p_episode_id: id,
-    p_payload,
-  });
+  const { data, error } = await supabase.rpc("publish_podcast_episode", {
+  p_episode_id: id,
+  p_payload,
+});
+
+console.log("PUBLISH RESULT:", data);
+console.log("PUBLISH ERROR:", error);
 
   if (error) {
     const code = error.message;

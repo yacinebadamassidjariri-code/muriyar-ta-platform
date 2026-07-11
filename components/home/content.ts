@@ -12,9 +12,11 @@ import type { Locale } from "@/lib/i18n/routing";
 export type HomeCopy = {
   hero: {
     eyebrow: string;
-    headline: string;
-    subhead: string;
-    safety: string;
+  headlineLead: string;
+  headlineEmphasis: string;
+  headlineTrailing: string;
+  subhead: string;
+  safety: string;
   };
   trust: {
     anonymous: string;
@@ -59,9 +61,11 @@ export type HomeCopy = {
 const en: HomeCopy = {
   hero: {
     eyebrow: "Her Voice · Muriyar Ta",
-    headline: "Every girl has a story worth hearing.",
+    headlineLead: "Every girl has a story",
+headlineEmphasis: "worth hearing",
+headlineTrailing: ".",
     subhead:
-      "A safe, anonymous space where girls and young women across the World share their experiences and turn them into awareness, advocacy, and change.",
+      "A safe, anonymous space where girls and young women around the world share their experiences, transforming personal stories into awareness, advocacy, and lasting change.",
     safety: "In immediate danger?",
   },
   trust: {
@@ -147,12 +151,14 @@ const en: HomeCopy = {
 
 const fr: HomeCopy = {
   hero: {
-    eyebrow: "Sa voix · Muriyar Ta",
-    headline: "Chaque fille a une histoire qui mérite d'être entendue.",
-    subhead:
-      "Un espace sûr et anonyme où les filles et les jeunes femmes du Niger et d'Afrique de l'Ouest partagent leurs expériences — et les transforment en sensibilisation, en plaidoyer et en changement.",
-    safety: "En danger immédiat ?",
-  },
+  eyebrow: "...",
+  headlineLead: "Chaque fille a une histoire",
+  headlineEmphasis: "qui mérite d'être entendue",
+  headlineTrailing: ".",
+  subhead:
+    "Un espace sûr et anonyme où les filles et les jeunes femmes du monde entier partagent leurs expériences, transformant leurs récits en sensibilisation, plaidoyer et changement durable.",
+  safety: "En danger immédiat ?",
+},
   trust: {
     anonymous: "Anonyme",
     reviewed: "Examiné avant publication",

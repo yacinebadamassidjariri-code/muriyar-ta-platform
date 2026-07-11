@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 
+
 const ALLOWED_KEYS = [
   "title",
   "slug",
@@ -105,6 +106,7 @@ function backToEditor(
 }
 
 export async function saveDraftAction(formData: FormData): Promise<void> {
+
   const locale = await getLocale();
   const episodeId = formData.get("episode_id");
   if (typeof episodeId !== "string" || !episodeId) {
@@ -117,6 +119,7 @@ export async function saveDraftAction(formData: FormData): Promise<void> {
 
   const p_payload = payloadFromForm(formData);
 
+
   const { error } = await supabase.rpc("save_podcast_episode_draft", {
     p_episode_id: id,
     p_payload,
@@ -126,7 +129,6 @@ export async function saveDraftAction(formData: FormData): Promise<void> {
     const code = error.message;
     backToEditor(locale, id, code, FIELD_FOR_CODE[code]);
   }
-
   revalidatePath(`/${locale}/admin/podcast`);
   revalidatePath(`/${locale}/admin/podcast/${id}`);
   backToEditor(locale, id);

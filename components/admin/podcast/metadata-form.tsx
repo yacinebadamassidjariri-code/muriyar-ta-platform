@@ -93,7 +93,7 @@ export function MetadataForm({
       <div className="space-y-6">
         {/* Title */}
         <div>
-          <Label htmlFor="title" required>
+          <Label htmlFor="title">
             {labels.titleLabel}
           </Label>
           <Input
@@ -180,7 +180,7 @@ export function MetadataForm({
 
         {/* Language */}
         <div>
-          <Label htmlFor="language_code" required>
+          <Label htmlFor="language_code">
             {labels.languageLabel}
           </Label>
           <select
@@ -256,7 +256,7 @@ export function MetadataForm({
 
         {/* Content Advisory */}
         <div>
-          <Label htmlFor="content_advisory" required>
+          <Label htmlFor="content_advisory">
             {labels.advisoryLabel}
           </Label>
           <select

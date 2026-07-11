@@ -82,7 +82,7 @@ export default async function PodcastDashboardPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  await requirePermission("podcast.edit");
+  await requirePermission("podcast.manage");
 
   const t = await getTranslations({ locale, namespace: "adminPodcast" });
   const sp = await searchParams;
@@ -189,6 +189,7 @@ export default async function PodcastDashboardPage({
           sortTitleAsc: t("sortTitleAsc"),
           sortTitleDesc: t("sortTitleDesc"),
           seriesLabels,
+          sortUpdatedAsc: t("sortUpdatedAsc"),
         }}
       />
 
@@ -201,6 +202,7 @@ export default async function PodcastDashboardPage({
             filteredTitle: t("emptyFilteredTitle"),
             filteredBody: t("emptyFilteredBody"),
             newEpisode: t("newEpisode"),
+            
           }}
         />
       ) : (
@@ -226,6 +228,7 @@ export default async function PodcastDashboardPage({
               statusPublished: t("statusPublished"),
               statusArchived: t("statusArchived"),
               seriesLabels,
+    
             }}
           />
 

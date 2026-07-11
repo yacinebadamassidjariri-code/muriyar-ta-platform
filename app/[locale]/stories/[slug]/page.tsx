@@ -49,7 +49,7 @@ export default async function StoryDetailPage({
       </Link>
 
       <header className="mt-6">
-        <h1 className="text-3xl font-bold text-ink md:text-4xl">{story.title}</h1>
+        <h1 className="text-3xl font-display font-semibold text-ink md:text-4xl">{story.title}</h1>
         <div className="mt-3">
           <StoryMeta
             publishedAt={story.published_at}

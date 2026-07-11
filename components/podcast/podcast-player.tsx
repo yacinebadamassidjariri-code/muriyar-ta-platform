@@ -20,10 +20,12 @@ export function PodcastPlayer({
   audioUrl,
   title,
   labels,
+  showDownload = true,
 }: {
   audioUrl: string | null;
   title: string;
   labels: Labels;
+  showDownload?: boolean;
 }) {
   if (!audioUrl) {
     return (
@@ -46,14 +48,16 @@ export function PodcastPlayer({
       >
         <source src={audioUrl} />
       </audio>
-      <div className="mt-3">
-        <Button asChild variant="secondary" size="sm">
-          <a href={audioUrl} download>
-            <Download className="h-4 w-4" aria-hidden="true" />
-            {labels.download}
-          </a>
-        </Button>
-      </div>
+      {showDownload ? (
+        <div className="mt-3">
+          <Button asChild variant="secondary" size="sm">
+            <a href={audioUrl} download>
+              <Download className="h-4 w-4" aria-hidden="true" />
+              {labels.download}
+            </a>
+          </Button>
+        </div>
+      ) : null}
     </Card>
   );
 }

@@ -15,7 +15,7 @@ export function Section({
 }: {
   id: string;
   eyebrow?: string;
-  title: string;
+  title: React.ReactNode;
   description?: string;
   className?: string;
   children?: React.ReactNode;

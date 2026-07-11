@@ -101,6 +101,68 @@
   "podcast_featured_requires_published": "Seuls les épisodes publiés peuvent être mis à la une.",
   "podcast_not_draft": "Cet épisode n'est pas un brouillon, il ne peut donc pas être publié depuis cet écran.",
   "podcast_not_published": "Cet épisode n'est pas actuellement publié."
+},
+"artwork": {
+  "sectionTitle": "Illustration de l'épisode",
+  "sectionSubtitle": "Image carrée affichée sur la page du podcast et dans les aperçus partagés.",
+  "emptyTitle": "Aucune illustration",
+  "emptyBody": "Téléchargez une image carrée d'au moins 1400×1400 pixels pour un rendu optimal sur les applications de podcast.",
+  "uploadButton": "Téléverser une image",
+  "replaceButton": "Remplacer",
+  "deleteButton": "Supprimer",
+  "uploadingLabel": "Téléversement…",
+  "finalizingLabel": "Finalisation…",
+  "loadingPreviewLabel": "Chargement de l'aperçu",
+  "filenameLabel": "Nom du fichier",
+  "sizeLabel": "Taille",
+  "uploadedAtLabel": "Téléversé le",
+  "confirmDeleteTitle": "Supprimer l'illustration ?",
+  "confirmDeleteBody": "L'illustration actuelle sera retirée de cet épisode. Cette action est irréversible.",
+  "confirmDelete": "Supprimer",
+  "cancel": "Annuler",
+  "acceptedFormats": "JPEG ou PNG",
+  "maxSize": "jusqu'à 5 Mo",
+  "squareOnly": "carré (1:1) uniquement",
+  "errors": {
+    "invalidType": "Seules les images JPEG ou PNG sont prises en charge.",
+    "tooLarge": "L'illustration doit peser 5 Mo ou moins.",
+    "notSquare": "L'illustration doit être carrée (largeur égale à la hauteur).",
+    "decodeFailed": "Impossible de lire cette image. Essayez un autre fichier.",
+    "uploadFailed": "Le téléversement n'a pas abouti. Veuillez réessayer.",
+    "podcast_invalid_mime": "Ce type de fichier n'est pas autorisé.",
+    "podcast_invalid_size": "Ce fichier est trop volumineux."
+  }
+},
+"audio": {
+  "sectionTitle": "Fichier audio",
+  "sectionSubtitle": "L'audio que les auditeurs entendront sur la page du podcast.",
+  "emptyTitle": "Aucun fichier audio",
+  "emptyBody": "Téléversez le fichier audio de l'épisode. Il sera disponible immédiatement pour l'aperçu interne.",
+  "uploadButton": "Téléverser l'audio",
+  "replaceButton": "Remplacer",
+  "deleteButton": "Supprimer",
+  "uploadingLabel": "Téléversement…",
+  "finalizingLabel": "Finalisation…",
+  "probingLabel": "Lecture du fichier…",
+  "loadingPreviewLabel": "Chargement de l'aperçu",
+  "filenameLabel": "Nom du fichier",
+  "durationLabel": "Durée",
+  "sizeLabel": "Taille",
+  "uploadedAtLabel": "Téléversé le",
+  "confirmDeleteTitle": "Supprimer l'audio ?",
+  "confirmDeleteBody": "L'audio actuel sera retiré de cet épisode. Cette action est irréversible.",
+  "confirmDelete": "Supprimer",
+  "cancel": "Annuler",
+  "acceptedFormats": "MP3, M4A ou WAV",
+  "maxSize": "jusqu'à 250 Mo",
+  "errors": {
+    "invalidType": "Seuls les fichiers MP3, M4A ou WAV sont pris en charge.",
+    "tooLarge": "Le fichier audio doit peser 250 Mo ou moins.",
+    "uploadFailed": "Le téléversement n'a pas abouti. Veuillez réessayer.",
+    "podcast_invalid_mime": "Ce type de fichier n'est pas autorisé.",
+    "podcast_invalid_size": "Ce fichier est trop volumineux.",
+    "podcast_invalid_duration": "La durée de cet audio n'a pas pu être enregistrée."
+  }
 }
 },
 
@@ -154,14 +216,350 @@
       "tagline": "Des jeunes en conversation.",
       "description": "Tables rondes entre jeunes sur l'éducation, le leadership, l'université, le mariage, les réseaux sociaux, les rêves et le changement communautaire."
     }
+  },
+  "artworkPlaceholderAlt": "Aucune illustration d'épisode disponible"
+},
+
+"home": {
+  "hero": {
+    "eyebrow": "SA VOIX. SON HISTOIRE. NOTRE AVENIR.",
+    "title": "Chaque fille a une histoire <emphasis>qui mérite d'être entendue</emphasis>.",
+    "subtitle": "Muriyar Ta est un espace sûr et anonyme où les filles et les jeunes femmes partagent leurs histoires. Ensemble, nous transformons ces récits en sensibilisation, en podcasts, en recherche et en plaidoyer.",
+    "ctaShareStory": "Partager mon histoire",
+    "ctaExploreStories": "Découvrir les histoires",
+    "reassurance": "Votre histoire vous appartient. La partager est toujours votre choix.",
+    "illustrationAlt": "Une illustration à l'aquarelle représentant une jeune fille anonyme écrivant sous un arbre en fleurs."
   }
+},
+
+"about": {
+  "metaTitle": "À propos de Muriyar Ta",
+  "metaDescription": "Muriyar Ta existe pour offrir un espace sûr et anonyme où les filles et les jeunes femmes peuvent partager leurs récits avec leurs propres mots.",
+  "heroEyebrow": "À propos",
+  "heroTitle": "Chaque récit mérite d'être entendu.",
+  "heroBody": "Derrière chaque statistique se trouve une personne avec des rêves, des peurs, des espoirs et des expériences qui méritent d'être reconnus. Muriyar Ta existe pour créer un espace sûr et anonyme où les filles et les jeunes femmes peuvent partager leurs récits avec leurs propres mots, car un changement durable commence par l'écoute.",
+
+  "storyEyebrow": "Notre histoire",
+  "storyTitle": "Notre histoire",
+  "storyPara1": "Avant que le monde ne connaisse Malala Yousafzai comme lauréate du prix Nobel de la paix et défenseure mondiale de l'éducation des filles, elle n'était qu'une jeune fille partageant son expérience du droit à apprendre qui lui était refusé. Son récit n'a pas révélé un nouveau problème au monde. Les filles étaient exclues de l'éducation depuis des générations. Ce qui a changé, c'est que les gens se sont enfin connectés à l'expérience humaine derrière les statistiques.",
+  "storyPara2": "Muriyar Ta est née de la même conviction.",
+  "storyPara3": "Trop souvent, les conversations sur le mariage des enfants, les violences basées sur le genre, les obstacles à l'éducation et les normes sociales nocives sont réduites à des chiffres, à des rapports et à des discussions politiques. Si les statistiques nous aident à comprendre l'ampleur d'un problème, elles ne peuvent jamais rendre compte pleinement de la réalité vécue par les personnes concernées.",
+  "storyPara4": "Derrière chaque statistique se trouve un récit qui attend d'être entendu.",
+  "storyPara5": "Muriyar Ta existe pour que ces récits ne restent plus jamais silencieux.",
+
+  "anonymityEyebrow": "Anonymat",
+  "anonymityTitle": "Pourquoi le récit anonyme ?",
+  "anonymityPara1": "Partager des expériences profondément personnelles ne devrait jamais se faire au prix de sa sécurité.",
+  "anonymityPara2": "Pour de nombreuses filles et jeunes femmes, parler ouvertement du mariage des enfants, des violences basées sur le genre, de la discrimination, de la pression familiale ou d'autres expériences sensibles peut les exposer à la stigmatisation, aux représailles ou à d'autres formes de violence. Trop souvent, le silence n'est pas un choix. C'est une stratégie de survie.",
+  "anonymityPara3": "En permettant aux récits d'être partagés de manière anonyme, Muriyar Ta lève certaines de ces barrières. Nous croyons que les filles doivent pouvoir s'exprimer honnêtement, sans crainte de jugement ni de conséquences. L'anonymat permet aux contributrices de rester protégées tout en garantissant que leurs expériences peuvent éduquer, inspirer et nourrir des conversations utiles.",
+
+  "missionVisionEyebrow": "Mission et vision",
+  "missionVisionTitle": "Ce que nous construisons",
+  "missionTitle": "Notre mission",
+  "missionBody": "Créer une plateforme sûre et anonyme où les filles et les jeunes femmes peuvent partager leurs récits librement, sans peur, sans stigmatisation et sans jugement. À travers le récit, les médias numériques et le plaidoyer, Muriyar Ta amplifie des voix trop souvent inaudibles, en transformant les expériences vécues en prise de conscience, en dialogue et en action. Plutôt que de parler au nom des filles et des jeunes femmes, Muriyar Ta existe pour créer un espace où elles peuvent parler pour elles-mêmes.",
+  "visionTitle": "Notre vision",
+  "visionBody": "Un monde où chaque fille a la possibilité de partager son récit en sécurité, d'être entendue et son histoire contribuera à mettre en lumière les injustices auxquelles les filles et les femmes sont confrontées.",
+
+  "valuesEyebrow": "Valeurs",
+  "valuesTitle": "Nos valeurs",
+  "values": {
+    "voice":         { "title": "Voix" },
+    "safety":        { "title": "Sécurité" },
+    "authenticity":  { "title": "Authenticité" },
+    "empowerment":   { "title": "Émancipation" },
+    "inclusion":     { "title": "Inclusion" },
+    "advocacy":      { "title": "Plaidoyer par le récit" }
+  },
+
+  "nameEyebrow": "Le nom",
+  "nameTitle": "Pourquoi « Muriyar Ta » ?",
+  "namePara1": "Muriyar Ta signifie « Sa voix » en haoussa. Plus qu'un nom, c'est une promesse. La promesse que chaque fille qui visitera cette plateforme y trouvera un espace où sa voix compte, où ses expériences sont valorisées, et où son récit mérite d'être entendu.",
+
+  "founderEyebrow": "De la fondatrice",
+  "founderTitle": "Rencontrer la fondatrice",
+  "founderPara1": "En grandissant à Maradi, au Niger, je me suis souvent interrogée sur le silence entourant des sujets qui façonnaient la vie des filles et des jeunes femmes. J'étais curieuse, posant sans cesse des questions sur les traditions, les attentes et les sujets rarement discutés ouvertement.",
+  "founderPara2": "Dès mon plus jeune âge, j'ai été exposée à des expériences de travail communautaire et de leadership qui ont transformé ma compréhension du plaidoyer. Elles m'ont appris qu'un changement significatif commence par écouter les personnes les plus concernées.",
+  "founderPara3": "Pourquoi entendons-nous si rarement directement les filles dont la vie est débattue ?",
+  "founderPara4": "Trop souvent, leurs expériences sont résumées par des statistiques, des rapports et des travaux de recherche, tandis que leurs propres voix restent absentes. Muriyar Ta est née de la conviction que chaque statistique représente une personne réelle avec un récit qui mérite d'être entendu. Je voulais créer un espace où les filles et les jeunes femmes pourraient partager ces expériences en toute sécurité, de manière anonyme et avec leurs propres mots. Un espace où l'on ne parle pas à leur place, mais où l'on les écoute.",
+  "founderPara5": "En tant que personne passionnée par l'égalité de genre, l'éducation, le développement international et l'impact social, je crois que le récit est bien plus qu'un moyen de partager des expériences. C'est un moyen de bâtir de la compréhension, de remettre en question des normes nocives et d'informer de meilleures politiques et solutions.",
+
+  "pullQuote": "Le silence protège les auteurs de violences, pas les victimes. Prendre la parole est le seul moyen de briser le silence et le cycle de la violence.",
+
+  "ctaEyebrow": "Rejoignez-nous",
+  "ctaTitle": "Aidez-nous à briser le silence",
+  "ctaBody": "Chaque récit partagé est un pas vers la fin du silence, la construction de la compréhension et le changement. Rejoignez-nous pour bâtir un avenir où chaque fille se sent en sécurité pour être entendue.",
+  "ctaShareStory": "Partager votre récit",
+  "ctaExploreResources": "Explorer les ressources",
+  "ctaPartnerWithUs": "Devenir partenaire"
+},
+
+"partner": {
+  "metaTitle": "Devenez partenaire",
+  "metaDescription": "Muriyar Ta collabore avec des organisations, chercheurs, éducateurs, médias et donateurs œuvrant pour les droits et les voix des filles et des jeunes femmes.",
+  "heroEyebrow": "Partenariat",
+  "heroTitle": "Devenez partenaire",
+  "heroBody": "Muriyar Ta grandit grâce à la collaboration. Si votre travail contribue à la sécurité, à l'éducation ou à la voix des filles et des jeunes femmes au Niger et en Afrique de l'Ouest, vous avez une place ici.",
+
+  "whyEyebrow": "Pourquoi",
+  "whyTitle": "Pourquoi nous nouons des partenariats",
+  "whyPara1": "Le changement durable n'est jamais l'œuvre d'une seule organisation. Mettre fin au mariage des enfants, élargir l'accès à l'éducation et lutter contre les violences basées sur le genre exigent des coalitions — de survivantes, de communautés, de chercheurs, d'éducateurs et d'institutions capables d'agir à grande échelle.",
+  "whyPara2": "Le partenariat est ce qui transforme les récits en politiques, la sensibilisation en action et les efforts isolés en dynamique commune. Nous travaillons avec des partenaires qui apportent rigueur, attention et un engagement à placer au cœur du travail les voix des personnes les plus concernées.",
+
+  "audiencesEyebrow": "Partenaires",
+  "audiencesTitle": "Avec qui nous travaillons",
+  "audiencesDescription": "Nous accueillons les collaborations avec un large éventail d'organisations et de personnes.",
+  "audiences": {
+    "ngos": {
+      "title": "ONG",
+      "body": "Organisations locales, nationales et internationales œuvrant pour l'égalité de genre, l'éducation et la protection de l'enfance."
+    },
+    "researchers": {
+      "title": "Chercheurs",
+      "body": "Universitaires et chercheurs indépendants travaillant sur le récit, le genre, l'éducation et la santé publique en Afrique de l'Ouest."
+    },
+    "education": {
+      "title": "Établissements éducatifs",
+      "body": "Écoles, universités et programmes de formation intégrant le récit centré sur les survivantes dans leurs cursus et actions."
+    },
+    "donors": {
+      "title": "Fondations et donateurs",
+      "body": "Fondations, philanthropes et bailleurs de fonds investissant dans l'égalité de genre et l'autonomisation des jeunes."
+    },
+    "media": {
+      "title": "Médias",
+      "body": "Journalistes, podcasteurs et rédactions engagés dans un traitement responsable des sujets sensibles."
+    },
+    "volunteers": {
+      "title": "Bénévoles",
+      "body": "Traducteurs, éditeurs, designers et membres de la communauté offrant temps et compétences à la mission."
+    }
+  },
+
+  "collaborationsEyebrow": "Collaboration",
+  "collaborationsTitle": "Comment nous pouvons collaborer",
+  "collaborationsDescription": "Chaque partenariat prend forme à partir de ce que chacun apporte. Voici les domaines où nous travaillons le plus souvent ensemble.",
+  "collaborations": {
+    "outreach": {
+      "title": "Action de proximité",
+      "body": "Aller à la rencontre des filles et des jeunes femmes là où elles vivent, apprennent et se rassemblent."
+    },
+    "research": {
+      "title": "Recherche",
+      "body": "Études conjointes, partage de données dans un cadre éthique strict et production de preuves."
+    },
+    "podcasts": {
+      "title": "Podcasts",
+      "body": "Coproduction d'épisodes, interviews d'invités et mise en avant croisée avec des émissions alignées."
+    },
+    "workshops": {
+      "title": "Ateliers",
+      "body": "Sessions en présentiel et en ligne sur le récit, la sécurité numérique et le plaidoyer."
+    },
+    "advocacy": {
+      "title": "Campagnes de plaidoyer",
+      "body": "Campagnes conjointes amplifiant les voix des survivantes dans le débat public et politique."
+    },
+    "resources": {
+      "title": "Développement de ressources",
+      "body": "Guides, boîtes à outils et supports pédagogiques produits en commun."
+    },
+    "translation": {
+      "title": "Traduction",
+      "body": "Rendre la plateforme et ses contenus accessibles en haoussa, zarma, français et au-delà."
+    },
+    "grants": {
+      "title": "Partenariats de financement",
+      "body": "Candidatures conjointes à des financements soutenant des projets partagés et un impact durable."
+    }
+  },
+
+  "principlesEyebrow": "Principes",
+  "principlesTitle": "Nos principes",
+  "principles": {
+    "privacy": "Confidentialité",
+    "ethics": "Éthique",
+    "community": "La communauté d'abord",
+    "respect": "Respect",
+    "collaboration": "Collaboration",
+    "evidence": "Fondé sur des données"
+  },
+
+  "prioritiesEyebrow": "En ce moment",
+  "prioritiesTitle": "Priorités actuelles",
+  "prioritiesDescription": "Les domaines où nous cherchons activement des partenaires dans les prochains mois.",
+  "priorities": {
+    "regional": "Partenariats au Niger et en Afrique de l'Ouest",
+    "translation": "Bénévoles traducteurs",
+    "academic": "Collaborations universitaires",
+    "guests": "Invités du podcast",
+    "organizational": "Partenariats organisationnels",
+    "funding": "Financements à long terme"
+  },
+
+  "processEyebrow": "Processus",
+  "processTitle": "Comment un partenariat prend forme",
+  "processDescription": "Un chemin simple, du premier message à une collaboration concrète.",
+  "processStepLabel": "Étape {step}",
+  "process": {
+    "reach": {
+      "title": "Prenez contact",
+      "body": "Envoyez-nous un message décrivant votre organisation et ce que vous aimeriez explorer."
+    },
+    "talk": {
+      "title": "Échangeons",
+      "body": "Nous organisons une première conversation pour comprendre vos objectifs et partager les nôtres."
+    },
+    "explore": {
+      "title": "Explorons les possibilités",
+      "body": "Ensemble, nous identifions où nos missions se rejoignent et à quoi un partenariat pourrait ressembler."
+    },
+    "build": {
+      "title": "Bâtir un impact significatif ensemble",
+      "body": "Nous formalisons la collaboration et lançons le travail commun."
+    }
+  },
+
+  "ctaEyebrow": "Entrons en contact",
+  "ctaTitle": "Construisons quelque chose de significatif ensemble",
+  "ctaBody": "Si l'un de ces éléments résonne avec votre travail, nous serions ravis d'échanger avec vous. Envoyez-nous un message et nous prenons le relais.",
+  "ctaButton": "Nous contacter"
+},
+
+"report": {
+  "metaTitle": "Signaler une situation",
+  "metaDescription": "Signalez confidentiellement une situation à l'équipe Muriyar Ta.",
+  "heroEyebrow": "Centre de signalement",
+  "heroTitle": "Signaler une situation",
+  "heroSubtitle": "Si vous ou une personne que vous connaissez subissez un mariage d'enfant, des violences basées sur le genre, des obstacles à l'éducation ou une autre situation grave, vous pouvez partager des informations en toute sécurité ici.",
+  "noticeTitle": "Important",
+  "noticeNotEmergency": "Ce service n'est pas un service d'urgence.",
+  "noticeCallEmergency": "Si une personne est en danger immédiat, contactez immédiatement les services d'urgence locaux.",
+  "noticeModerationReview": "Les signalements peuvent être examinés par l'équipe de modération Muriyar Ta.",
+  "formEyebrow": "Signalement",
+  "formTitle": "Partagez ce que vous savez",
+  "formDescription": "Seuls les champs obligatoires sont nécessaires. Ajoutez les détails que vous jugez utiles.",
+  "categoryLabel": "Type de situation",
+  "categoryPlaceholder": "Choisissez une catégorie",
+  "categoryOptions": {
+    "child_marriage": "Mariage d'enfant",
+    "gbv": "Violences basées sur le genre",
+    "education": "Obstacles à l'éducation",
+    "trafficking": "Traite des êtres humains",
+    "harassment": "Harcèlement",
+    "mental_health": "Santé mentale",
+    "other": "Autre"
+  },
+  "descriptionLabel": "Description",
+  "descriptionHelp": "Expliquez ce qui s'est passé avec vos propres mots. Jusqu'à 8 000 caractères.",
+  "countryLabel": "Pays",
+  "regionLabel": "Région ou État",
+  "cityLabel": "Ville ou village",
+  "emailLabel": "E-mail",
+  "emailHelp": "Utilisé uniquement si l'équipe de modération doit vous contacter.",
+  "phoneLabel": "Téléphone",
+  "phoneHelp": "Utilisé uniquement si l'équipe de modération doit vous contacter.",
+  "consentLabel": "Je comprends que ce signalement peut être examiné par l'équipe de modération Muriyar Ta.",
+  "optionalHint": "(facultatif)",
+  "submitButton": "Envoyer le signalement",
+  "submittingLabel": "Envoi en cours…",
+  "successTitle": "Merci pour votre partage",
+  "successBody": "Votre signalement a bien été reçu. L'équipe Muriyar Ta l'examinera et, si vous avez fourni des coordonnées, pourra vous recontacter.",
+  "successAction": "Envoyer un autre signalement",
+  "errors": {
+    "categoryRequired": "Choisissez une catégorie.",
+    "descriptionRequired": "Veuillez décrire la situation.",
+    "consentRequired": "Veuillez confirmer votre accord pour envoyer.",
+    "genericFailure": "Une erreur est survenue. Veuillez réessayer."
+  },
+  "supportEyebrow": "Soutien",
+  "supportTitle": "Besoin d'un soutien immédiat ?",
+  "supportDescription": "Si vous avez besoin d'aide tout de suite, ces ressources directes sont disponibles.",
+  "supportResourcesTitle": "Consulter les ressources",
+  "supportResourcesBody": "Trouvez des organisations, des lignes d'urgence et des programmes éducatifs pour les questions touchant les filles et les jeunes femmes en Afrique de l'Ouest.",
+  "supportResourcesCta": "Consulter les ressources",
+  "supportCrisisTitle": "Ressources de crise",
+  "supportCrisisBody": "Ressources d'aide immédiate pour les personnes en situation de crise ou en danger.",
+  "supportCrisisCta": "Ressources de crise"
+},
+"contact": {
+  "metaTitle": "Contacter Muriyar Ta",
+  "metaDescription": "Entrez en contact avec l'équipe Muriyar Ta.",
+  "heroEyebrow": "Contact",
+  "heroTitle": "Prenez contact",
+  "heroDescription": "Que vous soyez survivante, chercheur, journaliste, ONG, éducateur ou partenaire potentiel, nous serions ravis d'échanger avec vous.",
+  "formEyebrow": "Message",
+  "formTitle": "Envoyez-nous un message",
+  "formDescription": "L'équipe Muriyar Ta lit chaque message. Merci de nous dire brièvement qui vous êtes et ce dont vous souhaitez parler.",
+  "nameLabel": "Nom complet",
+  "emailLabel": "Adresse e-mail",
+  "organizationLabel": "Organisation",
+  "organizationOptional": "(facultatif)",
+  "subjectLabel": "Objet",
+  "messageLabel": "Message",
+  "messageHelp": "Jusqu'à 8 000 caractères.",
+  "consentLabel": "Je comprends que ce message peut être lu par l'équipe Muriyar Ta.",
+  "submitButton": "Envoyer le message",
+  "successTitle": "Merci de nous avoir écrit",
+  "successBody": "Votre message a bien été reçu. L'équipe Muriyar Ta le lira et vous répondra dès que possible.",
+  "successAction": "Envoyer un autre message",
+  "errors": {
+    "nameRequired": "Veuillez saisir votre nom.",
+    "emailRequired": "Veuillez saisir votre adresse e-mail.",
+    "emailInvalid": "Veuillez saisir une adresse e-mail valide.",
+    "subjectRequired": "Veuillez indiquer un objet.",
+    "messageRequired": "Veuillez rédiger un message.",
+    "consentRequired": "Veuillez confirmer votre accord pour envoyer."
+  },
+  "channelsEyebrow": "Contact direct",
+  "channelsTitle": "Comment nous joindre",
+  "channelsDescription": "Pour des demandes précises, vous pouvez nous écrire directement à l'adresse correspondant à votre besoin.",
+  "channels": {
+    "general": {
+      "title": "Demandes générales",
+      "body": "Questions, retours ou tout ce qui ne rentre pas dans les autres catégories."
+    },
+    "partnerships": {
+      "title": "Partenariats",
+      "body": "ONG, établissements éducatifs et organisations communautaires souhaitant collaborer."
+    },
+    "media": {
+      "title": "Médias",
+      "body": "Journalistes, podcasteurs et presse sollicitant un entretien ou une réaction."
+    },
+    "research": {
+      "title": "Recherche",
+      "body": "Chercheurs et universitaires intéressés par la plateforme, ses données ou sa méthodologie."
+    }
+  },
+  "faqEyebrow": "Questions fréquentes",
+  "faqTitle": "Foire aux questions",
+  "faqDescription": "Quelques-unes des questions les plus fréquentes.",
+  "faq": {
+    "anonymity": {
+      "q": "Puis-je rester anonyme ?",
+      "a": "Oui. Vous pouvez partager un récit anonymement via la page de soumission et nous contacter ici sans fournir d'informations personnelles au-delà d'un nom et d'un e-mail."
+    },
+    "response_time": {
+      "q": "Sous quel délai répondez-vous ?",
+      "a": "Nous essayons de répondre en quelques jours ouvrés. Les demandes complexes, notamment en recherche ou partenariat, peuvent prendre plus de temps."
+    },
+    "partner": {
+      "q": "Une organisation peut-elle devenir partenaire ?",
+      "a": "Oui. Nous collaborons avec des ONG, des établissements éducatifs et des groupes communautaires en Afrique de l'Ouest. Écrivez-nous via l'adresse Partenariats pour engager la discussion."
+    },
+    "research": {
+      "q": "Puis-je demander un accès pour la recherche ?",
+      "a": "Les chercheurs peuvent nous écrire via l'adresse Recherche avec une courte description de leur projet. Chaque demande est examinée avec attention afin de protéger les personnes qui nous confient leur récit."
+    }
+  },
+  "footerNote": "Muriyar Ta s'engage à protéger la sécurité et la dignité des personnes qui partagent leur récit avec nous. Merci de ne pas inclure d'informations identifiantes concernant des tiers dans votre message."
 },
 
   "nav": {
     "stories": "Récits",
     "podcast": "Podcast",
     "resources": "Ressources",
-    "reports": "Rapports",
+    "report": "Rapports",
     "about": "À propos",
     "submit": "Partager votre récit",
     "contact": "Contact"

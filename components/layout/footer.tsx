@@ -49,7 +49,14 @@ export function Footer() {
         </nav>
 
         <div className="text-sm">
-          <p className="mb-2 font-semibold text-ink">{t("contactTitle")}</p>
+          <p className="mb-2 font-semibold text-ink">
+  <Link
+    href="/partner"
+    className="transition-colors duration-200 hover:text-brand-700 hover:underline underline-offset-4"
+  >
+    {t("contactTitle")}
+  </Link>
+</p>
           <p className="text-ink-soft">{t("contactBody")}</p>
         </div>
       </div>

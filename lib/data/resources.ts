@@ -93,7 +93,7 @@ export async function listResources(
 
   const { data, error } = await query;
   if (error || !data) return [];
-  return data as Resource[];
+  return data as unknown as Resource[];
 }
 
 /** Crisis-only — the always-available safety surface. */
@@ -118,7 +118,12 @@ export async function listCrisisResources(
   const { data, error } = await query;
   if (error || !data) return [];
   // Normalize to the Resource shape; missing fields default to safe values.
-  return (data as Omit<Resource, "category_id" | "is_crisis_resource" | "last_verified_date">[])
+  return (
+  data as unknown as Omit<
+    Resource,
+    "category_id" | "is_crisis_resource" | "last_verified_date"
+  >[]
+)
     .map((r) => ({
       ...r,
       category_id: null,

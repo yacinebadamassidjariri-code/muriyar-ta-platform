@@ -6,17 +6,18 @@ export const mainNav = [
   { key: "stories", href: "/stories" },
   { key: "podcast", href: "/podcast" },
   { key: "resources", href: "/resources" },
-  { key: "reports", href: "/reports" },
-  { key: "about", href: "/about" },
+  { key: "reports", href: "/report" },
   { key: "submit", href: "/submit" },
+  { key: "about", href: "/about" },
 ] as const;
 
 export const footerNav = [
   { key: "stories", href: "/stories" },
   { key: "podcast", href: "/podcast" },
   { key: "resources", href: "/resources" },
-  { key: "reports", href: "/reports" },
+  { key: "reports", href: "/report" },
   { key: "contact", href: "/contact" },
+  { key: "about", href: "/about" },
 ] as const;
 
 // Admin sidebar. Labels are English-first (internal staff tool); each item is
@@ -27,7 +28,7 @@ export const adminNav: { href: string; label: string; roles: AppRole[] }[] = [
   { href: "/admin/podcast", label: "Podcast", roles: ["editor", "administrator"] },
   { href: "/admin/resources", label: "Resources", roles: ["editor", "administrator"] },
   { href: "/admin/newsletter", label: "Newsletter", roles: ["editor", "administrator"] },
-  { href: "/admin/reports", label: "Reports", roles: ["editor", "administrator"] },
+  { href: "/admin/report", label: "Reports", roles: ["editor", "administrator"] },
   { href: "/admin/partnerships", label: "Partnerships", roles: ["administrator"] },
   { href: "/admin/users", label: "Users", roles: ["administrator"] },
   { href: "/admin/audit", label: "Audit Log", roles: ["administrator"] },

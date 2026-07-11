@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   UserRound,
 } from "lucide-react";
+import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import { type Locale } from "@/lib/i18n/routing";
@@ -23,6 +24,112 @@ import { homeCopy } from "@/components/home/content";
 // Stays cacheable like the rest of the public surface; will be refreshed by the
 // existing revalidate window when new stories are published.
 export const revalidate = 300;
+/**
+ * Pencil underline for the phrase "worth hearing" in the hero title.
+ *
+ * The Human Mark: a hand-drawn SVG stroke sitting on top of a real
+ * text-decoration underline. If the SVG renders (all modern browsers),
+ * it visually replaces the underline. If it fails (screen readers,
+ * print, forced-colors mode, RSS extraction), the plain underline on
+ * the wrapping span remains as a graceful fallback.
+ *
+ * Static. Does not animate. Marked aria-hidden — the emphasis is visual
+ * only; the semantic content is the underlined text itself.
+ */
+ 
+function PencilUnderline() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 200 8"
+      preserveAspectRatio="none"
+      className="absolute inset-x-0 -bottom-1 w-full bg-surface"
+      style={{ height: "0.55em" }}
+    >
+      {/* Hand-drawn imperfect stroke. Slight variance, tapered ends. */}
+      <path
+        d="M2 5 C 20 3, 45 6, 68 4 S 110 5, 132 3.5 S 172 5, 198 4"
+        fill="none"
+        stroke="#5B4D53"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+/**
+ * Placeholder for the hero illustration. Composition suggestion for
+ * the eventual illustrator: young woman under blooming tree, notebook
+ * as ripple source, botanical extension to the upper-left. This SVG
+ * is a light abstract stand-in — NOT the final artwork.
+ *
+ * Uses only design tokens so it composes with any theme adjustments.
+ */
+function HeroIllustrationPlaceholder() {
+  return (
+    <svg
+      viewBox="0 0 400 500"
+      preserveAspectRatio="xMidYMid meet"
+      className="h-full w-full text-ink-soft/40"
+      aria-hidden="true"
+    >
+      {/* Tree canopy (upper third) — soft arcs suggesting foliage */}
+      <g fill="none" stroke="currentColor" strokeWidth="1.25">
+        <circle cx="140" cy="120" r="55" opacity="0.5" />
+        <circle cx="220" cy="90" r="70" opacity="0.4" />
+        <circle cx="280" cy="140" r="50" opacity="0.5" />
+        <circle cx="180" cy="70" r="35" opacity="0.35" />
+      </g>
+
+      {/* Tree trunk */}
+      <path
+        d="M 205 175 Q 210 260, 205 340"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+
+      {/* Seated figure (abstracted) */}
+      <g fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+        {/* Head */}
+        <circle cx="170" cy="300" r="18" />
+        {/* Torso arc */}
+        <path d="M 155 318 Q 150 350, 165 375" />
+        <path d="M 185 318 Q 195 345, 185 375" />
+        {/* Legs folded */}
+        <path d="M 165 375 Q 175 395, 210 400" />
+        <path d="M 185 375 Q 210 385, 235 395" />
+        {/* Arm to notebook */}
+        <path d="M 180 340 Q 200 355, 215 365" />
+      </g>
+
+      {/* Notebook */}
+      <g fill="none" stroke="currentColor" strokeWidth="1.25">
+        <rect x="210" y="360" width="55" height="35" rx="2" />
+        <line x1="220" y1="372" x2="255" y2="372" opacity="0.5" />
+        <line x1="220" y1="380" x2="250" y2="380" opacity="0.5" />
+      </g>
+
+      {/* Voice ripples emanating from notebook */}
+      <g fill="none" stroke="currentColor" strokeLinecap="round">
+        <path d="M 275 365 Q 305 350, 335 370" strokeWidth="1" opacity="0.5" />
+        <path d="M 285 350 Q 325 330, 360 355" strokeWidth="0.75" opacity="0.35" />
+        <path d="M 295 335 Q 345 310, 385 340" strokeWidth="0.5" opacity="0.2" />
+      </g>
+
+      {/* Botanical extension — a small branch reaching upper-left */}
+      <g fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round">
+        <path d="M 95 155 Q 65 130, 40 100" />
+        <path d="M 78 138 Q 70 128, 66 118" strokeWidth="1" />
+        <path d="M 65 118 Q 58 112, 50 108" strokeWidth="0.75" />
+        {/* Small leaves */}
+        <ellipse cx="55" cy="112" rx="6" ry="3" transform="rotate(-45 55 112)" opacity="0.6" />
+        <ellipse cx="45" cy="102" rx="5" ry="2.5" transform="rotate(-30 45 102)" opacity="0.5" />
+      </g>
+    </svg>
+  );
+}
 
 export default async function HomePage({
   params,
@@ -40,67 +147,66 @@ export default async function HomePage({
   return (
     <>
       {/* ---------------- Hero (calm, white surface) ---------------- */}
-      <section aria-labelledby="hero-heading" className="py-14 md:py-20">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
-          {c.hero.eyebrow}
-        </p>
-        <h1
-          id="hero-heading"
-          className="mt-4 max-w-3xl text-4xl font-bold leading-tight text-ink md:text-5xl"
-        >
-          {c.hero.headline}
-        </h1>
-        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">
-          {c.hero.subhead}
-        </p>
+      
 
-        <div className="mt-8 flex flex-wrap items-center gap-3">
-          <Button asChild size="lg">
-            <Link href="/submit">
-              <PenLine className="h-4 w-4" aria-hidden="true" />
-              {t("nav.submit")}
-            </Link>
-          </Button>
-          <Button asChild size="lg" variant="secondary">
-            <Link href="/stories">
-              <BookOpen className="h-4 w-4" aria-hidden="true" />
-              {t("nav.stories")}
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-          </Button>
-        </div>
+{/* ─── Hero ─────────────────────────────────────────────────────── */}
+{/* ─── Hero ─────────────────────────────────────────────────────── */}
+<header className="mx-auto grid w-full max-w-screen-2xl items-center gap-10 px-6 py-15 md:grid-cols-[1fr_1fr] md:gap-14 md:px-10 md:py-20 lg:gap-20 lg:py-24 lg:px-14">
+  {/* Left column — editorial text */}
+  <div className="flex flex-col justify-center md:pr-4 lg:pr-8">
+    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-700">
+      {t("home.hero.eyebrow")}
+    </p>
 
-        {/* Subtle trust indicators directly below the CTAs */}
-        <ul
-          aria-label="Platform commitments"
-          className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-ink-soft"
-        >
-          <li className="flex items-center gap-2">
-            <UserRound className="h-4 w-4 text-brand-600" aria-hidden="true" />
-            {c.trust.anonymous}
-          </li>
-          <li className="flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-brand-600" aria-hidden="true" />
-            {c.trust.reviewed}
-          </li>
-          <li className="flex items-center gap-2">
-            <Check className="h-4 w-4 text-brand-600" aria-hidden="true" />
-            {c.trust.noAccount}
-          </li>
-        </ul>
+    <h1 className="mt-7 font-display text-[3.25rem] font-semibold leading-[1.04] tracking-tight text-ink md:text-[4rem] text-[clamp(3.5rem,5vw,5.5rem)]">
+      {t.rich("home.hero.title", {
+        emphasis: (chunks) => (
+          <span className="relative inline-block underline decoration-transparent [text-underline-offset:0.2em]">
+            {chunks}
+            <PencilUnderline />
+          </span>
+        ),
+      })}
+    </h1>
 
-        {/* Crisis Resources link — intentional, long-term part of navigation */}
-        <p className="mt-6 flex flex-wrap items-center gap-2 text-sm">
-          <LifeBuoy className="h-4 w-4 text-danger" aria-hidden="true" />
-          <span className="font-semibold text-ink">{c.hero.safety}</span>
-          <Link
-            href="/resources"
-            className="font-semibold text-brand-700 underline"
-          >
-            {t("footer.crisisLink")}
-          </Link>
-        </p>
-      </section>
+    <p className="mt-7 max-w-xl text-base leading-[1.7] text-ink-soft md:text-lg">
+      {t("home.hero.subtitle")}
+    </p>
+
+    <div className="mt-10 flex flex-wrap items-center gap-7">
+      <Button asChild>
+        <Link href="/submit">{t("home.hero.ctaShareStory")}</Link>
+      </Button>
+      <Link
+        href="/stories"
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-ink transition-colors duration-200 hover:text-brand-700"
+      >
+        {t("home.hero.ctaExploreStories")}
+        <span aria-hidden="true">→</span>
+      </Link>
+    </div>
+
+    <p className="mt-12 max-w-sm text-sm leading-relaxed text-ink-soft">
+      {t("home.hero.reassurance")}
+    </p>
+  </div>
+
+  {/* Right column — illustration */}
+  <div className="flex items-center justify-end">
+    <img
+      src="/illustrations/home-hero.png"
+      alt={t("home.hero.illustrationAlt")}
+      className="
+      w-full
+      max-w-[42rem]
+      md:max-w-[48rem]
+      lg:max-w-[56rem]
+      select-none
+      "
+draggable={false}
+    />
+  </div>
+</header>
 
       {/* ---------------- Mission ---------------- */}
       <Section
@@ -166,6 +272,8 @@ export default async function HomePage({
           </>
         )}
       </Section>
+
+      
 
       {/* ---------------- Share Your Story CTA ---------------- */}
       <section aria-labelledby="share-heading" className="mt-14">
@@ -235,28 +343,33 @@ export default async function HomePage({
   </p>
 </Section>
 
-      {/* ---------------- Partner With Us ---------------- */}
-      <Section
-        id="partner-heading"
-        eyebrow={c.partner.eyebrow}
-        title={c.partner.title}
-      >
-        <Card className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between md:p-8">
-          <div className="max-w-2xl">
-            <p className="text-ink-soft">{c.partner.body}</p>
-            <ul className="mt-3 flex flex-wrap gap-2">
-              {c.partner.audiences.map((a) => (
-                <li key={a}>
-                  <Badge>{a}</Badge>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <Button asChild size="lg">
-            <Link href="/contact">{c.partner.cta}</Link>
-          </Button>
-        </Card>
-      </Section>
-    </>
-  );
+      {/* ---------------- Partner With Us ---------------- */}   
+<Section
+  id="partner-heading"
+  eyebrow={c.partner.eyebrow}
+  title={
+    <Link
+      href="/partner"
+      className="text-ink transition-colors duration-200 hover:text-brand-700 hover:underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+    >
+      {c.partner.title}
+    </Link>
+  }
+>
+  <Card className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between md:p-8">
+    <div className="max-w-2xl">
+      <p className="text-ink-soft">{c.partner.body}</p>
+
+      <ul className="mt-3 flex flex-wrap gap-2">
+        {c.partner.audiences.map((a) => (
+          <li key={a}>
+            <Badge>{a}</Badge>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </Card>
+</Section>
+</> 
+); 
 }

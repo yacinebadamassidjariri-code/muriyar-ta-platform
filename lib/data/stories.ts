@@ -163,7 +163,7 @@ export async function getRelatedPodcastEpisodesForStory(
     .order("published_at", { ascending: false })
     .limit(limit);
   if (error || !data) return [];
-  return data as PodcastEpisode[];
+  return data as unknown as PodcastEpisode[];
 }
 
 /**

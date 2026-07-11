@@ -87,10 +87,21 @@ export type EpisodeForEdit = {
   status: EpisodeStatus;
   published_at: string | null;
   published_by: string | null;
+  audio_asset_id: string | null;
+  artwork_asset_id: string | null;
   created_by: string | null;
   created_by_display: string | null;
   published_by_display: string | null;
   updated_at: string;
+  audio_original_filename: string | null;
+  audio_mime_type: string | null;
+  audio_size_bytes: number | null;
+  audio_duration_seconds: number | null;
+  audio_uploaded_at: string | null;
+  artwork_original_filename: string | null;
+  artwork_mime_type: string | null;
+  artwork_size_bytes: number | null;
+  artwork_uploaded_at: string | null;
 };
 
 export type Language = {
@@ -122,8 +133,10 @@ const LIST_COLS =
 const DETAIL_COLS =
   "episode_id, slug, title, description, episode_summary, series_slug, " +
   "episode_kind, language_code, content_advisory, transcript_status, " +
-  "is_featured, duration_seconds, status, published_at, published_by, updated_at";
-
+  "is_featured, duration_seconds, status, published_at, published_by, " +
+  "audio_asset_id, artwork_asset_id, created_by, updated_at, " +
+  "audio_asset:podcast_media_assets!audio_asset_id(original_filename, mime_type, size_bytes, duration_seconds, uploaded_at, status), " +
+  "artwork_asset:podcast_media_assets!artwork_asset_id(original_filename, mime_type, size_bytes, uploaded_at, status)";
 
 /** Neutralize PostgREST ilike wildcards in user input. */
 function escapeIlike(term: string): string {
@@ -235,7 +248,7 @@ export async function listAllEpisodes(
 
   type Row = EpisodeListRow;
 
-  const items: EpisodeListRow[] = ((data ?? []) as Row[]).map((r) => ({
+  const items: EpisodeListRow[] = ((data ?? []) as unknown as Row[]).map((r) => ({
     episode_id: r.episode_id,
     slug: r.slug,
     title: r.title,
@@ -280,13 +293,85 @@ export async function getEpisodeForEdit(
     return { ok: true, value: null };
   }
 
- type Row = Omit<
-  EpisodeForEdit,
-  "created_by_display" | "published_by_display"
-> & {
-  published_by_user: EmbeddedUser | EmbeddedUser[];
+ type MediaAsset = {
+  original_filename: string | null;
+  mime_type: string | null;
+  size_bytes: number | null;
+  duration_seconds?: number | null;
+  uploaded_at: string | null;
+  status: string;
 };
-  const r = data as Row;
+
+type Row = Omit<
+  EpisodeForEdit,
+  | "created_by_display"
+  | "published_by_display"
+  | "audio_original_filename"
+  | "audio_mime_type"
+  | "audio_size_bytes"
+  | "audio_duration_seconds"
+  | "audio_uploaded_at"
+  | "artwork_original_filename"
+  | "artwork_mime_type"
+  | "artwork_size_bytes"
+  | "artwork_uploaded_at"
+> & {
+  created_by_user: EmbeddedUser | EmbeddedUser[];
+  published_by_user: EmbeddedUser | EmbeddedUser[];
+  audio_asset:
+    | {
+        original_filename: string | null;
+        mime_type: string | null;
+        size_bytes: number | null;
+        duration_seconds: number | null;
+        uploaded_at: string | null;
+        status: string;
+      }
+    | Array<{
+        original_filename: string | null;
+        mime_type: string | null;
+        size_bytes: number | null;
+        duration_seconds: number | null;
+        uploaded_at: string | null;
+        status: string;
+      }>
+    | null;
+  artwork_asset:
+    | {
+        original_filename: string | null;
+        mime_type: string | null;
+        size_bytes: number | null;
+        uploaded_at: string | null;
+        status: string;
+      }
+    | Array<{
+        original_filename: string | null;
+        mime_type: string | null;
+        size_bytes: number | null;
+        uploaded_at: string | null;
+        status: string;
+      }>
+    | null;
+};
+  const r = data as unknown as Row;
+
+  const audioRow = Array.isArray(r.audio_asset)
+  ? r.audio_asset[0]
+  : r.audio_asset;
+
+  const artRow = Array.isArray(r.artwork_asset)
+    ? r.artwork_asset[0]
+    : r.artwork_asset;
+
+  const audioReady =
+    audioRow && audioRow.status === "ready"
+      ? audioRow
+      : null;
+
+  const artworkReady =
+    artRow && artRow.status === "ready"
+      ? artRow
+      : null;
 
   return {
     ok: true,
@@ -310,6 +395,19 @@ export async function getEpisodeForEdit(
       created_by_display: null,
       published_by_display: flattenEmbeddedDisplay(r.published_by_user),
       updated_at: r.updated_at,
+      audio_asset_id: r.audio_asset_id,
+      artwork_asset_id: r.artwork_asset_id,
+
+      audio_original_filename: audioReady?.original_filename ?? null,
+audio_mime_type: audioReady?.mime_type ?? null,
+audio_size_bytes: audioReady?.size_bytes ?? null,
+audio_duration_seconds: audioReady?.duration_seconds ?? null,
+audio_uploaded_at: audioReady?.uploaded_at ?? null,
+
+artwork_original_filename: artworkReady?.original_filename ?? null,
+artwork_mime_type: artworkReady?.mime_type ?? null,
+artwork_size_bytes: artworkReady?.size_bytes ?? null,
+artwork_uploaded_at: artworkReady?.uploaded_at ?? null,
     },
   };
 }
@@ -319,15 +417,25 @@ export async function getEpisodeForEdit(
 // ---------------------------------------------------------------------------
 
 export async function listLanguages(): Promise<Result<Language[]>> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("supported_languages")
-    .select("language_code, display_name, is_active")
-    .eq("is_active", true)
-    .order("display_name", { ascending: true });
+  try {
+    const supabase = await createClient();
 
-  if (error) {
-    return { ok: false, error: error.message };
+    const { data, error } = await supabase
+      .from("supported_languages")
+      .select("language_code, display_name:name, is_active")
+      .eq("is_active", true)
+      .order("name", { ascending: true });
+
+    console.log("LANGUAGE QUERY ERROR:", error);
+    console.log("LANGUAGE QUERY DATA:", data);
+
+    if (error) {
+      return { ok: false, error: error.message };
+    }
+
+    return { ok: true, value: (data ?? []) as Language[] };
+  } catch (e) {
+    console.error("listLanguages crashed:", e);
+    return { ok: false, error: "crashed" };
   }
-  return { ok: true, value: (data ?? []) as Language[] };
 }

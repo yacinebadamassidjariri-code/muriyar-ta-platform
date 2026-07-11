@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Inter } from "next/font/google";
+import { Inter, Cormorant_Garamond } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale, getMessages, getTranslations } from "next-intl/server";
 import { routing, localeDir, type Locale } from "@/lib/i18n/routing";
@@ -15,6 +15,13 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans-stack",
   display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 export function generateStaticParams() {
@@ -53,7 +60,12 @@ export default async function LocaleLayout({
   const dir = localeDir[locale as Locale];
 
   return (
-    <html lang={locale} dir={dir} className={inter.variable} suppressHydrationWarning>
+    <html
+  lang={locale}
+  dir={dir}
+  className={`${inter.variable} ${cormorant.variable}`}
+  suppressHydrationWarning
+>
       <body className="flex min-h-dvh flex-col bg-surface font-sans text-ink antialiased">
         <NextIntlClientProvider messages={messages}>
           <Providers>

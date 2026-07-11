@@ -48,28 +48,28 @@ export function RelatedResourcesSection({
                 </p>
               ) : null}
               {r.contact_phone ? (
-                <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-ink-soft">
-                  <Phone className="h-4 w-4" aria-hidden="true" />
-                  
-                    href={`tel:${r.contact_phone}`}
-                    className="hover:text-brand-700"
-                  >
-                    {r.contact_phone}
-                  </a>
-                </p>
-              ) : null}
+  <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-ink-soft">
+    <Phone className="h-4 w-4" aria-hidden="true" />
+    <a
+      href={`tel:${r.contact_phone}`}
+      className="hover:text-brand-700"
+    >
+      {r.contact_phone}
+    </a>
+  </p>
+) : null}
               {r.website_url ? (
                 <div className="mt-auto pt-2">
                   <Button asChild variant="secondary" size="sm">
-                    
-                      href={r.website_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                      {labels.visit}
-                    </a>
-                  </Button>
+  <a
+    href={r.website_url}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <ExternalLink className="h-4 w-4" aria-hidden="true" />
+    {labels.visit}
+  </a>
+</Button>
                 </div>
               ) : null}
             </Card>

@@ -287,7 +287,7 @@ begin
       v_series_slug,
       v_episode_kind::public.podcast_episode_kind,
       coalesce(v_language, 'en'),
-      v_advisory::public.podcast_content_advisory,
+      coalesce(v_advisory, 'none')::public.podcast_content_advisory,
       coalesce(v_featured, false),
       'draft',
       v_user
