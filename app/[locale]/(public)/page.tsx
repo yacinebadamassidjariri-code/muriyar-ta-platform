@@ -20,6 +20,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Section } from "@/components/ui/section";
 import { homeCopy } from "@/components/home/content";
+import { FloralSeparator } from "@/components/home/botanical";
 
 // Stays cacheable like the rest of the public surface; will be refreshed by the
 // existing revalidate window when new stories are published.
@@ -208,22 +209,27 @@ draggable={false}
   </div>
 </header>
 
-      {/* ---------------- Mission ---------------- */}
+      {/* ---------------- Mission (editorial feature) ---------------- */}
       <Section
         id="mission-heading"
         eyebrow={c.mission.eyebrow}
         title={c.mission.title}
       >
-        <p className="-mt-2 max-w-3xl text-lg text-ink-soft">
+        <p className="-mt-2 max-w-3xl text-lg leading-relaxed text-ink-soft">
           {t("footer.mission")}
         </p>
-        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+        {/* Subtle organic divider — the bordered cards are gone; whitespace
+            and typography carry the structure now. */}
+        <FloralSeparator className="mt-12 max-w-3xl text-stone-300" />
+
+        <ul className="mt-12 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
           {c.mission.pillars.map((p) => (
-            <li key={p.title}>
-              <Card className="h-full p-5">
-                <p className="font-semibold text-ink">{p.title}</p>
-                <p className="mt-1.5 text-sm text-ink-soft">{p.body}</p>
-              </Card>
+            <li key={p.title} className="flex flex-col">
+              <p className="font-semibold leading-snug text-ink">{p.title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+                {p.body}
+              </p>
             </li>
           ))}
         </ul>
