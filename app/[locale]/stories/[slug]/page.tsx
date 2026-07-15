@@ -4,8 +4,9 @@ import { ArrowLeft } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import { getPublishedStoryBySlug } from "@/lib/data/stories";
-import { StoryMeta } from "@/components/stories/story-meta";
 import { deriveExcerpt } from "@/lib/utils/excerpt";
+import { storiesEditorial } from "@/components/stories/content";
+import { FloralSeparator } from "@/components/home/botanical";
 
 export const revalidate = 300;
 
@@ -26,6 +27,20 @@ export async function generateMetadata({
   };
 }
 
+/** Locale-aware long date; 'zar' has no guaranteed Intl tag, so it borrows 'en'. */
+function formatDate(publishedAt: string, locale: string): string {
+  const intlLocale = locale === "zar" ? "en" : locale;
+  return new Intl.DateTimeFormat(intlLocale, { dateStyle: "long" }).format(
+    new Date(publishedAt),
+  );
+}
+
+/** Whole-minute reading estimate from the body text (~200 words/min, min 1). */
+function readingMinutes(body: string): number {
+  const words = body.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
 export default async function StoryDetailPage({
   params,
 }: {
@@ -38,31 +53,40 @@ export default async function StoryDetailPage({
   const story = await getPublishedStoryBySlug(slug);
   if (!story) notFound();
 
+  const ed =
+    storiesEditorial[locale as keyof typeof storiesEditorial] ?? storiesEditorial.en;
+  const theme = story.tags[0]?.name;
+
   return (
-    <article className="mx-auto w-full max-w-3xl px-4 py-10">
+    <article className="mx-auto w-full max-w-3xl px-4 py-16 md:py-20">
       <Link
         href="/stories"
-        className="inline-flex items-center gap-1 text-sm text-ink-soft hover:text-brand-700"
+        className="inline-flex items-center gap-1 text-sm text-charcoal-500 transition-colors hover:text-plum-700"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         {t("back")}
       </Link>
 
-      <header className="mt-6">
-        <h1 className="text-3xl font-display font-semibold text-ink md:text-4xl">{story.title}</h1>
-        <div className="mt-3">
-          <StoryMeta
-            publishedAt={story.published_at}
-            tags={story.tags}
-            locale={locale}
-          />
-        </div>
-        <p className="mt-3 text-sm text-ink-soft">
+      <header className="mt-8">
+        <p className="text-xs uppercase tracking-[0.14em] text-stone-500">
+          <time dateTime={new Date(story.published_at).toISOString()}>
+            {formatDate(story.published_at, locale)}
+          </time>
+          {" · "}
+          {readingMinutes(story.body_text)} {ed.readSuffix}
+          {theme ? " · " + theme : null}
+        </p>
+        <h1 className="mt-4 font-display text-3xl font-medium leading-tight text-plum-800 md:text-[2.6rem]">
+          {story.title}
+        </h1>
+        <p className="mt-4 text-sm text-charcoal-500">
           {t("authoredBy", { author: story.author_display })}
         </p>
       </header>
 
-      <div className="mt-8 whitespace-pre-wrap text-base leading-relaxed text-ink">
+      <FloralSeparator className="my-8 w-40 max-w-full text-rose-200" />
+
+      <div className="whitespace-pre-wrap text-[1.05rem] leading-relaxed text-charcoal-700 md:leading-loose">
         {story.body_text}
       </div>
     </article>

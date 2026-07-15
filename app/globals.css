@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  /* Warm ivory canvas for the whole site (was #ffffff). */
+  --background: #FCFAF7;
   --foreground: #171717;
 }
 

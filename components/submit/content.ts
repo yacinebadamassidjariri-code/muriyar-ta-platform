@@ -34,16 +34,16 @@ const en: SubmitCopy = {
     subtitle:
       "Your story is anonymous and reviewed to protect your identity before anything is published. You decide what to share.",
     points: [
-      "Anonymous — we never ask for your name",
-      "Reviewed to remove identifying details",
-      "Published only with your consent",
+      "We never ask for your name.",
+      "We remove anything that could identify you.",
+      "Nothing is published without your consent.",
     ],
   },
   form: {
     languageLabel: "Language",
     storyLabel: "Your story",
-    storyPlaceholder: "Write your story in your own words…",
-    storyHelp: "Please write at least 50 characters.",
+    storyPlaceholder: "Begin wherever feels right…",
+    storyHelp: "Write as much or as little as feels right. At least 50 characters.",
     charsSuffix: "characters",
     consentLabel:
       "I understand my story will be reviewed and may be published in anonymized form, and I consent to this.",
@@ -76,16 +76,16 @@ const fr: SubmitCopy = {
     subtitle:
       "Votre récit est anonyme et examiné pour protéger votre identité avant toute publication. Vous décidez de ce que vous partagez.",
     points: [
-      "Anonyme — nous ne demandons jamais votre nom",
-      "Examiné pour retirer les détails identifiants",
-      "Publié uniquement avec votre consentement",
+      "Nous ne demandons jamais votre nom.",
+      "Nous retirons tout ce qui pourrait vous identifier.",
+      "Rien n'est publié sans votre consentement.",
     ],
   },
   form: {
     languageLabel: "Langue",
     storyLabel: "Votre récit",
-    storyPlaceholder: "Écrivez votre récit avec vos propres mots…",
-    storyHelp: "Veuillez écrire au moins 50 caractères.",
+    storyPlaceholder: "Commencez là où vous le sentez…",
+    storyHelp: "Écrivez autant que vous le souhaitez. Au moins 50 caractères.",
     charsSuffix: "caractères",
     consentLabel:
       "Je comprends que mon récit sera examiné et pourra être publié sous forme anonymisée, et j'y consens.",

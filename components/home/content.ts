@@ -36,6 +36,13 @@ export type HomeCopy = {
     emptyTitle: string;
     emptyBody: string;
   };
+  podcast: {
+    eyebrow: string;
+    title: string;
+    invitation: string;
+    listen: string;
+    allEpisodes: string;
+  };
   share: {
     title: string;
     body: string;
@@ -105,6 +112,14 @@ headlineTrailing: ".",
     emptyBody:
       "When the first stories are published, they'll appear right here. In the meantime, you can learn what the platform is for and how to contribute.",
   },
+  podcast: {
+  eyebrow: "Podcast",
+  title: "Listen to Muriyar Ta",
+  invitation:
+    "Stories, conversations, and reflections from girls and young women.",
+  listen: "Listen now",
+  allEpisodes: "Browse all episodes",
+},
   share: {
     title: "Share your story — safely and anonymously.",
     body: "You decide what to share. Every submission is carefully reviewed to remove identifying details, and nothing is published without consent.",
@@ -196,6 +211,14 @@ const fr: HomeCopy = {
     emptyBody:
       "Lorsque les premiers récits seront publiés, ils s'afficheront ici. En attendant, vous pouvez en apprendre davantage sur la plateforme et sur la façon de contribuer.",
   },
+  podcast: {
+  eyebrow: "Podcast",
+  title: "Écoutez Muriyar Ta",
+  invitation:
+    "Histoires, conversations et réflexions de jeunes filles et de femmes.",
+  listen: "Écouter",
+  allEpisodes: "Voir tous les épisodes",
+},
   share: {
     title: "Partagez votre récit — en toute sécurité et anonymement.",
     body: "Vous décidez de ce que vous partagez. Chaque envoi est soigneusement examiné pour retirer les détails identifiants, et rien n'est publié sans consentement.",

@@ -2,25 +2,30 @@ import {
   ArrowRight,
   ArrowUpRight,
   BookOpen,
-  Check,
-  HeartHandshake,
   LifeBuoy,
   PenLine,
   ShieldCheck,
   UserRound,
 } from "lucide-react";
-import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import { type Locale } from "@/lib/i18n/routing";
 import { listPublishedStories } from "@/lib/data/stories";
-import { StoryCard } from "@/components/stories/story-card";
+import {
+  getFeaturedEpisode,
+  getPodcastPlaybackUrl,
+} from "@/lib/data/podcast";
+import { StoryMeta } from "@/components/stories/story-meta";
+import { deriveExcerpt } from "@/lib/utils/excerpt";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Section } from "@/components/ui/section";
+import { HomeSection } from "@/components/home/home-section";
 import { homeCopy } from "@/components/home/content";
-import { FloralSeparator } from "@/components/home/botanical";
+import {
+  BotanicalCorner,
+  FloralSeparator,
+  PencilStroke,
+} from "@/components/home/botanical";
 
 // Stays cacheable like the rest of the public surface; will be refreshed by the
 // existing revalidate window when new stories are published.
@@ -58,79 +63,6 @@ function PencilUnderline() {
     </svg>
   );
 }
-/**
- * Placeholder for the hero illustration. Composition suggestion for
- * the eventual illustrator: young woman under blooming tree, notebook
- * as ripple source, botanical extension to the upper-left. This SVG
- * is a light abstract stand-in — NOT the final artwork.
- *
- * Uses only design tokens so it composes with any theme adjustments.
- */
-function HeroIllustrationPlaceholder() {
-  return (
-    <svg
-      viewBox="0 0 400 500"
-      preserveAspectRatio="xMidYMid meet"
-      className="h-full w-full text-ink-soft/40"
-      aria-hidden="true"
-    >
-      {/* Tree canopy (upper third) — soft arcs suggesting foliage */}
-      <g fill="none" stroke="currentColor" strokeWidth="1.25">
-        <circle cx="140" cy="120" r="55" opacity="0.5" />
-        <circle cx="220" cy="90" r="70" opacity="0.4" />
-        <circle cx="280" cy="140" r="50" opacity="0.5" />
-        <circle cx="180" cy="70" r="35" opacity="0.35" />
-      </g>
-
-      {/* Tree trunk */}
-      <path
-        d="M 205 175 Q 210 260, 205 340"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-
-      {/* Seated figure (abstracted) */}
-      <g fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-        {/* Head */}
-        <circle cx="170" cy="300" r="18" />
-        {/* Torso arc */}
-        <path d="M 155 318 Q 150 350, 165 375" />
-        <path d="M 185 318 Q 195 345, 185 375" />
-        {/* Legs folded */}
-        <path d="M 165 375 Q 175 395, 210 400" />
-        <path d="M 185 375 Q 210 385, 235 395" />
-        {/* Arm to notebook */}
-        <path d="M 180 340 Q 200 355, 215 365" />
-      </g>
-
-      {/* Notebook */}
-      <g fill="none" stroke="currentColor" strokeWidth="1.25">
-        <rect x="210" y="360" width="55" height="35" rx="2" />
-        <line x1="220" y1="372" x2="255" y2="372" opacity="0.5" />
-        <line x1="220" y1="380" x2="250" y2="380" opacity="0.5" />
-      </g>
-
-      {/* Voice ripples emanating from notebook */}
-      <g fill="none" stroke="currentColor" strokeLinecap="round">
-        <path d="M 275 365 Q 305 350, 335 370" strokeWidth="1" opacity="0.5" />
-        <path d="M 285 350 Q 325 330, 360 355" strokeWidth="0.75" opacity="0.35" />
-        <path d="M 295 335 Q 345 310, 385 340" strokeWidth="0.5" opacity="0.2" />
-      </g>
-
-      {/* Botanical extension — a small branch reaching upper-left */}
-      <g fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round">
-        <path d="M 95 155 Q 65 130, 40 100" />
-        <path d="M 78 138 Q 70 128, 66 118" strokeWidth="1" />
-        <path d="M 65 118 Q 58 112, 50 108" strokeWidth="0.75" />
-        {/* Small leaves */}
-        <ellipse cx="55" cy="112" rx="6" ry="3" transform="rotate(-45 55 112)" opacity="0.6" />
-        <ellipse cx="45" cy="102" rx="5" ry="2.5" transform="rotate(-30 45 102)" opacity="0.5" />
-      </g>
-    </svg>
-  );
-}
 
 export default async function HomePage({
   params,
@@ -142,15 +74,28 @@ export default async function HomePage({
   const t = await getTranslations();
   const c = homeCopy[locale as Locale] ?? homeCopy.en;
 
-  // Three newest stories for the active locale, via the existing data layer.
-  const latest = await listPublishedStories(locale, 3);
+  // Newest stories + the featured podcast episode, via existing data readers.
+  const [latest, featuredEpisode] = await Promise.all([
+    listPublishedStories(locale, 3),
+    getFeaturedEpisode(locale),
+  ]);
+  // Signed artwork URL for the featured episode (existing reader; may be null).
+  const episodeArtwork = featuredEpisode
+    ? await getPodcastPlaybackUrl(featuredEpisode.episode_id, "artwork")
+    : null;
+  // Featured-first editorial split: the newest story leads, the rest support it.
+  const [featuredStory, ...supportingStories] = latest;
+  // Episode summary as the editorial pull quote (existing model fields only).
+  const episodeSummary =
+    featuredEpisode?.episode_summary?.trim() ||
+    featuredEpisode?.description?.trim() ||
+    "";
 
   return (
     <>
       {/* ---------------- Hero (calm, white surface) ---------------- */}
       
 
-{/* ─── Hero ─────────────────────────────────────────────────────── */}
 {/* ─── Hero ─────────────────────────────────────────────────────── */}
 <header className="mx-auto grid w-full max-w-screen-2xl items-center gap-10 px-6 py-15 md:grid-cols-[1fr_1fr] md:gap-14 md:px-10 md:py-20 lg:gap-20 lg:py-24 lg:px-14">
   {/* Left column — editorial text */}
@@ -210,47 +155,49 @@ draggable={false}
 </header>
 
       {/* ---------------- Mission (editorial feature) ---------------- */}
-      <Section
+      <HomeSection
         id="mission-heading"
         eyebrow={c.mission.eyebrow}
         title={c.mission.title}
+        className="mt-20 md:mt-28"
       >
-        <p className="-mt-2 max-w-3xl text-lg leading-relaxed text-ink-soft">
+        <p className="-mt-2 max-w-3xl text-lg leading-relaxed text-charcoal-500">
           {t("footer.mission")}
         </p>
 
         {/* Subtle organic divider — the bordered cards are gone; whitespace
             and typography carry the structure now. */}
-        <FloralSeparator className="mt-12 max-w-3xl text-stone-300" />
+        <FloralSeparator className="mt-12 max-w-3xl text-rose-200" />
 
         <ul className="mt-12 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
           {c.mission.pillars.map((p) => (
             <li key={p.title} className="flex flex-col">
-              <p className="font-semibold leading-snug text-ink">{p.title}</p>
-              <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+              <p className="font-semibold leading-snug text-plum-800">{p.title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-charcoal-500">
                 {p.body}
               </p>
             </li>
           ))}
         </ul>
-      </Section>
+      </HomeSection>
 
       {/* ---------------- Latest Stories ---------------- */}
-      <Section
+      <HomeSection
         id="latest-stories-heading"
         eyebrow={c.latest.eyebrow}
         title={c.latest.title}
         description={c.latest.description}
+        className="mt-20 md:mt-28"
       >
         {latest.length === 0 ? (
           <Card className="flex flex-col items-center gap-3 p-10 text-center">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-plum-50 text-plum-700">
               <BookOpen className="h-6 w-6" aria-hidden="true" />
             </span>
-            <h3 className="text-xl font-semibold text-ink">
+            <h3 className="text-xl font-semibold text-plum-800">
               {c.latest.emptyTitle}
             </h3>
-            <p className="max-w-md text-ink-soft">{c.latest.emptyBody}</p>
+            <p className="max-w-md text-charcoal-500">{c.latest.emptyBody}</p>
             <Button asChild variant="secondary" className="mt-2">
               <Link href="/submit">
                 <PenLine className="h-4 w-4" aria-hidden="true" />
@@ -260,122 +207,269 @@ draggable={false}
           </Card>
         ) : (
           <>
-            <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {latest.map((story) => (
-                <li key={story.story_id}>
-                  <StoryCard story={story} locale={locale} />
-                </li>
-              ))}
-            </ul>
-            <div className="mt-6">
-              <Button asChild variant="secondary">
-                <Link href="/stories">
-                  {c.latest.viewAll}
-                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+            <div
+              className={`grid gap-x-12 gap-y-12 ${
+                supportingStories.length > 0
+                  ? "lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-x-16"
+                  : ""
+              }`}
+            >
+              {/* Featured story — editorial article treatment, no card */}
+              <article className="flex flex-col">
+                {/* Editorial accent distinguishing the featured story */}
+                <PencilStroke className="mb-4 w-12 text-plum-600" />
+                <Link
+                  href={`/stories/${featuredStory.slug}`}
+                  className="group flex flex-col rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-600"
+                >
+                  <h3 className="text-2xl font-semibold leading-tight text-plum-800 transition-colors duration-200 group-hover:text-plum-700 md:text-3xl">
+                    {featuredStory.title}
+                  </h3>
+                  <p className="mt-4 text-base leading-relaxed text-charcoal-500">
+                    {featuredStory.seo_description?.trim() ||
+                      deriveExcerpt(featuredStory.body_text, 400)}
+                  </p>
+                  <div className="mt-5">
+                    <StoryMeta
+                      publishedAt={featuredStory.published_at}
+                      tags={featuredStory.tags}
+                      locale={locale}
+                    />
+                  </div>
                 </Link>
-              </Button>
+              </article>
+
+              {/* Supporting stories — lighter list, hairline dividers, no cards */}
+              {supportingStories.length > 0 ? (
+                <ul className="flex flex-col divide-y divide-stone-200">
+                  {supportingStories.map((story) => (
+                    <li
+                      key={story.story_id}
+                      className="py-6 first:pt-0 last:pb-0"
+                    >
+                      <Link
+                        href={`/stories/${story.slug}`}
+                        className="group block rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-600"
+                      >
+                        <h4 className="font-semibold leading-snug text-plum-800 transition-colors duration-200 group-hover:text-plum-700">
+                          {story.title}
+                        </h4>
+                        <div className="mt-2">
+                          <StoryMeta
+                            publishedAt={story.published_at}
+                            tags={story.tags}
+                            locale={locale}
+                          />
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+
+            <div className="mt-10">
+              <Link
+                href="/stories"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-plum-800 transition-colors duration-200 hover:text-plum-700"
+              >
+                {c.latest.viewAll}
+                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
             </div>
           </>
         )}
-      </Section>
+      </HomeSection>
 
       
 
-      {/* ---------------- Share Your Story CTA ---------------- */}
-      <section aria-labelledby="share-heading" className="mt-14">
-        <Card className="border-brand-100 bg-brand-50 p-6 md:p-8">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-2xl">
-              <h2 id="share-heading" className="text-2xl font-bold text-ink">
-                {c.share.title}
-              </h2>
-              <p className="mt-2 text-ink-soft">{c.share.body}</p>
-              <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink">
-                {c.share.points.map((point) => (
-                  <li key={point} className="flex items-center gap-2">
-                    <Check
-                      className="h-4 w-4 text-brand-600"
-                      aria-hidden="true"
-                    />
-                    {point}
-                  </li>
-                ))}
-              </ul>
+      {/* ---------------- Podcast (featured editorial moment) ---------------- */}
+      {featuredEpisode ? (
+        <section aria-labelledby="podcast-heading" className="mt-20 md:mt-28">
+          <div className="grid items-center gap-10 md:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] md:gap-14 lg:gap-20">
+            {/* Episode artwork — existing signed-URL reader; botanical fallback */}
+            <div className="mx-auto w-full max-w-md md:mx-0">
+              <div className="relative aspect-square w-full overflow-hidden rounded-sm bg-cream-200">
+                {episodeArtwork?.signedUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={episodeArtwork.signedUrl}
+                    alt=""
+                    className="h-full w-full select-none object-cover"
+                    draggable={false}
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <BotanicalCorner className="h-24 w-24 text-rose-200" />
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="shrink-0">
-              <Button asChild size="lg">
-                <Link href="/submit">
-                  <PenLine className="h-4 w-4" aria-hidden="true" />
-                  {t("nav.submit")}
-                </Link>
-              </Button>
-              <p className="mt-2 text-center text-xs text-ink-soft">
-                {c.share.noAccount}
+
+            {/* Editorial text — quiet, typographic, one listening invitation */}
+            <div className="flex flex-col">
+              <p className="text-sm font-semibold uppercase tracking-wider text-plum-600">
+                {c.podcast.eyebrow}
               </p>
+              <h2
+                id="podcast-heading"
+                className="mt-2 text-2xl font-semibold tracking-tight leading-tight text-plum-800 md:text-3xl"
+              >
+                {featuredEpisode.title}
+              </h2>
+
+              {episodeSummary ? (
+                <p className="mt-6 max-w-xl text-lg leading-relaxed text-charcoal-500 md:text-xl">
+                  {episodeSummary}
+                </p>
+              ) : null}
+
+              <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3">
+                <Link
+                  href={`/podcast/${featuredEpisode.episode_id}`}
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-plum-700 transition-colors duration-200 hover:text-plum-800"
+                >
+                  {c.podcast.listen}
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+                <Link
+                  href="/podcast"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-charcoal-500 transition-colors duration-200 hover:text-plum-700"
+                >
+                  {c.podcast.allEpisodes}
+                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </div>
             </div>
           </div>
-        </Card>
+        </section>
+      ) : null}
+
+      {/* ---------------- Share Your Story CTA (editorial) ---------------- */}
+      <section aria-labelledby="share-heading" className="mt-20 md:mt-28">
+        <div className="bg-cream-200 px-6 py-16 text-center md:px-10 md:py-24">
+          <div className="mx-auto flex max-w-3xl flex-col items-center">
+            <FloralSeparator className="mb-8 w-40 max-w-full text-rose-200" />
+            <h2
+              id="share-heading"
+              className="text-2xl font-semibold leading-tight text-plum-800 md:text-3xl"
+            >
+              {c.share.title}
+            </h2>
+            <p className="mt-5 max-w-2xl text-left text-lg leading-relaxed text-charcoal-500">
+              {c.share.body}
+            </p>
+
+            {/* Reassurances as a calm inline row — no check-mark iconography */}
+            <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-xs tracking-wide text-charcoal-500">
+              {c.share.points.map((point, i) => (
+                <li key={point} className="flex items-center gap-3">
+                  {i > 0 ? (
+                    <span aria-hidden="true" className="text-stone-300">
+                      ·
+                    </span>
+                  ) : null}
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-12">
+              <Button asChild size="lg">
+                <Link href="/submit">{t("nav.submit")}</Link>
+              </Button>
+              <p className="mt-3 text-xs text-charcoal-500">{c.share.noAccount}</p>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* ---------------- Resources Preview (informational only, now links) ---------------- */}
-<Section
+<HomeSection
   id="resources-preview-heading"
   eyebrow={c.resourcesPreview.eyebrow}
   title={c.resourcesPreview.title}
   description={c.resourcesPreview.description}
+  className="mt-20 md:mt-28"
 >
-  <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  {/* Editorial resource index — no cards; a curated directory driven by
+      typography, hierarchy, whitespace and hairline dividers. */}
+  <ul className="border-t border-stone-200">
     {c.resourcesPreview.categories.map((cat) => (
       <li key={cat.title}>
         <Link
           href="/resources"
-          className="block h-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+          className="group grid gap-1 border-b border-stone-200 py-6 transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-600 md:grid-cols-[minmax(0,1fr)_minmax(0,1.8fr)] md:items-baseline md:gap-10 md:py-7"
         >
-          <Card className="group h-full p-5 transition hover:border-brand-300 hover:shadow-md">
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-              <HeartHandshake className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <p className="mt-3 font-semibold text-ink group-hover:text-brand-700">
-              {cat.title}
-            </p>
-            <p className="mt-1.5 text-sm text-ink-soft">{cat.body}</p>
-          </Card>
+          <h3 className="flex items-center gap-2 text-lg font-semibold leading-snug text-plum-800 transition-colors duration-200 group-hover:text-plum-700">
+            {cat.title}
+            <ArrowUpRight
+              className="h-4 w-4 shrink-0 text-plum-600 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+              aria-hidden="true"
+            />
+          </h3>
+          <p className="text-sm leading-relaxed text-charcoal-500 md:text-base">
+            {cat.body}
+          </p>
         </Link>
       </li>
     ))}
   </ul>
-  <p className="mt-5 text-sm italic text-ink-soft">
+  <p className="mt-8 text-sm italic text-charcoal-500">
     {c.resourcesPreview.note}
   </p>
-</Section>
+</HomeSection>
 
       {/* ---------------- Partner With Us ---------------- */}   
-<Section
-  id="partner-heading"
-  eyebrow={c.partner.eyebrow}
-  title={
-    <Link
-      href="/partner"
-      className="text-ink transition-colors duration-200 hover:text-brand-700 hover:underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
-    >
-      {c.partner.title}
-    </Link>
-  }
+<section
+  aria-labelledby="partner-heading"
+  className="mt-20 py-16 text-center md:mt-28 md:py-24"
 >
-  <Card className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between md:p-8">
-    <div className="max-w-2xl">
-      <p className="text-ink-soft">{c.partner.body}</p>
+  <div className="mx-auto flex max-w-2xl flex-col items-center">
+    <FloralSeparator className="mb-8 w-40 max-w-full text-rose-200" />
+    <p className="text-sm font-semibold uppercase tracking-wider text-plum-600">
+      {c.partner.eyebrow}
+    </p>
+    <h2
+      id="partner-heading"
+      className="mt-3 text-2xl font-bold leading-tight text-plum-800 md:text-3xl"
+    >
+      <Link
+        href="/partner"
+        className="transition-colors duration-200 hover:text-plum-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-600"
+      >
+        {c.partner.title}
+      </Link>
+    </h2>
+    <p className="mt-5 text-lg leading-relaxed text-charcoal-500">
+      {c.partner.body}
+    </p>
 
-      <ul className="mt-3 flex flex-wrap gap-2">
-        {c.partner.audiences.map((a) => (
-          <li key={a}>
-            <Badge>{a}</Badge>
-          </li>
-        ))}
-      </ul>
+    {/* Audiences as a quiet inline line — supporting metadata, not badges */}
+    <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-xs tracking-wide text-charcoal-500">
+      {c.partner.audiences.map((a, i) => (
+        <li key={a} className="flex items-center gap-3">
+          {i > 0 ? (
+            <span aria-hidden="true" className="text-stone-300">
+              ·
+            </span>
+          ) : null}
+          <span>{a}</span>
+        </li>
+      ))}
+    </ul>
+
+    <div className="mt-10">
+      <Link
+        href="/partner"
+        className="inline-flex items-center gap-1.5 text-sm font-semibold text-plum-700 transition-colors duration-200 hover:text-plum-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-600"
+      >
+        {c.partner.cta}
+        <ArrowRight className="h-4 w-4" aria-hidden="true" />
+      </Link>
     </div>
-  </Card>
-</Section>
+  </div>
+</section>
 </> 
 ); 
 }

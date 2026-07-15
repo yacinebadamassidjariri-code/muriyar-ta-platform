@@ -290,7 +290,8 @@
   "heroEyebrow": "Partner",
   "heroTitle": "Partner With Us",
   "heroBody": "Muriyar Ta grows through collaboration. If your work advances the safety, education, or voice of girls and young women in Niger and across West Africa, there is a place for you here.",
-
+  "ctaPartnerWithUs": "Partner with Us",
+  
   "whyEyebrow": "Why partner",
   "whyTitle": "Why we partner",
   "whyPara1": "Lasting change is never the work of a single organization. Ending child marriage, expanding access to education, and confronting gender-based violence require coalitions — of survivors, communities, researchers, educators, and institutions that can act at scale.",
@@ -550,7 +551,7 @@
     "stories": "Stories",
     "podcast": "Podcast",
     "resources": "Resources",
-    "report": "Reports",
+    "reports": "Report",
     "about": "About",
     "submit": "Share your story",
     "contact": "Contact"
