@@ -3,8 +3,6 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
-import { Section } from "@/components/ui/section";
-import { Card } from "@/components/ui/card";
 import {
   PODCAST_SERIES,
   type PodcastSeriesSlug,
@@ -16,17 +14,17 @@ import {
   listSeriesEpisodes,
   listThemeEpisodes,
   listRelatedResources,
+  getPodcastPlaybackUrl,
+  type PodcastEpisode,
 } from "@/lib/data/podcast";
+import { podcastEditorial } from "@/components/podcast/content";
 import { PodcastMetadata } from "@/components/podcast/podcast-metadata";
 import { PodcastPlayer } from "@/components/podcast/podcast-player";
 import { PodcastTranscript } from "@/components/podcast/podcast-transcript";
-import { PodcastSeriesRecommendations } from "@/components/podcast/podcast-series-recommendations";
-import { PodcastThemeRecommendations } from "@/components/podcast/podcast-theme-recommendations";
-import { RelatedStorySection } from "@/components/relationships/related-story-section";
-import { RelatedResourcesSection } from "@/components/relationships/related-resources-section";
-import type { StoryListItem } from "@/lib/data/stories";
-import { ImageOff } from "lucide-react";
-import { getPodcastPlaybackUrl } from "@/lib/data/podcast";
+import { EpisodeEntry } from "@/components/podcast/episode-entry";
+import { PodcastRelatedStory } from "@/components/podcast/podcast-related-story";
+import { PodcastRelatedResources } from "@/components/podcast/podcast-related-resources";
+import { FloralSeparator } from "@/components/home/botanical";
 
 export const revalidate = 300;
 
@@ -58,15 +56,21 @@ export default async function PodcastEpisodePage({
 }) {
   const { locale, episodeSlug } = await params;
   setRequestLocale(locale);
+  // `t` scopes to the `podcast` namespace; `tp` reads the episode-page labels
+  // that live at the top level of the message files (unchanged catalogs).
   const t = await getTranslations({ locale, namespace: "podcast" });
+  const tp = await getTranslations({ locale });
+  const ed =
+    podcastEditorial[locale as keyof typeof podcastEditorial] ??
+    podcastEditorial.en;
 
   const episode = await getEpisodeBySlug(episodeSlug);
   if (!episode) notFound();
 
   const [audioPlayback, artworkPlayback] = await Promise.all([
-  getPodcastPlaybackUrl(episode.episode_id, "audio"),
-  getPodcastPlaybackUrl(episode.episode_id, "artwork"),
-]);
+    getPodcastPlaybackUrl(episode.episode_id, "audio"),
+    getPodcastPlaybackUrl(episode.episode_id, "artwork"),
+  ]);
   const audioUrl = audioPlayback?.signedUrl ?? episode.external_audio_url;
   const artworkUrl = artworkPlayback?.signedUrl ?? null;
 
@@ -94,185 +98,164 @@ export default async function PodcastEpisodePage({
       : Promise.resolve([]),
   ]);
 
-  // Adapt RelatedStory[] (the podcast-side projection) → StoryListItem[]
-  // (the canonical shape RelatedStorySection / StoryCard consume).
-  const relatedStories: StoryListItem[] = stories.map((s) => ({
-    story_id: s.story_id,
-    title: s.title,
-    slug: s.slug,
-    language_code: s.language_code,
-    seo_description: s.seo_description,
-    body_text: s.body_text,
-    published_at: s.published_at,
-    tags: [],
-  }));
+  // One quiet "Continue listening" list: series + theme discovery, deduped.
+  const seen = new Set<string>([episode.episode_id]);
+  const moreEpisodes: PodcastEpisode[] = [];
+  for (const ep of [...seriesEpisodes, ...themeEpisodes]) {
+    if (!seen.has(ep.episode_id)) {
+      seen.add(ep.episode_id);
+      moreEpisodes.push(ep);
+    }
+  }
 
-  const cardMinutes = t("minutes");
-  const advisoryStrong = t("advisoryStrong");
-  const advisoryMild = t("advisoryMild");
+  const lead =
+    episode.episode_summary?.trim() || episode.description?.trim() || "";
+  const advisory =
+    episode.content_advisory === "strong"
+      ? t("advisoryStrong")
+      : episode.content_advisory === "mild"
+        ? t("advisoryMild")
+        : null;
+
+  const entryLabels = {
+    listenSuffix: ed.listenSuffix,
+    advisoryStrong: t("advisoryStrong"),
+    advisoryMild: t("advisoryMild"),
+  };
 
   return (
-    <article className="mx-auto w-full max-w-4xl px-4 pb-16">
+    <article className="mx-auto w-full max-w-3xl px-5 pb-20">
       <Link
         href="/podcast"
-        className="mt-8 inline-flex items-center gap-1 text-sm text-ink-soft hover:text-brand-700"
+        className="mt-10 inline-flex items-center gap-1 text-sm text-charcoal-500 transition-colors hover:text-plum-700"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-        {t("backToPodcast")}
+        {tp("backToPodcast")}
       </Link>
 
-      {/* 1) Episode Hero */}
-<header className="mt-6 mb-6 grid gap-6 md:grid-cols-[240px_1fr]">
-  {/* Artwork */}
-  <div className="order-first md:order-none">
-    <div className="aspect-square w-full max-w-[240px] overflow-hidden rounded-xl border border-line bg-surface-muted">
-      {artworkUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={artworkUrl}
-          alt=""
-          className="h-full w-full object-cover"
-        />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center text-ink-soft">
-          <ImageOff className="h-10 w-10" aria-hidden="true" />
-          <span className="sr-only">{t("artworkPlaceholderAlt")}</span>
+      {/* Episode hero: title and introduction dominate; metadata stays quiet. */}
+      <header className="mt-8">
+        {seriesName ? (
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-plum-600">
+            {seriesName}
+          </p>
+        ) : null}
+        <h1 className="mt-3 font-display text-3xl font-medium leading-tight text-plum-800 md:text-[2.6rem]">
+          {episode.title}
+        </h1>
+        <div className="mt-4">
+          <PodcastMetadata
+            seriesName={seriesName}
+            languageCode={episode.language_code}
+            durationSeconds={
+              audioPlayback?.durationSeconds ?? episode.duration_seconds
+            }
+            publishedAt={episode.published_at}
+            locale={locale}
+            labels={{
+              series: tp("metaSeries"),
+              language: tp("metaLanguage"),
+              duration: tp("metaDuration"),
+              minutes: ed.listenSuffix,
+              published: tp("metaPublished"),
+            }}
+          />
         </div>
-      )}
-    </div>
-  </div>
+        {advisory ? (
+          <p className="mt-3 text-sm text-charcoal-500">{advisory}</p>
+        ) : null}
+        {lead ? (
+          <p className="mt-6 text-lg leading-relaxed text-charcoal-500">
+            {lead}
+          </p>
+        ) : null}
+        {artworkUrl ? (
+          <div className="mt-8 max-w-[240px] overflow-hidden rounded-sm border border-stone-200/70">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={artworkUrl}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ) : null}
+      </header>
 
-  {/* Metadata */}
-  <div>
-    <h1 className="text-3xl font-bold leading-tight text-ink md:text-4xl">
-      {episode.title}
-    </h1>
-    {episode.episode_summary?.trim() || episode.description?.trim() ? (
-      <p className="mt-3 max-w-3xl text-lg leading-relaxed text-ink-soft">
-        {episode.episode_summary?.trim() || episode.description?.trim()}
-      </p>
-    ) : null}
-    <div className="mt-4">
-      <PodcastMetadata
-        seriesName={seriesName}
-        languageCode={episode.language_code}
-        durationSeconds={
-          audioPlayback?.durationSeconds ?? episode.duration_seconds
-        }
-        publishedAt={episode.published_at}
-        locale={locale}
-        labels={{
-          series: t("metaSeries"),
-          language: t("metaLanguage"),
-          duration: t("metaDuration"),
-          minutes: cardMinutes,
-          published: t("metaPublished"),
-        }}
-      />
-    </div>
-    {episode.content_advisory === "strong" ? (
-      <p className="mt-4 inline-block rounded-md bg-danger/10 px-3 py-1.5 text-sm font-semibold text-danger">
-        {t("advisoryStrong")}
-      </p>
-    ) : episode.content_advisory === "mild" ? (
-      <p className="mt-4 inline-block rounded-md bg-surface-muted px-3 py-1.5 text-sm font-medium text-ink-soft">
-        {t("advisoryMild")}
-      </p>
-    ) : null}
-  </div>
-</header>
+      <FloralSeparator className="my-10 w-40 max-w-full text-rose-200" />
 
-      {/* 2) Player */}
-      <PodcastPlayer
-  audioUrl={audioUrl}
-  title={episode.title}
-  showDownload={false}
-  labels={{
-    unavailableTitle: t("playerUnavailableTitle"),
-    unavailableBody: t("playerUnavailableBody"),
-    download: t("playerDownload"),
-  }}
-/>
+      {/* Invitation, then the player — the player supports the story. */}
+      <p className="font-display text-lg text-plum-700">{ed.listenInvite}</p>
+      <div className="mt-3">
+        <PodcastPlayer
+          audioUrl={audioUrl}
+          title={episode.title}
+          showDownload={false}
+          labels={{
+            unavailableTitle: tp("playerUnavailableTitle"),
+            unavailableBody: tp("playerUnavailableBody"),
+            download: tp("playerDownload"),
+          }}
+        />
+      </div>
 
-      {/* 3) Transcript */}
+      {/* Transcript as a continuation of the reading experience. */}
       <PodcastTranscript
         transcript={episode.transcript}
         status={episode.transcript_status}
         labels={{
-          heading: t("transcriptHeading"),
-          emptyTitle: t("transcriptEmptyTitle"),
-          emptyBody: t("transcriptEmptyBody"),
-          statusAuto: t("transcriptStatusAuto"),
-          statusHuman: t("transcriptStatusHuman"),
-          statusNone: t("transcriptStatusNone"),
-          statusLabel: t("transcriptStatusLabel"),
+          heading: tp("transcriptHeading"),
+          emptyTitle: tp("transcriptEmptyTitle"),
+          emptyBody: tp("transcriptEmptyBody"),
+          statusAuto: tp("transcriptStatusAuto"),
+          statusHuman: tp("transcriptStatusHuman"),
+          statusNone: tp("transcriptStatusNone"),
+          statusLabel: tp("transcriptStatusLabel"),
         }}
       />
 
-      {/* 4) About */}
-      {episode.episode_summary?.trim() ? (
-        <Section
-          id="podcast-about"
-          eyebrow={t("aboutEyebrow")}
-          title={t("aboutTitle")}
-        >
-          <Card className="p-6">
-            <p className="whitespace-pre-wrap text-base leading-relaxed text-ink">
-              {episode.episode_summary}
-            </p>
-          </Card>
-        </Section>
-      ) : null}
-
-      {/* 5) Podcast → Story (dedicated, editor-managed) */}
-      <RelatedStorySection
-        stories={relatedStories}
-        locale={locale}
+      {/* Related voices — the anonymous stories behind this episode. */}
+      <PodcastRelatedStory
+        stories={stories}
         labels={{
-          eyebrow: t("relatedStoryEyebrow"),
-          heading: t("relatedStoryHeading"),
-          description: t("relatedStoryDescription"),
+          eyebrow: tp("relatedStoryEyebrow"),
+          heading: ed.relatedVoices,
+          description: tp("relatedStoryDescription"),
+          cta: tp("relatedStoryCta"),
         }}
       />
 
-      {/* 6) Podcast → Resources (theme-derived) */}
-      <RelatedResourcesSection
+      {/* Find support — theme-derived resources. */}
+      <PodcastRelatedResources
         resources={relatedResources}
         labels={{
-          eyebrow: t("relatedResourcesEyebrow"),
-          heading: t("relatedResourcesHeading"),
-          description: t("relatedResourcesDescription"),
-          visit: t("relatedResourcesVisit"),
+          eyebrow: tp("relatedResourcesEyebrow"),
+          heading: ed.findSupport,
+          description: tp("relatedResourcesDescription"),
+          visit: tp("relatedResourcesVisit"),
         }}
       />
 
-      {/* 7) More from this Series — episode discovery, podcast-scoped */}
-      {seriesName ? (
-        <PodcastSeriesRecommendations
-          episodes={seriesEpisodes}
-          locale={locale}
-          labels={{
-            eyebrow: t("seriesRecsEyebrow"),
-            heading: t("seriesRecsHeading", { series: seriesName }),
-            cardMinutes,
-            advisoryStrong,
-            advisoryMild,
-          }}
-        />
+      {/* Continue listening — gently onward to the next episode. */}
+      {moreEpisodes.length > 0 ? (
+        <section aria-labelledby="continue-listening" className="mt-14">
+          <h2
+            id="continue-listening"
+            className="font-display text-2xl font-medium text-plum-800 md:text-3xl"
+          >
+            {ed.continueListening}
+          </h2>
+          <div className="mt-2 divide-y divide-stone-200/60 border-t border-stone-200/60">
+            {moreEpisodes.map((ep) => (
+              <EpisodeEntry
+                key={ep.episode_id}
+                episode={ep}
+                locale={locale}
+                labels={entryLabels}
+              />
+            ))}
+          </div>
+        </section>
       ) : null}
-
-      {/* 8) More on this Theme — episode discovery */}
-      <PodcastThemeRecommendations
-        episodes={themeEpisodes}
-        locale={locale}
-        labels={{
-          eyebrow: t("themeRecsEyebrow"),
-          heading: t("themeRecsHeading"),
-          cardMinutes,
-          advisoryStrong,
-          advisoryMild,
-        }}
-      />
     </article>
   );
 }

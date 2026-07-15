@@ -18,6 +18,7 @@ export type Resource = {
   name: string;
   description: string | null;
   category_id: number | null;
+  category_ids: number[];
   website_url: string | null;
   contact_phone: string | null;
   contact_email: string | null;
@@ -25,6 +26,7 @@ export type Resource = {
   geographic_region_id: number | null;
   is_crisis_resource: boolean;
   last_verified_date: string | null;
+  editorial_priority: "high" | "medium" | "low" | null;
 };
 
 export type Category = {
@@ -45,6 +47,26 @@ export type ResourceListOptions = {
   limit?: number;
 };
 
+/**
+ * Deterministic precedence for choosing resources.category_id when importing a
+ * multi-category resource. All memberships should be stored in
+ * resource_category_assignments; this only preserves the legacy single-category
+ * compatibility value for older readers and views.
+ */
+export const RESOURCE_COMPATIBILITY_CATEGORY_PRECEDENCE = [
+  "find-local-organizations",
+  "helplines-and-crisis-support",
+  "child-marriage-support",
+  "gbv-support-services",
+  "gender-based-violence-support-services",
+  "gender-based-violence-support",
+  "mental-health-support",
+  "legal-support",
+  "education-and-scholarships",
+  "health-services",
+  "ngos-and-organizations",
+] as const;
+
 /** Lowercase, hyphenated slug derived from a category name. */
 export function categorySlug(name: string): string {
   return name
@@ -57,9 +79,20 @@ export function categorySlug(name: string): string {
 }
 
 const RESOURCE_COLS =
-  "resource_id, name, description, category_id, website_url, contact_phone, " +
+  "resource_id, name, description, category_id, category_ids, website_url, contact_phone, " +
   "contact_email, languages_supported, geographic_region_id, is_crisis_resource, " +
-  "last_verified_date";
+  "last_verified_date, editorial_priority";
+
+export function selectCompatibilityCategoryId(categories: Category[]): number | null {
+  if (categories.length === 0) return null;
+  const bySlug = new Map(categories.map((c) => [c.slug, c.category_id]));
+  for (const slug of RESOURCE_COMPATIBILITY_CATEGORY_PRECEDENCE) {
+    const id = bySlug.get(slug);
+    if (id != null) return id;
+  }
+  return categories.slice().sort((a, b) => a.sort_order - b.sort_order)[0]
+    ?.category_id ?? null;
+}
 
 /** All active categories. UI consumes this directly — DB is the source of truth. */
 export async function listCategories(): Promise<Category[]> {
@@ -85,7 +118,7 @@ export async function listResources(
     .order("name", { ascending: true })
     .limit(opts.limit ?? 100);
 
-  if (opts.categoryId) query = query.eq("category_id", opts.categoryId);
+  if (opts.categoryId) query = query.contains("category_ids", [opts.categoryId]);
   if (opts.q && opts.q.trim()) {
     const term = `%${opts.q.trim()}%`;
     query = query.or(`name.ilike.${term},description.ilike.${term}`);
@@ -121,14 +154,16 @@ export async function listCrisisResources(
   return (
   data as unknown as Omit<
     Resource,
-    "category_id" | "is_crisis_resource" | "last_verified_date"
+    "category_id" | "category_ids" | "is_crisis_resource" | "last_verified_date" | "editorial_priority"
   >[]
 )
     .map((r) => ({
       ...r,
       category_id: null,
+      category_ids: [],
       is_crisis_resource: true,
       last_verified_date: null,
+      editorial_priority: null,
     }));
 }
 

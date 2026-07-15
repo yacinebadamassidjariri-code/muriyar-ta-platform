@@ -2,12 +2,16 @@ import type { AppRole } from "./roles";
 
 // Public navigation. `key` indexes the "nav" message namespace; `href` is a
 // locale-agnostic path (the i18n <Link> adds the locale prefix).
+// Ordered as two editorial clusters: the "voices" a reader encounters and adds
+// to (Stories, Podcast, Share your story), then the surrounding context
+// (Resources, Report, About). Hrefs are unchanged; only the sequence reflects
+// Muriyar Ta's editorial priorities. Consumed only by the masthead.
 export const mainNav = [
   { key: "stories", href: "/stories" },
   { key: "podcast", href: "/podcast" },
+  { key: "submit", href: "/submit" },
   { key: "resources", href: "/resources" },
   { key: "reports", href: "/report" },
-  { key: "submit", href: "/submit" },
   { key: "about", href: "/about" },
 ] as const;
 

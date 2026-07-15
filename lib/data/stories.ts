@@ -197,7 +197,7 @@ export async function getRelatedResourcesForStory(
   const { data, error } = await supabase
     .from("resources_public")
     .select("resource_id, name, description, website_url, contact_phone")
-    .in("category_id", matchedIds)
+    .overlaps("category_ids", matchedIds)
     .order("name", { ascending: true })
     .limit(limit);
   if (error || !data) return [];

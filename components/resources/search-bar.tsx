@@ -11,14 +11,14 @@ export function SearchBar({
   placeholder,
   submitLabel,
   defaultValue,
-  activeCategoryId,
+  activeCategoryId = null,
   action,
 }: {
   label: string;
   placeholder: string;
   submitLabel: string;
   defaultValue?: string;
-  activeCategoryId: number | null;
+  activeCategoryId?: number | null;
   action: string; // e.g. "/en/resources"
 }) {
   return (

@@ -141,13 +141,15 @@ on conflict do nothing;
 
 -- ---------- Resource categories (PRD 14.1) ----------
 insert into public.resource_categories (name, sort_order) values
+  ('Find Local Organizations',0),
   ('Education & Scholarships',1),
   ('Mental Health Support',2),
   ('Legal Support',3),
   ('GBV Support Services',4),
-  ('Health Services',5),
-  ('Helplines & Crisis Support',6),
-  ('NGOs & Organizations',7)
+  ('Child Marriage Support',5),
+  ('Health Services',6),
+  ('Helplines & Crisis Support',7),
+  ('NGOs & Organizations',8)
 on conflict (name) do nothing;
 
 -- ---------- Initial consent version (PRD 5.1) ----------

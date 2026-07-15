@@ -1,7 +1,13 @@
 import { getTranslations } from "next-intl/server";
 
 /** Server component — short, calm introduction to the podcast section. */
-export async function PodcastHero({ locale }: { locale: string }) {
+export async function PodcastHero({
+  locale,
+  purpose,
+}: {
+  locale: string;
+  purpose?: string;
+}) {
   const t = await getTranslations({ locale, namespace: "podcast" });
   return (
     <header className="py-10 md:py-14">
@@ -12,7 +18,7 @@ export async function PodcastHero({ locale }: { locale: string }) {
         {t("heroTitle")}
       </h1>
       <p className="mt-4 max-w-2xl text-lg leading-relaxed text-ink-soft">
-        {t("heroBody")}
+        {purpose ?? t("heroBody")}
       </p>
     </header>
   );
