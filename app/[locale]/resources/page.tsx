@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Link } from "@/lib/i18n/navigation";
 import {
   listCategories,
   listResources,
@@ -25,6 +26,7 @@ import { ResourcesEmptyState } from "@/components/resources/empty-state";
 import { BotanicalCorner, FloralSeparator } from "@/components/home/botanical";
 
 export const revalidate = 300;
+const RESULTS_PER_PAGE = 10;
 
 export async function generateMetadata({
   params,
@@ -41,7 +43,7 @@ export default async function ResourcesIndexPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ category?: string; q?: string }>;
+  searchParams: Promise<{ category?: string; q?: string; page?: string }>;
 }) {
   const { locale } = await params;
   const sp = await searchParams;
@@ -57,6 +59,9 @@ export default async function ResourcesIndexPage({
     : null;
   const q = sp.q?.trim() || null;
   const searching = !!q || catId != null;
+  const requestedPage = Number.parseInt(sp.page ?? "1", 10);
+  const page =
+    Number.isFinite(requestedPage) && requestedPage > 0 ? requestedPage : 1;
 
   const [categories, resources] = await Promise.all([
     listCategories(),
@@ -85,8 +90,11 @@ export default async function ResourcesIndexPage({
     };
   };
 
+  const sortLocale = locale === "fr" ? "fr" : "en";
   const byLocalFirst = (a: Resource, b: Resource): number =>
-    regionRank(regionOf(a)) - regionRank(regionOf(b));
+    regionRank(regionOf(a)) - regionRank(regionOf(b)) ||
+    a.name.localeCompare(b.name, sortLocale, { sensitivity: "base" }) ||
+    a.resource_id.localeCompare(b.resource_id);
 
   const entryLabels = { visit: ed.visit, localTag: ed.localTag };
 
@@ -140,6 +148,21 @@ export default async function ResourcesIndexPage({
   const results = searching
     ? resources.slice().sort(byLocalFirst).map(toEntry)
     : [];
+  const pageCount = Math.max(1, Math.ceil(results.length / RESULTS_PER_PAGE));
+  const currentPage = Math.min(page, pageCount);
+  const visibleResults = results.slice(
+    (currentPage - 1) * RESULTS_PER_PAGE,
+    currentPage * RESULTS_PER_PAGE,
+  );
+
+  const pageHref = (nextPage: number): string => {
+    const query = new URLSearchParams();
+    if (q) query.set("q", q);
+    if (catId != null) query.set("category", String(catId));
+    if (nextPage > 1) query.set("page", String(nextPage));
+    const qs = query.toString();
+    return qs ? `/resources?${qs}` : "/resources";
+  };
 
   return (
     <div className="relative mx-auto w-full max-w-3xl px-5 py-16 md:py-20">
@@ -176,6 +199,7 @@ export default async function ResourcesIndexPage({
           placeholder={ed.searchPlaceholder}
           submitLabel={ed.searchSubmit}
           defaultValue={q ?? ""}
+          activeCategoryId={catId}
           action={`/${locale}/resources`}
         />
       </div>
@@ -194,7 +218,7 @@ export default async function ResourcesIndexPage({
             </div>
           ) : (
             <div className="mt-4 divide-y divide-stone-200/60 border-t border-stone-200/60">
-              {results.map((e) => (
+              {visibleResults.map((e) => (
                 <ResourceEntry
                   key={e.resourceId}
                   resource={e.resource}
@@ -205,6 +229,46 @@ export default async function ResourcesIndexPage({
               ))}
             </div>
           )}
+          {results.length > 0 && pageCount > 1 ? (
+            <nav
+              aria-label={ed.paginationLabel}
+              className="mt-8 flex flex-wrap items-center justify-between gap-4 text-sm text-charcoal-500"
+            >
+              <p>{ed.pageSummary(currentPage, pageCount)}</p>
+              <div className="flex items-center gap-2">
+                {currentPage > 1 ? (
+                  <Link
+                    href={pageHref(currentPage - 1)}
+                    className="rounded-md border border-stone-200 bg-white px-3 py-1.5 font-medium text-plum-700 transition-colors hover:bg-rose-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-600"
+                  >
+                    {ed.previousPage}
+                  </Link>
+                ) : (
+                  <span
+                    aria-disabled="true"
+                    className="cursor-not-allowed rounded-md border border-stone-200 bg-stone-50 px-3 py-1.5 font-medium text-stone-400"
+                  >
+                    {ed.previousPage}
+                  </span>
+                )}
+                {currentPage < pageCount ? (
+                  <Link
+                    href={pageHref(currentPage + 1)}
+                    className="rounded-md border border-stone-200 bg-white px-3 py-1.5 font-medium text-plum-700 transition-colors hover:bg-rose-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-600"
+                  >
+                    {ed.nextPage}
+                  </Link>
+                ) : (
+                  <span
+                    aria-disabled="true"
+                    className="cursor-not-allowed rounded-md border border-stone-200 bg-stone-50 px-3 py-1.5 font-medium text-stone-400"
+                  >
+                    {ed.nextPage}
+                  </span>
+                )}
+              </div>
+            </nav>
+          ) : null}
         </section>
       ) : resources.length === 0 ? (
         <div className="mt-12">
@@ -221,6 +285,8 @@ export default async function ResourcesIndexPage({
             rest={rest}
             recommendedHint={ed.recommendedHint}
             entryLabels={entryLabels}
+            showMoreLabel={ed.showMore}
+            showLessLabel={ed.showLess}
           />
         ))
       )}

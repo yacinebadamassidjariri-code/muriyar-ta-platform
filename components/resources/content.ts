@@ -111,6 +111,12 @@ export type ResourcesEditorial = {
   localTag: string;
   visit: string;
   recommendedHint: string;
+  showMore: string;
+  showLess: string;
+  paginationLabel: string;
+  previousPage: string;
+  nextPage: string;
+  pageSummary: (page: number, pageCount: number) => string;
   emptyTitle: string;
   emptyBody: string;
   clusters: Record<ClusterKey, { label: string; intro: string }>;
@@ -133,6 +139,12 @@ const en: ResourcesEditorial = {
   localTag: "In Niger",
   visit: "Visit",
   recommendedHint: "If you're not sure where to begin",
+  showMore: "Show more",
+  showLess: "Show less",
+  paginationLabel: "Resource results pages",
+  previousPage: "Previous",
+  nextPage: "Next",
+  pageSummary: (page, pageCount) => `Page ${page} of ${pageCount}`,
   emptyTitle: "Nothing matched your search",
   emptyBody:
     "Try a different word, or browse the library below. Every organization here has been chosen with care.",
@@ -192,6 +204,12 @@ const fr: ResourcesEditorial = {
   localTag: "Au Niger",
   visit: "Visiter",
   recommendedHint: "Si vous ne savez pas par où commencer",
+  showMore: "Afficher plus",
+  showLess: "Afficher moins",
+  paginationLabel: "Pages de résultats des ressources",
+  previousPage: "Précédent",
+  nextPage: "Suivant",
+  pageSummary: (page, pageCount) => `Page ${page} sur ${pageCount}`,
   emptyTitle: "Aucun résultat pour votre recherche",
   emptyBody:
     "Essayez un autre mot, ou parcourez la bibliothèque ci-dessous. Chaque organisation y a été choisie avec soin.",
