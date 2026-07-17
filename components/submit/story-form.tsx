@@ -3,11 +3,16 @@
 import { useActionState, useState } from "react";
 import { LifeBuoy } from "lucide-react";
 import { submitStory, type SubmitState } from "@/lib/actions/submit-story";
-import { STORY_MIN, STORY_MAX } from "@/lib/validation/submission";
+import {
+  GEOGRAPHIC_CONTEXT_MAX,
+  STORY_MIN,
+  STORY_MAX,
+} from "@/lib/validation/submission";
 import { locales, localeLabels, type Locale } from "@/lib/i18n/routing";
 import type { SubmitCopy } from "@/components/submit/content";
 import { submitEditorial } from "@/components/submit/editorial-content";
 import { Link } from "@/lib/i18n/navigation";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FloralSeparator } from "@/components/home/botanical";
@@ -136,6 +141,83 @@ export function StoryForm({ copy, locale }: { copy: SubmitCopy; locale: string }
           ) : null}
         </div>
       </section>
+
+      {/* Optional broad context — deliberately secondary to the story itself */}
+      <div
+        data-motion-section
+        className="border-t border-stone-300/70 py-14 md:py-20"
+      >
+        <div
+          data-motion-part="body"
+          className="grid gap-10 md:grid-cols-2 md:gap-12"
+        >
+          <div>
+            <Label
+              htmlFor="country"
+              className="font-display text-2xl font-medium text-plum-800 md:text-3xl"
+            >
+              {copy.form.countryLabel}
+            </Label>
+            <Input
+              id="country"
+              name="country"
+              type="text"
+              maxLength={GEOGRAPHIC_CONTEXT_MAX}
+              autoComplete="off"
+              aria-invalid={!!state.errors?.country}
+              aria-describedby={
+                state.errors?.country
+                  ? "country-help country-error"
+                  : "country-help"
+              }
+              className="mt-4 h-12 rounded-lg border-stone-200 bg-cream-50 px-4 text-base text-charcoal-700 focus-visible:outline-plum-600 aria-[invalid=true]:border-rose-500"
+            />
+            <p
+              id="country-help"
+              className="mt-2 text-sm leading-relaxed text-charcoal-500"
+            >
+              {copy.form.countryHelp}
+            </p>
+            {state.errors?.country ? (
+              <p id="country-error" className="mt-2 text-sm text-rose-700">
+                {err(state.errors.country)}
+              </p>
+            ) : null}
+          </div>
+
+          <div>
+            <Label
+              htmlFor="region"
+              className="font-display text-2xl font-medium text-plum-800 md:text-3xl"
+            >
+              {copy.form.regionLabel}
+            </Label>
+            <Input
+              id="region"
+              name="region"
+              type="text"
+              maxLength={GEOGRAPHIC_CONTEXT_MAX}
+              autoComplete="off"
+              aria-invalid={!!state.errors?.region}
+              aria-describedby={
+                state.errors?.region ? "region-help region-error" : "region-help"
+              }
+              className="mt-4 h-12 rounded-lg border-stone-200 bg-cream-50 px-4 text-base text-charcoal-700 focus-visible:outline-plum-600 aria-[invalid=true]:border-rose-500"
+            />
+            <p
+              id="region-help"
+              className="mt-2 text-sm leading-relaxed text-charcoal-500"
+            >
+              {copy.form.regionHelp}
+            </p>
+            {state.errors?.region ? (
+              <p id="region-error" className="mt-2 text-sm text-rose-700">
+                {err(state.errors.region)}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      </div>
 
       <FloralSeparator className="text-rose-200" />
 

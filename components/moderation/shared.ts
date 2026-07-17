@@ -9,6 +9,8 @@ export type ReviewSubmission = {
   current_state: string;
   issue_tag_id: number | null;
   region_id: number | null;
+  country: string | null;
+  region: string | null;
   assigned_moderator_id: string | null;
   consent_given: boolean;
   consent_version_id: number | null;

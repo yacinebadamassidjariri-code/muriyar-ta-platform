@@ -184,19 +184,6 @@ export default async function SubmitPage({
 
         <FloralSeparator className="text-rose-200" />
 
-        <section
-          data-motion-section
-          aria-label={ed.formLeadIn}
-          className="mx-auto max-w-3xl pb-6 pt-16 text-center md:pb-10 md:pt-24"
-        >
-          <p
-            data-motion-part="body"
-            className="font-display text-3xl font-medium leading-tight text-plum-800 md:text-4xl"
-          >
-            {ed.formLeadIn}
-          </p>
-        </section>
-
         <StoryForm copy={c} locale={locale} />
       </div>
     </div>

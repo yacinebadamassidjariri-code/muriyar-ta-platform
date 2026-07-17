@@ -4,7 +4,8 @@ export type ModerationCopy = {
   queue: { title: string; subtitle: string; empty: string; item: string; length: string };
   detail: {
     title: string; back: string; closed: string; storyTitle: string; bodyEmpty: string;
-    metaTitle: string; language: string; submitted: string; length: string; chars: string;
+    metaTitle: string; language: string; country: string; region: string;
+    submitted: string; length: string; chars: string;
     consentTitle: string; consentGiven: string; yes: string; no: string;
     consentVersion: string; consentAt: string; consentLang: string;
   };
@@ -35,6 +36,8 @@ const en: ModerationCopy = {
     bodyEmpty: "(No text body — this submission has no readable content.)",
     metaTitle: "Details",
     language: "Language",
+    country: "Country",
+    region: "Region, state, or province",
     submitted: "Submitted",
     length: "Length",
     chars: "characters",
@@ -100,6 +103,8 @@ const fr: ModerationCopy = {
     bodyEmpty: "(Aucun texte — cette soumission n'a pas de contenu lisible.)",
     metaTitle: "Détails",
     language: "Langue",
+    country: "Pays",
+    region: "Région, État ou province",
     submitted: "Soumis le",
     length: "Longueur",
     chars: "caractères",

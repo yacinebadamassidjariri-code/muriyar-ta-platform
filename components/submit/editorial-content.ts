@@ -21,7 +21,6 @@ export type SubmitEditorial = {
     steps: { title: string; body: string }[];
   };
   quote: string;
-  formLeadIn: string;
   consentNote: string;
 };
 
@@ -60,7 +59,6 @@ const en: SubmitEditorial = {
     ],
   },
   quote: "Every story shared here helps another girl realize she is not alone.",
-  formLeadIn: "When you feel ready, begin. There is no rush, and no wrong way.",
   consentNote:
     "You stay in control. Nothing is ever published without your permission.",
 };
@@ -101,8 +99,6 @@ const fr: SubmitEditorial = {
   },
   quote:
     "Chaque récit partagé ici aide une autre fille à comprendre qu'elle n'est pas seule.",
-  formLeadIn:
-    "Quand vous vous sentez prête, commencez. Rien ne presse, et il n'y a pas de mauvaise façon.",
   consentNote:
     "Vous gardez le contrôle. Rien n'est jamais publié sans votre permission.",
 };

@@ -20,6 +20,8 @@ export async function submitStory(
   const input = {
     language: String(formData.get("language") ?? ""),
     story: String(formData.get("story") ?? ""),
+    country: String(formData.get("country") ?? ""),
+    region: String(formData.get("region") ?? ""),
     consent:
       formData.get("consent") === "on" || formData.get("consent") === "true",
     locale: String(formData.get("locale") ?? "en"),
@@ -35,14 +37,28 @@ export async function submitStory(
       p_language_code: data.language,
       p_consent: true,
       p_consent_language: input.locale,
+      p_country: data.country,
+      p_region: data.region,
     });
 
     if (error) {
       // Map known server-side validation errors back to fields where possible.
       const code = error.message;
-      if (code === "too_short") return { status: "error", errors: { story: "story_short" } };
-      if (code === "consent_required") return { status: "error", errors: { consent: "consent_required" } };
-      if (code === "unsupported_language") return { status: "error", errors: { language: "language_invalid" } };
+      if (code === "too_short") {
+        return { status: "error", errors: { story: "story_short" } };
+      }
+      if (code === "consent_required") {
+        return { status: "error", errors: { consent: "consent_required" } };
+      }
+      if (code === "unsupported_language") {
+        return { status: "error", errors: { language: "language_invalid" } };
+      }
+      if (code === "country_too_long") {
+        return { status: "error", errors: { country: "country_long" } };
+      }
+      if (code === "region_too_long") {
+        return { status: "error", errors: { region: "region_long" } };
+      }
       return { status: "error", errors: { form: "submit_failed" } };
     }
 

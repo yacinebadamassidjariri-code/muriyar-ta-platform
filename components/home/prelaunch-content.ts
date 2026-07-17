@@ -136,7 +136,7 @@ const en: PrelaunchCopy = {
   },
   storyTypes: {
     eyebrow: "What you can share",
-    title: "Your story can begin wherever your experience begins.",
+    title: "Whatever You Choose to Share Matters.",
     intro:
       "You can write about one moment, a longer journey, a question you still carry, or a future you are working toward.",
     topics: [
@@ -151,7 +151,7 @@ const en: PrelaunchCopy = {
   },
   anonymity: {
     eyebrow: "Why anonymity matters",
-    title: "Speaking openly can carry real consequences.",
+    title: "Your safety matters to us",
     paragraphs: [
       "For some girls and young women, being publicly identified can affect family relationships, marriage prospects, personal safety, or standing in a community. It can lead to exclusion or violence.",
       "Anonymity makes space for honest expression without requiring a contributor to attach her public identity to a difficult experience. It is a protection built into how Muriyar Ta receives and reviews stories.",
@@ -331,7 +331,7 @@ const fr: PrelaunchCopy = {
   },
   storyTypes: {
     eyebrow: "Ce que vous pouvez partager",
-    title: "Votre récit peut commencer là où commence votre expérience.",
+    title: "Tout ce que vous choisissez de partager compte.",
     intro:
       "Vous pouvez écrire sur un moment, un parcours plus long, une question que vous portez encore ou un avenir que vous cherchez à construire.",
     topics: [
@@ -346,7 +346,7 @@ const fr: PrelaunchCopy = {
   },
   anonymity: {
     eyebrow: "Pourquoi l’anonymat compte",
-    title: "Parler ouvertement peut avoir de réelles conséquences.",
+    title: "Votre securite est une priorite pour nous",
     paragraphs: [
       "Pour certaines filles et jeunes femmes, être identifiée publiquement peut affecter les relations familiales, les perspectives de mariage, la sécurité personnelle ou la place dans la communauté. Cela peut entraîner l’exclusion ou la violence.",
       "L’anonymat ouvre un espace d’expression sincère sans obliger une contributrice à associer son identité publique à une expérience difficile. Cette protection est intégrée à la manière dont Muriyar Ta reçoit et examine les récits.",

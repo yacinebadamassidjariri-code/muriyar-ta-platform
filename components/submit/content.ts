@@ -19,6 +19,10 @@ export type SubmitCopy = {
     storyPlaceholder: string;
     storyHelp: string;
     charsSuffix: string; // e.g. "characters"
+    countryLabel: string;
+    countryHelp: string;
+    regionLabel: string;
+    regionHelp: string;
     consentLabel: string;
     submit: string;
     submitting: string;
@@ -45,6 +49,11 @@ const en: SubmitCopy = {
     storyPlaceholder: "Begin wherever feels right…",
     storyHelp: "Write as much or as little as feels right. At least 50 characters.",
     charsSuffix: "characters",
+    countryLabel: "Country",
+    countryHelp: "Optional. Share only the country you are comfortable identifying.",
+    regionLabel: "Region, state, or province",
+    regionHelp:
+      "Optional. Do not include your city, village, neighborhood, or address.",
     consentLabel:
       "I understand my story will be reviewed and may be published in anonymized form, and I consent to this.",
     submit: "Submit story",
@@ -55,6 +64,8 @@ const en: SubmitCopy = {
     story_required: "Please write your story.",
     story_short: "Your story should be at least 50 characters.",
     story_long: "Your story is too long.",
+    country_long: "Country must be 100 characters or fewer.",
+    region_long: "Region, state, or province must be 100 characters or fewer.",
     consent_required: "Please confirm consent to continue.",
     submit_failed: "Something went wrong. Please try again.",
   },
@@ -87,6 +98,12 @@ const fr: SubmitCopy = {
     storyPlaceholder: "Commencez là où vous le sentez…",
     storyHelp: "Écrivez autant que vous le souhaitez. Au moins 50 caractères.",
     charsSuffix: "caractères",
+    countryLabel: "Pays",
+    countryHelp:
+      "Facultatif. Indiquez uniquement le pays que vous acceptez d’identifier.",
+    regionLabel: "Région, État ou province",
+    regionHelp:
+      "Facultatif. N’indiquez pas votre ville, village, quartier ou adresse.",
     consentLabel:
       "Je comprends que mon récit sera examiné et pourra être publié sous forme anonymisée, et j'y consens.",
     submit: "Envoyer le récit",
@@ -97,6 +114,8 @@ const fr: SubmitCopy = {
     story_required: "Veuillez écrire votre récit.",
     story_short: "Votre récit doit comporter au moins 50 caractères.",
     story_long: "Votre récit est trop long.",
+    country_long: "Le pays doit comporter 100 caractères maximum.",
+    region_long: "La région, l’État ou la province doit comporter 100 caractères maximum.",
     consent_required: "Veuillez confirmer votre consentement pour continuer.",
     submit_failed: "Une erreur s'est produite. Veuillez réessayer.",
   },
