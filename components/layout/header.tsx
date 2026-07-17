@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/i18n/navigation";
-import { mainNav } from "@/lib/constants/navigation";
+import { mainNav, prelaunchNav } from "@/lib/constants/navigation";
+import { isPrelaunchMode } from "@/lib/config/prelaunch";
 import { Nav } from "./nav";
 import { LocaleSwitcher } from "./locale-switcher";
 import { CrisisLink } from "./crisis-link";
@@ -16,7 +17,11 @@ import { CrisisLink } from "./crisis-link";
  */
 export function Header() {
   const t = useTranslations("nav");
-  const items = mainNav.map((item) => ({ href: item.href, label: t(item.key) }));
+  const navigation = isPrelaunchMode() ? prelaunchNav : mainNav;
+  const items = navigation.map((item) => ({
+    href: item.href,
+    label: t(item.key),
+  }));
 
   return (
     <header className="relative bg-[#2D2038] text-stone-300">

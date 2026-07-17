@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/i18n/navigation";
+import { isPrelaunchMode } from "@/lib/config/prelaunch";
 import { LocaleSwitcher } from "./locale-switcher";
 
 /**
@@ -110,6 +111,7 @@ export function Footer() {
   const t = useTranslations("footer");
   const tn = useTranslations("nav");
   const year = new Date().getFullYear();
+  const prelaunch = isPrelaunchMode();
 
   return (
     <footer
@@ -136,7 +138,7 @@ export function Footer() {
           <p className="text-stone-300">
             {t("crisisBody")}{" "}
             <Link
-              href="/resources"
+              href="/resources/crisis"
               className="font-medium text-cream-50 underline decoration-rose-200/60 underline-offset-4 transition-colors duration-200 hover:decoration-rose-200 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-300/70"
             >
               {t("crisisLink")}
@@ -152,8 +154,14 @@ export function Footer() {
           {/* Wordmark + editorial callout — one opening spread. On mobile the
               callout sits directly beneath the wordmark; on md+ they face each
               other across a subtle gutter, vertically paired. */}
-          <div className="grid gap-8 md:grid-cols-12 md:items-center md:gap-10">
-            <div className="md:col-span-4">
+          <div
+            className={
+              prelaunch
+                ? "grid gap-8"
+                : "grid gap-8 md:grid-cols-12 md:items-center md:gap-10"
+            }
+          >
+            <div className={prelaunch ? undefined : "md:col-span-4"}>
               <Link
                 href="/"
                 className="inline-block font-display text-4xl font-semibold tracking-tight text-cream-50 transition-colors duration-200 hover:text-white focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-300/70 md:text-5xl"
@@ -168,76 +176,103 @@ export function Footer() {
             {/* Editorial callout — the emotional focal point. A soft wash off a
                 subtle gutter rule frames it as the featured page of the spread,
                 without a border-heavy card. */}
-            <div className="md:col-span-8 md:border-l md:border-white/10 md:bg-gradient-to-r md:from-white/[0.04] md:to-transparent md:py-2 md:pl-8 lg:pl-12">
-              <div className="max-w-xl">
-                <span aria-hidden="true" className="block h-px w-12 bg-rose-200/70" />
-                <p className="mt-4 font-display text-[1.9rem] font-medium leading-snug text-cream-50 md:text-[2.4rem]">
-                  {t("shareTitle")}
-                </p>
-                <p className="mt-3 max-w-md text-[1.05rem] leading-relaxed text-stone-100">
-                  {t("shareBody")}
-                </p>
-                <Link
-                  href="/submit"
-                  className="group/cta mt-5 inline-flex items-center gap-2 text-[0.95rem] font-semibold uppercase tracking-[0.14em] text-cream-50 transition-colors duration-200 hover:text-white focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-300/70"
-                >
-                  <span className="underline decoration-cream-50/50 underline-offset-[6px] transition-colors duration-200 group-hover/cta:decoration-cream-50">
-                    {t("shareCta")}
-                  </span>
+            {!prelaunch ? (
+              <div className="md:col-span-8 md:border-l md:border-white/10 md:bg-gradient-to-r md:from-white/[0.04] md:to-transparent md:py-2 md:pl-8 lg:pl-12">
+                <div className="max-w-xl">
                   <span
                     aria-hidden="true"
-                    className="transition-transform duration-200 ease-out group-hover/cta:translate-x-1"
+                    className="block h-px w-12 bg-rose-200/70"
+                  />
+                  <p className="mt-4 font-display text-[1.9rem] font-medium leading-snug text-cream-50 md:text-[2.4rem]">
+                    {t("shareTitle")}
+                  </p>
+                  <p className="mt-3 max-w-md text-[1.05rem] leading-relaxed text-stone-100">
+                    {t("shareBody")}
+                  </p>
+                  <Link
+                    href="/submit"
+                    className="group/cta mt-5 inline-flex items-center gap-2 text-[0.95rem] font-semibold uppercase tracking-[0.14em] text-cream-50 transition-colors duration-200 hover:text-white focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-300/70"
                   >
-                    →
-                  </span>
-                </Link>
+                    <span className="underline decoration-cream-50/50 underline-offset-[6px] transition-colors duration-200 group-hover/cta:decoration-cream-50">
+                      {t("shareCta")}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="transition-transform duration-200 ease-out group-hover/cta:translate-x-1"
+                    >
+                      →
+                    </span>
+                  </Link>
+                </div>
               </div>
-            </div>
+            ) : null}
           </div>
 
           {/* Secondary navigation — flows down from the spread (no hard rule),
               offset to sit beneath the callout with unevenly weighted columns. */}
-          <div className="mt-8 md:mt-10 md:grid md:grid-cols-12">
-            <div className="grid gap-8 sm:grid-cols-[1.1fr_1fr_0.9fr] md:col-span-8 md:col-start-5 md:gap-x-10">
-            <FooterGroup title={t("explore")}>
-              <li>
-                <FooterLink href="/stories">{tn("stories")}</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="/podcast">{tn("podcast")}</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="/resources">{tn("resources")}</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="/submit">{tn("submit")}</FooterLink>
-              </li>
-            </FooterGroup>
-
-            <FooterGroup title={t("orgTitle")}>
-              <li>
-                <FooterLink href="/about">{tn("about")}</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="/partner">{t("contactTitle")}</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="/contact#contact-faq">{t("faq")}</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="/contact">{tn("contact")}</FooterLink>
-              </li>
-            </FooterGroup>
-
-            <FooterGroup title={t("connectTitle")}>
-              {SOCIAL.map((s) => (
-                <li key={s.label}>
-                  <FooterLink href={s.href} external>
-                    {s.label}
-                  </FooterLink>
+          <div
+            className={
+              prelaunch ? "mt-8" : "mt-8 md:mt-10 md:grid md:grid-cols-12"
+            }
+          >
+            <div
+              className={
+                prelaunch
+                  ? "grid gap-8 md:col-span-8 md:col-start-5"
+                  : "grid gap-8 sm:grid-cols-[1.1fr_1fr_0.9fr] md:col-span-8 md:col-start-5 md:gap-x-10"
+              }
+            >
+              <FooterGroup title={t("explore")}>
+                {!prelaunch ? (
+                  <>
+                    <li>
+                      <FooterLink href="/stories">{tn("stories")}</FooterLink>
+                    </li>
+                    <li>
+                      <FooterLink href="/podcast">{tn("podcast")}</FooterLink>
+                    </li>
+                  </>
+                ) : null}
+                <li>
+                  <FooterLink href="/submit">{tn("submit")}</FooterLink>
                 </li>
-              ))}
-            </FooterGroup>
+                <li>
+                  <FooterLink href="/resources">{tn("resources")}</FooterLink>
+                </li>
+              </FooterGroup>
+
+              {!prelaunch ? (
+                <>
+                  <FooterGroup title={t("orgTitle")}>
+                    <li>
+                      <FooterLink href="/about">{tn("about")}</FooterLink>
+                    </li>
+                    <li>
+                      <FooterLink href="/partner">
+                        {t("contactTitle")}
+                      </FooterLink>
+                    </li>
+                    <li>
+                      <FooterLink href="/contact#contact-faq">
+                        {t("faq")}
+                      </FooterLink>
+                    </li>
+                    <li>
+                      <FooterLink href="/contact">{tn("contact")}</FooterLink>
+                    </li>
+                  </FooterGroup>
+
+                  <FooterGroup title={t("connectTitle")}>
+                    {SOCIAL.map((s) => (
+                      <li key={s.label}>
+                        <FooterLink href={s.href} external>
+                          {s.label}
+                        </FooterLink>
+                      </li>
+                    ))}
+                  </FooterGroup>
+                </>
+              ) : null}
             </div>
           </div>
         </div>

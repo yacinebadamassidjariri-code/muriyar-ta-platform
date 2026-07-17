@@ -26,6 +26,8 @@ import {
   FloralSeparator,
   PencilStroke,
 } from "@/components/home/botanical";
+import { PrelaunchHome } from "@/components/home/prelaunch-home";
+import { isPrelaunchMode } from "@/lib/config/prelaunch";
 
 // Stays cacheable like the rest of the public surface; will be refreshed by the
 // existing revalidate window when new stories are published.
@@ -71,6 +73,11 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  if (isPrelaunchMode()) {
+    return <PrelaunchHome locale={locale as Locale} />;
+  }
+
   const t = await getTranslations();
   const c = homeCopy[locale as Locale] ?? homeCopy.en;
 

@@ -165,7 +165,7 @@ export function StoryForm({ copy, locale }: { copy: SubmitCopy; locale: string }
         <LifeBuoy className="h-4 w-4 shrink-0 text-rose-500" aria-hidden="true" />
         {copy.safety.text}{" "}
         <Link
-          href="/resources"
+          href="/resources/crisis"
           className="font-medium text-plum-700 underline underline-offset-4 transition-colors duration-200 hover:text-plum-800 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-600"
         >
           {copy.safety.link}

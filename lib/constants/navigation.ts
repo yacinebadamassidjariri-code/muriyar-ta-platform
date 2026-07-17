@@ -15,6 +15,13 @@ export const mainNav = [
   { key: "about", href: "/about" },
 ] as const;
 
+// Pre-launch presentation only. Routes omitted here remain directly accessible;
+// the server-side mode flag changes navigation emphasis, never route access.
+export const prelaunchNav = [
+  { key: "submit", href: "/submit" },
+  { key: "resources", href: "/resources" },
+] as const;
+
 export const footerNav = [
   { key: "stories", href: "/stories" },
   { key: "podcast", href: "/podcast" },
