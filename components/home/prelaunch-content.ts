@@ -79,7 +79,7 @@ export type PrelaunchCopy = {
     emailLabel: string;
     email: string;
     socialLabel: string;
-    socials: { name: string; status: string }[];
+    socials: { name: string; href: string }[];
   };
   invitation: {
     eyebrow: string;
@@ -268,8 +268,11 @@ const en: PrelaunchCopy = {
     email: "yacinebadamassi@gmail.com",
     socialLabel: "Social",
     socials: [
-      { name: "Instagram", status: "Coming soon" },
-      { name: "Facebook", status: "Coming soon" },
+      { name: "Instagram", href: "https://www.instagram.com/muriyarta/" },
+      {
+        name: "Facebook",
+        href: "https://www.facebook.com/profile.php?id=61592216060446",
+      },
     ],
   },
   invitation: {
@@ -460,8 +463,11 @@ const fr: PrelaunchCopy = {
     email: "yacinebadamassi@gmail.com",
     socialLabel: "Réseaux sociaux",
     socials: [
-      { name: "Instagram", status: "Bientôt disponible" },
-      { name: "Facebook", status: "Bientôt disponible" },
+      { name: "Instagram", href: "https://www.instagram.com/muriyarta/" },
+      {
+        name: "Facebook",
+        href: "https://www.facebook.com/profile.php?id=61592216060446",
+      },
     ],
   },
   invitation: {

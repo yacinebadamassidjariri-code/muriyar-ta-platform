@@ -541,8 +541,14 @@ export function PrelaunchHome({ locale }: { locale: Locale }) {
               <dd className="mt-2 space-y-1 text-charcoal-500">
                 {c.contact.socials.map((social) => (
                   <p key={social.name}>
-                    <span className="font-medium text-plum-800">{social.name}</span>
-                    <span className="text-charcoal-400"> · {social.status}</span>
+                    <a
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-plum-800 underline decoration-rose-300 underline-offset-4 hover:text-plum-900 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
+                    >
+                      {social.name}
+                    </a>
                   </p>
                 ))}
               </dd>
