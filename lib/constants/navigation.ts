@@ -19,7 +19,7 @@ export const mainNav = [
 // the server-side mode flag changes navigation emphasis, never route access.
 export const prelaunchNav = [
   { key: "submit", href: "/submit" },
-  { key: "resources", href: "/resources" },
+  { key: "about", href: "/#about-founder" },
 ] as const;
 
 export const footerNav = [
