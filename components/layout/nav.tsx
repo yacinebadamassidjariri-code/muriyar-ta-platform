@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Link, usePathname } from "@/lib/i18n/navigation";
 import { cn } from "@/lib/utils/cn";
+import styles from "./nav.module.css";
 
 type NavItem = { href: string; label: string };
 
@@ -16,12 +17,16 @@ export function Nav({ items }: { items: NavItem[] }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const panelRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   // Escape closes the mobile sheet; focus moves to the first link on open.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
     };
     document.addEventListener("keydown", onKey);
     panelRef.current?.querySelector<HTMLAnchorElement>("a")?.focus();
@@ -66,8 +71,9 @@ export function Nav({ items }: { items: NavItem[] }) {
       </nav>
 
       <button
+        ref={triggerRef}
         type="button"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-md text-stone-300 transition-colors hover:text-cream-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-300/70 lg:hidden"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-md text-stone-300 transition-[color,transform] duration-200 hover:-translate-y-px hover:text-cream-50 active:translate-y-0 motion-reduce:transform-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-300/70 lg:hidden"
         aria-label="Menu"
         aria-expanded={open}
         aria-controls="mobile-nav"
@@ -80,36 +86,40 @@ export function Nav({ items }: { items: NavItem[] }) {
         )}
       </button>
 
-      {open ? (
-        <div
-          id="mobile-nav"
-          ref={panelRef}
-          className="absolute inset-x-0 top-full z-40 bg-[#2D2038] shadow-lg shadow-black/20 lg:hidden"
+      <div
+        id="mobile-nav"
+        ref={panelRef}
+        aria-hidden={!open}
+        inert={!open}
+        className={cn(
+          "absolute inset-x-0 top-full z-40 bg-[#2D2038] shadow-lg shadow-black/20 lg:hidden",
+          styles.mobilePanel,
+          open && styles.mobilePanelOpen,
+        )}
+      >
+        <nav
+          aria-label="Primary"
+          className="mx-auto flex max-w-6xl flex-col px-5 py-1"
         >
-          <nav
-            aria-label="Primary"
-            className="mx-auto flex max-w-6xl flex-col px-5 py-1"
-          >
-            {items.map((item) => {
-              const active = isActive(pathname, item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  aria-current={active ? "page" : undefined}
-                  className={cn(
-                    "border-b border-white/10 py-3.5 text-base transition-colors last:border-0 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-300/70",
-                    active ? "text-cream-50" : "text-stone-200 hover:text-cream-50",
-                  )}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-      ) : null}
+          {items.map((item) => {
+            const active = isActive(pathname, item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "border-b border-white/10 py-3.5 text-base transition-[color,transform] duration-200 last:border-0 hover:translate-x-0.5 motion-reduce:transform-none focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-300/70",
+                  active ? "text-cream-50" : "text-stone-200 hover:text-cream-50",
+                )}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
     </>
   );
 }

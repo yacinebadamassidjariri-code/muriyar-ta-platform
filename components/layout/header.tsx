@@ -28,7 +28,7 @@ export function Header() {
       <div className="mx-auto flex h-[70px] max-w-6xl items-center justify-between gap-6 px-5">
         <Link
           href="/"
-          className="font-display text-2xl font-medium tracking-[0.01em] text-cream-50 transition-colors hover:text-white focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-300/70"
+          className="font-display text-2xl font-medium tracking-[0.01em] text-cream-50 transition-[color,transform] duration-200 hover:-translate-y-px hover:text-white active:translate-y-0 motion-reduce:transform-none focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-300/70"
         >
           Muriyar&nbsp;Ta
         </Link>

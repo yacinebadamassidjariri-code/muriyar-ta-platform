@@ -1,0 +1,308 @@
+.root {
+  --motion-distance: 14px;
+  --motion-duration: 620ms;
+  --motion-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.heroEntrance,
+.heroLogoEntrance {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 520ms var(--motion-ease),
+    transform 620ms var(--motion-ease);
+}
+
+.heroEyebrow {
+  transition-delay: 20ms;
+}
+
+.heroTitle {
+  transition-delay: 90ms;
+}
+
+.heroIntro {
+  transition-delay: 165ms;
+}
+
+.heroImpact {
+  transition-delay: 220ms;
+}
+
+.heroCta {
+  transition-delay: 285ms;
+}
+
+.heroNote {
+  transition-delay: 340ms;
+}
+
+.heroLogoEntrance {
+  transition-delay: 55ms;
+}
+
+@starting-style {
+  .heroEntrance {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  .heroLogoEntrance {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+}
+
+.logoDrift {
+  animation: logo-drift 11s ease-in-out 900ms infinite alternate;
+  will-change: transform;
+}
+
+.botanicalDrift {
+  animation: botanical-drift 15s ease-in-out 1.2s infinite alternate;
+  will-change: transform;
+}
+
+.symbolDrift {
+  animation: symbol-drift 13s ease-in-out 700ms infinite alternate;
+  will-change: transform;
+}
+
+.root [data-motion-part] {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--motion-duration) var(--motion-ease),
+    transform var(--motion-duration) var(--motion-ease);
+  transition-delay: var(--part-delay, 0ms);
+}
+
+.root [data-motion-part="eyebrow"] {
+  --part-delay: 0ms;
+}
+
+.root [data-motion-part="heading"] {
+  --part-delay: 70ms;
+}
+
+.root [data-motion-part="body"] {
+  --part-delay: 135ms;
+}
+
+.root [data-motion-part="supporting"] {
+  --part-delay: 205ms;
+}
+
+.root[data-motion="ready"]
+  [data-motion-section]:not([data-motion-visible="true"])
+  [data-motion-part] {
+  opacity: 0;
+  transform: translateY(var(--motion-distance));
+}
+
+.root [data-motion-stagger] > * {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 520ms var(--motion-ease),
+    transform 560ms var(--motion-ease);
+}
+
+.root[data-motion="ready"]
+  [data-motion-section]:not([data-motion-visible="true"])
+  [data-motion-stagger]
+  > * {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.root [data-motion-section][data-motion-visible="true"] [data-motion-stagger] > :nth-child(1) {
+  transition-delay: 130ms;
+}
+
+.root [data-motion-section][data-motion-visible="true"] [data-motion-stagger] > :nth-child(2) {
+  transition-delay: 185ms;
+}
+
+.root [data-motion-section][data-motion-visible="true"] [data-motion-stagger] > :nth-child(3) {
+  transition-delay: 240ms;
+}
+
+.root [data-motion-section][data-motion-visible="true"] [data-motion-stagger] > :nth-child(4) {
+  transition-delay: 295ms;
+}
+
+.root [data-motion-section][data-motion-visible="true"] [data-motion-stagger] > :nth-child(5) {
+  transition-delay: 350ms;
+}
+
+.root [data-motion-section][data-motion-visible="true"] [data-motion-stagger] > :nth-child(6) {
+  transition-delay: 405ms;
+}
+
+.pullQuote {
+  position: relative;
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 720ms var(--motion-ease),
+    transform 760ms var(--motion-ease);
+  transition-delay: 110ms;
+}
+
+.pullQuote::before,
+.pullQuote::after {
+  position: absolute;
+  left: 50%;
+  width: min(7rem, 28vw);
+  height: 1px;
+  content: "";
+  background: color-mix(in srgb, var(--color-rose-200) 72%, transparent);
+  transform: translateX(-50%) scaleX(1);
+  transform-origin: center;
+  transition: transform 820ms var(--motion-ease) 210ms;
+}
+
+.pullQuote::before {
+  top: -1.75rem;
+}
+
+.pullQuote::after {
+  bottom: -1.75rem;
+}
+
+.root[data-motion="ready"]
+  [data-motion-section]:not([data-motion-visible="true"])
+  .pullQuote {
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+.root[data-motion="ready"]
+  [data-motion-section]:not([data-motion-visible="true"])
+  .pullQuote::before,
+.root[data-motion="ready"]
+  [data-motion-section]:not([data-motion-visible="true"])
+  .pullQuote::after {
+  transform: translateX(-50%) scaleX(0);
+}
+
+.destinationPanel {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 720ms var(--motion-ease),
+    transform 820ms var(--motion-ease);
+}
+
+.root[data-motion="ready"]
+  .destinationPanel:not([data-motion-visible="true"]) {
+  opacity: 0.92;
+  transform: translateY(20px);
+}
+
+.interactiveLink {
+  transform: translateY(0);
+  transition-property: color, background-color, border-color, transform;
+  transition-duration: 220ms;
+  transition-timing-function: var(--motion-ease);
+}
+
+.interactiveLink:hover {
+  transform: translateY(-2px);
+}
+
+.interactiveLink:active {
+  transform: translateY(0);
+  transition-duration: 90ms;
+}
+
+.arrowCta .ctaArrow {
+  transform: translateX(0);
+  transition: transform 220ms var(--motion-ease);
+}
+
+.arrowCta:hover .ctaArrow {
+  transform: translateX(3px);
+}
+
+.progressRule {
+  display: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .progressRule {
+    position: fixed;
+    z-index: 45;
+    top: 70px;
+    bottom: 0;
+    left: 0;
+    display: block;
+    width: 1px;
+    background: color-mix(in srgb, var(--color-rose-500) 48%, transparent);
+    transform: scaleY(0);
+    transform-origin: top;
+    animation: page-progress linear both;
+    animation-timeline: scroll(root);
+    pointer-events: none;
+  }
+}
+
+@keyframes page-progress {
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes logo-drift {
+  to {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes botanical-drift {
+  to {
+    transform: translate3d(-3px, 5px, 0);
+  }
+}
+
+@keyframes symbol-drift {
+  to {
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroEntrance,
+  .heroLogoEntrance,
+  .root [data-motion-part],
+  .root [data-motion-stagger] > *,
+  .pullQuote,
+  .destinationPanel,
+  .interactiveLink,
+  .arrowCta .ctaArrow {
+    opacity: 1;
+    transform: none;
+    transition-duration: 0.01ms;
+    transition-delay: 0ms;
+  }
+
+  .pullQuote::before,
+  .pullQuote::after {
+    transform: translateX(-50%) scaleX(1);
+    transition: none;
+  }
+
+  .logoDrift,
+  .botanicalDrift,
+  .symbolDrift {
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
+
+  .progressRule {
+    display: none;
+    animation: none;
+  }
+}
