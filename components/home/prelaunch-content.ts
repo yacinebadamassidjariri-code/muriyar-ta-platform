@@ -11,10 +11,18 @@ export type PrelaunchCopy = {
     primaryCta: string;
     pilotNote: string;
   };
+  launchAnnouncement: {
+    title: string;
+    body: string;
+  };
   mission: {
     eyebrow: string;
     title: string;
     paragraphs: string[];
+  };
+  missionVision: {
+    accessibleTitle: string;
+    cards: [EditorialItem, EditorialItem];
   };
   audience: {
     eyebrow: string;
@@ -102,12 +110,30 @@ const en: PrelaunchCopy = {
     pilotNote:
       "Story submissions are open during the pilot. Every story enters a private review process and is never displayed publicly on submission.",
   },
+  launchAnnouncement: {
+    title: "Launching Soon",
+    body:
+      "The full Muriyar Ta platform is launching soon. Story submissions are already open.",
+  },
   mission: {
     eyebrow: "Our mission",
     title: "A place to speak for yourself.",
     paragraphs: [
       "Girls and young women are often discussed in reports, programs, and policy without being heard in their own words.",
       "Muriyar Ta exists so girls are not spoken for, but listened to. It creates room for lived experience to be shared with dignity, context, and care.",
+    ],
+  },
+  missionVision: {
+    accessibleTitle: "Mission and Vision",
+    cards: [
+      {
+        title: "Mission",
+        body: "To create a safe and anonymous platform where girls and young women can share their stories freely, without fear, stigma, or judgment. Through storytelling, digital media, and advocacy, Muriyar Ta amplifies voices that too often go unheard, helping transform lived experiences into awareness, dialogue, and action. Rather than speaking on behalf of girls and young women, Muriyar Ta exists to create a space where they can speak for themselves.",
+      },
+      {
+        title: "Vision",
+        body: "A world where every girl has the opportunity to safely share her story, have her voice heard, and contribute to shaping the policies, programs, and social norms that affect her life.",
+      },
     ],
   },
   audience: {
@@ -297,12 +323,30 @@ const fr: PrelaunchCopy = {
     pilotNote:
       "Les récits sont acceptés pendant la phase pilote. Chaque récit entre dans un processus d’examen privé et n’est jamais affiché publiquement au moment de l’envoi.",
   },
+  launchAnnouncement: {
+    title: "Bientôt disponible",
+    body:
+      "La plateforme complète Muriyar Ta sera bientôt lancée. Les soumissions de récits sont déjà ouvertes.",
+  },
   mission: {
     eyebrow: "Notre mission",
     title: "Un espace pour parler en son propre nom.",
     paragraphs: [
       "Les filles et les jeunes femmes sont souvent évoquées dans les rapports, les programmes et les politiques sans être entendues avec leurs propres mots.",
       "Muriyar Ta existe pour que les filles ne soient pas seulement représentées par d’autres, mais réellement écoutées. La plateforme crée un espace où l’expérience vécue peut être partagée avec dignité, contexte et attention.",
+    ],
+  },
+  missionVision: {
+    accessibleTitle: "Mission et vision",
+    cards: [
+      {
+        title: "Mission",
+        body: "Créer une plateforme sûre et anonyme où les filles et les jeunes femmes peuvent partager leurs récits librement, sans peur, sans stigmatisation et sans jugement. À travers le récit, les médias numériques et le plaidoyer, Muriyar Ta amplifie des voix trop souvent inaudibles, en transformant les expériences vécues en prise de conscience, en dialogue et en action. Plutôt que de parler au nom des filles et des jeunes femmes, Muriyar Ta existe pour créer un espace où elles peuvent parler pour elles-mêmes.",
+      },
+      {
+        title: "Vision",
+        body: "Un monde où chaque fille a la possibilité de partager son récit en sécurité, d'être entendue et son histoire contribuera à mettre en lumière les injustices auxquelles les filles et les femmes sont confrontées.",
+      },
     ],
   },
   audience: {

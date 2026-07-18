@@ -140,6 +140,74 @@
   transition-delay: 405ms;
 }
 
+.launchAnnouncement {
+  box-shadow: 0 18px 42px color-mix(in srgb, var(--color-plum-900) 12%, transparent);
+}
+
+.launchRule {
+  position: absolute;
+  top: 0;
+  right: 2rem;
+  bottom: 0;
+  width: 1px;
+  background: color-mix(in srgb, var(--color-rose-200) 58%, transparent);
+  transform: rotate(12deg) scaleY(1.35);
+  transform-origin: center;
+}
+
+.flipCard {
+  perspective: 1200px;
+  cursor: pointer;
+}
+
+.flipCardInner {
+  display: grid;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.flipCardFace {
+  grid-area: 1 / 1;
+  min-height: 19rem;
+  border: 1px solid var(--color-stone-300);
+  padding: 2rem;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition:
+    transform 680ms var(--motion-ease),
+    opacity 420ms var(--motion-ease);
+}
+
+.flipCardFront {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  background: color-mix(in srgb, var(--color-cream-100) 90%, white);
+  text-align: center;
+  transform: rotateY(0deg);
+}
+
+.flipCardBack {
+  background: var(--color-plum-800);
+  transform: rotateY(180deg);
+}
+
+.flipCardActive .flipCardFront {
+  transform: rotateY(-180deg);
+}
+
+.flipCardActive .flipCardBack {
+  transform: rotateY(0deg);
+}
+
+.flipCardOrnament {
+  width: min(7rem, 42%);
+  height: 1px;
+  background: var(--color-rose-200);
+}
+
 .pullQuote {
   position: relative;
   opacity: 1;
@@ -304,5 +372,27 @@
   .progressRule {
     display: none;
     animation: none;
+  }
+
+  .flipCardFace {
+    transform: none;
+    transition: none;
+  }
+
+  .flipCardBack {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .flipCardActive .flipCardFront {
+    visibility: hidden;
+    opacity: 0;
+    transform: none;
+  }
+
+  .flipCardActive .flipCardBack {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
   }
 }

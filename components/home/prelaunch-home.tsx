@@ -5,6 +5,7 @@ import type { Locale } from "@/lib/i18n/routing";
 import { cn } from "@/lib/utils/cn";
 import { BotanicalCorner, FloralSeparator } from "./botanical";
 import { prelaunchCopy } from "./prelaunch-content";
+import { PrelaunchMissionVision } from "./prelaunch-mission-vision";
 import { PrelaunchMotion } from "./prelaunch-motion";
 import styles from "./prelaunch-motion.module.css";
 
@@ -108,6 +109,32 @@ export function PrelaunchHome({ locale }: { locale: Locale }) {
           </div>
         </header>
 
+        <section
+          data-motion-section
+          aria-labelledby="prelaunch-launch-announcement"
+          className={cn(
+            "relative overflow-hidden border-y border-plum-300 bg-plum-800 px-6 py-9 text-cream-50 md:px-10 md:py-12",
+            styles.launchAnnouncement,
+          )}
+        >
+          <span aria-hidden="true" className={styles.launchRule} />
+          <div className="relative grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:items-center md:gap-12">
+            <h2
+              data-motion-part="heading"
+              id="prelaunch-launch-announcement"
+              className="font-display text-4xl font-medium leading-tight md:text-5xl"
+            >
+              {c.launchAnnouncement.title}
+            </h2>
+            <p
+              data-motion-part="body"
+              className="max-w-2xl text-lg leading-relaxed text-stone-100 md:text-xl"
+            >
+              {c.launchAnnouncement.body}
+            </p>
+          </div>
+        </section>
+
         <FloralSeparator className="text-rose-200" />
 
         <section
@@ -162,6 +189,17 @@ export function PrelaunchHome({ locale }: { locale: Locale }) {
               ))}
             </div>
           </div>
+        </section>
+
+        <section
+          data-motion-section
+          aria-labelledby="prelaunch-mission-vision"
+          className="py-16 md:py-24"
+        >
+          <h2 id="prelaunch-mission-vision" className="sr-only">
+            {c.missionVision.accessibleTitle}
+          </h2>
+          <PrelaunchMissionVision cards={c.missionVision.cards} />
         </section>
 
         <section
