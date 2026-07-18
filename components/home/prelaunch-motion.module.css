@@ -208,6 +208,221 @@
   background: var(--color-rose-200);
 }
 
+.editorialHeadingRule {
+  display: block;
+  width: 4.75rem;
+  height: 1px;
+  margin: 1.5rem auto 0;
+  background: var(--color-rose-500);
+  transform-origin: center;
+}
+
+.journeyList {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(2rem, 4vw, 4rem);
+}
+
+.journeyStep {
+  --watercolor-primary: var(--color-rose-200);
+  --watercolor-secondary: var(--color-plum-100);
+  position: relative;
+  min-width: 0;
+  text-align: center;
+}
+
+.journeyStep:nth-child(2) {
+  --watercolor-primary: #bcc6ad;
+  --watercolor-secondary: var(--color-cream-300);
+}
+
+.journeyStep:nth-child(3) {
+  --watercolor-primary: var(--color-plum-200);
+  --watercolor-secondary: var(--color-rose-100);
+}
+
+.journeyStep:nth-child(4) {
+  --watercolor-primary: #c9c1a8;
+  --watercolor-secondary: var(--color-rose-100);
+}
+
+.watercolorMark,
+.offeringMark {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 7.5rem;
+  height: 6.75rem;
+  margin-inline: auto;
+  place-items: center;
+  isolation: isolate;
+}
+
+.watercolorMark::before,
+.offeringMark::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0.35rem;
+  content: "";
+  background:
+    radial-gradient(circle at 30% 35%, color-mix(in srgb, var(--watercolor-primary) 74%, transparent) 0 28%, transparent 64%),
+    radial-gradient(circle at 68% 60%, color-mix(in srgb, var(--watercolor-secondary) 78%, transparent) 0 34%, transparent 68%);
+  border-radius: 58% 42% 54% 46% / 44% 58% 42% 56%;
+  opacity: 0.72;
+  transform: rotate(-5deg);
+}
+
+.journeyStep:nth-child(even) .watercolorMark::before,
+.offeringItem:nth-child(even) .offeringMark::before {
+  border-radius: 42% 58% 45% 55% / 60% 40% 58% 42%;
+  transform: rotate(6deg);
+}
+
+.journeyIcon,
+.offeringIcon {
+  width: 2.25rem;
+  height: 2.25rem;
+  color: var(--color-plum-700);
+  stroke-width: 1.35;
+}
+
+.journeyNumber {
+  display: block;
+  margin-top: 0.65rem;
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  letter-spacing: 0.12em;
+  color: var(--color-rose-700);
+}
+
+.journeyArrow {
+  position: absolute;
+  top: 3.2rem;
+  right: calc(-1 * clamp(1.75rem, 3.5vw, 3.5rem));
+  width: clamp(1.25rem, 2vw, 2rem);
+  height: 1rem;
+  color: var(--color-stone-300);
+  stroke-width: 1;
+  opacity: 1;
+  transform: translateX(0);
+  transition:
+    opacity 480ms var(--motion-ease),
+    transform 560ms var(--motion-ease);
+  transition-delay: 360ms;
+}
+
+.root[data-motion="ready"]
+  [data-motion-section]:not([data-motion-visible="true"])
+  .journeyArrow {
+  opacity: 0;
+  transform: translateX(-8px);
+}
+
+.offeringList {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.offeringItem {
+  --watercolor-primary: var(--color-rose-100);
+  --watercolor-secondary: var(--color-cream-300);
+  min-width: 0;
+  padding: 0 1.2rem;
+  text-align: center;
+}
+
+.offeringItem + .offeringItem {
+  border-left: 1px solid color-mix(in srgb, var(--color-stone-300) 70%, transparent);
+}
+
+.offeringItem:nth-child(2),
+.offeringItem:nth-child(5) {
+  --watercolor-primary: #bcc6ad;
+  --watercolor-secondary: var(--color-cream-300);
+}
+
+.offeringItem:nth-child(3),
+.offeringItem:nth-child(6) {
+  --watercolor-primary: var(--color-plum-100);
+  --watercolor-secondary: var(--color-rose-100);
+}
+
+.offeringMark {
+  width: 6rem;
+  height: 5.5rem;
+}
+
+.offeringIcon {
+  width: 1.85rem;
+  height: 1.85rem;
+}
+
+@media (max-width: 1024px) {
+  .journeyList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3.5rem 3rem;
+  }
+
+  .journeyArrow {
+    display: none;
+  }
+
+  .offeringList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    border-top: 1px solid color-mix(in srgb, var(--color-stone-300) 70%, transparent);
+  }
+
+  .offeringItem {
+    padding: 2rem clamp(1rem, 4vw, 2rem);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-stone-300) 70%, transparent);
+  }
+
+  .offeringItem:nth-child(odd) {
+    border-left: 0;
+  }
+}
+
+@media (max-width: 639px) {
+  .journeyList {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .journeyStep {
+    padding: 0.5rem 0 4.5rem;
+  }
+
+  .journeyStep:last-child {
+    padding-bottom: 0;
+  }
+
+  .journeyStep:not(:last-child)::after {
+    position: absolute;
+    z-index: 0;
+    top: 8rem;
+    bottom: 0.75rem;
+    left: 50%;
+    width: 1px;
+    content: "";
+    background: color-mix(in srgb, var(--color-stone-300) 68%, transparent);
+  }
+
+  .offeringList {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .offeringItem,
+  .offeringItem + .offeringItem {
+    padding: 2.25rem 0;
+    border-left: 0;
+  }
+
+  .offeringItem:last-child {
+    border-bottom: 0;
+  }
+}
+
 .pullQuote {
   position: relative;
   opacity: 1;
@@ -372,6 +587,13 @@
   .progressRule {
     display: none;
     animation: none;
+  }
+
+  .journeyArrow,
+  .editorialHeadingRule {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 
   .flipCardFace {

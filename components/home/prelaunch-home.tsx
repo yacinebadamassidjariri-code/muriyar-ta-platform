@@ -1,5 +1,17 @@
 import Image from "next/image";
-import { ArrowRight, LifeBuoy } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpenCheck,
+  Feather,
+  FileChartColumn,
+  FilePenLine,
+  HeartHandshake,
+  LibraryBig,
+  LifeBuoy,
+  Megaphone,
+  Mic2,
+  ShieldCheck,
+} from "lucide-react";
 import { Link } from "@/lib/i18n/navigation";
 import type { Locale } from "@/lib/i18n/routing";
 import { cn } from "@/lib/utils/cn";
@@ -14,6 +26,20 @@ const sectionLabel =
 const sectionTitle =
   "mt-3 font-display text-3xl font-medium leading-tight text-plum-800 md:text-4xl";
 const motionRootId = "prelaunch-motion-root";
+const sharingIcons = [
+  FilePenLine,
+  BookOpenCheck,
+  ShieldCheck,
+  Megaphone,
+] as const;
+const buildingIcons = [
+  Feather,
+  LibraryBig,
+  Mic2,
+  HeartHandshake,
+  FileChartColumn,
+  Megaphone,
+] as const;
 
 export function PrelaunchHome({ locale }: { locale: Locale }) {
   const c = prelaunchCopy[locale] ?? prelaunchCopy.en;
@@ -325,39 +351,60 @@ export function PrelaunchHome({ locale }: { locale: Locale }) {
           aria-labelledby="prelaunch-sharing"
           className="border-y border-stone-300/70 py-16 md:py-24"
         >
-          <p data-motion-part="eyebrow" className={sectionLabel}>
-            {c.sharing.eyebrow}
-          </p>
-          <h2
-            data-motion-part="heading"
-            id="prelaunch-sharing"
-            className={sectionTitle}
-          >
-            {c.sharing.title}
-          </h2>
-          <p
-            data-motion-part="body"
-            className="mt-5 max-w-2xl text-lg leading-relaxed text-charcoal-500"
-          >
-            {c.sharing.intro}
-          </p>
+          <div className="mx-auto max-w-3xl text-center">
+            <p data-motion-part="eyebrow" className={sectionLabel}>
+              {c.sharing.eyebrow}
+            </p>
+            <h2
+              data-motion-part="heading"
+              id="prelaunch-sharing"
+              className={sectionTitle}
+            >
+              {c.sharing.title}
+            </h2>
+            <span
+              data-motion-part="supporting"
+              aria-hidden="true"
+              className={styles.editorialHeadingRule}
+            />
+            <p
+              data-motion-part="body"
+              className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-charcoal-500"
+            >
+              {c.sharing.intro}
+            </p>
+          </div>
 
           <ol
             data-motion-stagger
-            className="mt-10 border-t border-stone-300/70"
+            className={cn("mt-14", styles.journeyList)}
           >
-            {c.sharing.steps.map((step, index) => (
-              <li
-                key={step.title}
-                className="grid gap-3 border-b border-stone-300/70 py-6 md:grid-cols-[3rem_minmax(0,1fr)_minmax(0,2fr)] md:items-baseline md:gap-6"
-              >
-                <span className="font-display text-xl text-rose-700">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <h3 className="font-semibold text-plum-800">{step.title}</h3>
-                <p className="leading-relaxed text-charcoal-500">{step.body}</p>
-              </li>
-            ))}
+            {c.sharing.steps.map((step, index) => {
+              const StepIcon = sharingIcons[index] ?? FilePenLine;
+
+              return (
+                <li key={step.title} className={styles.journeyStep}>
+                  <div aria-hidden="true" className={styles.watercolorMark}>
+                    <StepIcon className={styles.journeyIcon} />
+                  </div>
+                  <span className={styles.journeyNumber}>
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="mt-3 font-display text-xl font-medium text-plum-800">
+                    {step.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed text-charcoal-500 md:text-base">
+                    {step.body}
+                  </p>
+                  {index < c.sharing.steps.length - 1 ? (
+                    <ArrowRight
+                      aria-hidden="true"
+                      className={styles.journeyArrow}
+                    />
+                  ) : null}
+                </li>
+              );
+            })}
           </ol>
         </section>
 
@@ -450,42 +497,56 @@ export function PrelaunchHome({ locale }: { locale: Locale }) {
           aria-labelledby="prelaunch-building"
           className="py-16 md:py-24"
         >
-          <p data-motion-part="eyebrow" className={sectionLabel}>
-            {c.building.eyebrow}
-          </p>
-          <h2
-            data-motion-part="heading"
-            id="prelaunch-building"
-            className={sectionTitle}
-          >
-            {c.building.title}
-          </h2>
-          <p
-            data-motion-part="body"
-            className="mt-5 max-w-3xl text-lg leading-relaxed text-charcoal-500"
-          >
-            {c.building.intro}
-          </p>
-          <p
-            data-motion-part="supporting"
-            className="mt-5 max-w-3xl font-medium text-plum-800"
-          >
-            {c.building.note}
-          </p>
+          <div className="mx-auto max-w-3xl text-center">
+            <p data-motion-part="eyebrow" className={sectionLabel}>
+              {c.building.eyebrow}
+            </p>
+            <h2
+              data-motion-part="heading"
+              id="prelaunch-building"
+              className={sectionTitle}
+            >
+              {c.building.title}
+            </h2>
+            <span
+              data-motion-part="supporting"
+              aria-hidden="true"
+              className={styles.editorialHeadingRule}
+            />
+            <p
+              data-motion-part="body"
+              className="mx-auto mt-5 max-w-3xl text-lg leading-relaxed text-charcoal-500"
+            >
+              {c.building.intro}
+            </p>
+            <p
+              data-motion-part="supporting"
+              className="mx-auto mt-5 max-w-3xl font-medium text-plum-800"
+            >
+              {c.building.note}
+            </p>
+          </div>
           <ul
             data-motion-stagger
-            className="mt-10 grid gap-x-12 border-t border-stone-300/70 md:grid-cols-2"
+            className={cn("mt-14", styles.offeringList)}
           >
-            {c.building.items.map((item) => (
-              <li key={item.title} className="border-b border-stone-300/70 py-7">
-                <h3 className="font-display text-2xl font-medium text-plum-800">
-                  {item.title}
-                </h3>
-                <p className="mt-2 max-w-lg leading-relaxed text-charcoal-500">
-                  {item.body}
-                </p>
-              </li>
-            ))}
+            {c.building.items.map((item, index) => {
+              const OfferingIcon = buildingIcons[index] ?? Feather;
+
+              return (
+                <li key={item.title} className={styles.offeringItem}>
+                  <div aria-hidden="true" className={styles.offeringMark}>
+                    <OfferingIcon className={styles.offeringIcon} />
+                  </div>
+                  <h3 className="mt-5 font-display text-xl font-medium leading-tight text-plum-800">
+                    {item.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed text-charcoal-500">
+                    {item.body}
+                  </p>
+                </li>
+              );
+            })}
           </ul>
         </section>
 
