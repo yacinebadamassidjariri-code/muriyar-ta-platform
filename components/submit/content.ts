@@ -13,6 +13,11 @@ import type { Locale } from "@/lib/i18n/routing";
  */
 export type SubmitCopy = {
   intro: { title: string; subtitle: string; points: string[] };
+  guidance: {
+    heading: string;
+    intro: string;
+    questions: string[];
+  };
   form: {
     languageLabel: string;
     storyLabel: string;
@@ -41,6 +46,17 @@ const en: SubmitCopy = {
       "We never ask for your name.",
       "We remove anything that could identify you.",
       "Nothing is published without your consent.",
+    ],
+  },
+  guidance: {
+    heading: "Not sure where to begin?",
+    intro:
+      "You do not have to answer every question. These prompts are only here to help you reflect.",
+    questions: [
+      "Have you ever been treated differently from boys at home, in your community, at school, or in any other place?",
+      "When did you first realize that something was unfair, harmful, or different because you were a girl?",
+      "What do you wish families, schools, communities, or leaders would change?",
+      "What message would you leave for the people reading your story?",
     ],
   },
   form: {
@@ -90,6 +106,17 @@ const fr: SubmitCopy = {
       "Nous ne demandons jamais votre nom.",
       "Nous retirons tout ce qui pourrait vous identifier.",
       "Rien n'est publié sans votre consentement.",
+    ],
+  },
+  guidance: {
+    heading: "Vous ne savez pas par où commencer ?",
+    intro:
+      "Vous n’avez pas besoin de répondre à toutes les questions. Ces pistes sont simplement là pour vous aider à réfléchir.",
+    questions: [
+      "Avez-vous déjà été traitée différemment des garçons à la maison, dans votre communauté, à l’école ou ailleurs ?",
+      "À quel moment avez-vous compris pour la première fois qu’une situation était injuste, nuisible ou différente parce que vous étiez une fille ?",
+      "Qu’aimeriez-vous que les familles, les écoles, les communautés ou les responsables changent ?",
+      "Quel message aimeriez-vous laisser aux personnes qui liront votre récit ?",
     ],
   },
   form: {

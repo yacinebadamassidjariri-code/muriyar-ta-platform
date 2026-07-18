@@ -165,60 +165,6 @@ export function PrelaunchHome({ locale }: { locale: Locale }) {
 
         <section
           data-motion-section
-          aria-labelledby="prelaunch-mission"
-          className="grid gap-8 py-16 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-16 md:py-24"
-        >
-          <div>
-            <p data-motion-part="eyebrow" className={sectionLabel}>
-              {c.mission.eyebrow}
-            </p>
-            <h2
-              data-motion-part="heading"
-              id="prelaunch-mission"
-              className={sectionTitle}
-            >
-              {c.mission.title}
-            </h2>
-          </div>
-          <div
-            data-motion-part="body"
-            className="space-y-5 text-lg leading-relaxed text-charcoal-500"
-          >
-            {c.mission.paragraphs.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </div>
-        </section>
-
-        <section
-          data-motion-section
-          aria-labelledby="prelaunch-audience"
-          className="border-y border-stone-300/70 py-14 md:py-20"
-        >
-          <div className="mx-auto max-w-4xl">
-            <p data-motion-part="eyebrow" className={sectionLabel}>
-              {c.audience.eyebrow}
-            </p>
-            <h2
-              data-motion-part="heading"
-              id="prelaunch-audience"
-              className={sectionTitle}
-            >
-              {c.audience.title}
-            </h2>
-            <div
-              data-motion-part="body"
-              className="mt-7 grid gap-5 text-lg leading-relaxed text-charcoal-500 md:grid-cols-2 md:gap-12"
-            >
-              {c.audience.paragraphs.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section
-          data-motion-section
           aria-labelledby="prelaunch-mission-vision"
           className="py-16 md:py-24"
         >
@@ -352,15 +298,12 @@ export function PrelaunchHome({ locale }: { locale: Locale }) {
           className="border-y border-stone-300/70 py-16 md:py-24"
         >
           <div className="mx-auto max-w-3xl text-center">
-            <p data-motion-part="eyebrow" className={sectionLabel}>
-              {c.sharing.eyebrow}
-            </p>
             <h2
               data-motion-part="heading"
               id="prelaunch-sharing"
-              className={sectionTitle}
+              className="font-display text-4xl font-medium leading-tight text-plum-800 md:text-5xl"
             >
-              {c.sharing.title}
+              {c.sharing.eyebrow}
             </h2>
             <span
               data-motion-part="supporting"

@@ -15,19 +15,9 @@ export type PrelaunchCopy = {
     title: string;
     body: string;
   };
-  mission: {
-    eyebrow: string;
-    title: string;
-    paragraphs: string[];
-  };
   missionVision: {
     accessibleTitle: string;
     cards: [EditorialItem, EditorialItem];
-  };
-  audience: {
-    eyebrow: string;
-    title: string;
-    paragraphs: string[];
   };
   stories: {
     eyebrow: string;
@@ -50,7 +40,6 @@ export type PrelaunchCopy = {
   };
   sharing: {
     eyebrow: string;
-    title: string;
     intro: string;
     steps: EditorialItem[];
   };
@@ -101,9 +90,9 @@ export type PrelaunchCopy = {
 const en: PrelaunchCopy = {
   hero: {
     eyebrow: "Anonymous storytelling for girls and young women",
-    title: "A place for girls’ stories to be heard.",
+    title: "A place to break taboos and make girls’ voices heard.",
     body:
-      "Muriyar Ta means “Her Voice” in Hausa. It is an anonymous storytelling platform for girls and young women whose experiences are too often ignored, silenced, or reduced to statistics.",
+      "Muriyar Ta means “Her Voice” in Hausa. It is an anonymous storytelling platform where girls and young women whose experiences are too often ignored, silenced, or reduced to statistics can speak up, challenge harmful norms, and bring attention to injustices in their communities.",
     impact:
       "Sharing a story can help another girl feel less alone and bring lived experience into awareness, solidarity, advocacy, and deeper understanding.",
     primaryCta: "Share your story",
@@ -114,14 +103,6 @@ const en: PrelaunchCopy = {
     title: "Launching Soon",
     body:
       "The full Muriyar Ta platform is launching soon. Story submissions are already open.",
-  },
-  mission: {
-    eyebrow: "Our mission",
-    title: "A place to speak for yourself.",
-    paragraphs: [
-      "Girls and young women are often discussed in reports, programs, and policy without being heard in their own words.",
-      "Muriyar Ta exists so girls are not spoken for, but listened to. It creates room for lived experience to be shared with dignity, context, and care.",
-    ],
   },
   missionVision: {
     accessibleTitle: "Mission and Vision",
@@ -134,14 +115,6 @@ const en: PrelaunchCopy = {
         title: "Vision",
         body: "A world where every girl has the opportunity to safely share her story, have her voice heard, and contribute to shaping the policies, programs, and social norms that affect her life.",
       },
-    ],
-  },
-  audience: {
-    eyebrow: "Who this space is for",
-    title: "No experience is too ordinary to matter.",
-    paragraphs: [
-      "Muriyar Ta welcomes stories from girls and young women across backgrounds, countries, ages, and identities.",
-      "A story does not need to describe an extreme event. Everyday pressures, private questions, moments of courage, difficult choices, and hopes for the future all belong in the wider picture of girls’ lives.",
     ],
   },
   stories: {
@@ -185,7 +158,6 @@ const en: PrelaunchCopy = {
   },
   sharing: {
     eyebrow: "What happens when you share",
-    title: "Your story is received with purpose.",
     intro:
       "The submission form asks for your story, its language, and your consent. It does not ask you to create an account or provide your name.",
     steps: [
@@ -277,12 +249,11 @@ const en: PrelaunchCopy = {
   },
   founder: {
     eyebrow: "A note from the founder",
-    title: "I built Muriyar Ta because listening is where meaningful change begins.",
+    title: "Every voice matters. Silence protects problems and perpetrators, not people or victims.",
     paragraphs: [
-      "I am Yacine Badamassi Djariri, and I grew up in Maradi, Niger. From a young age, I questioned the norms and silences that shape girls’ lives, especially around topics people were taught not to discuss.",
-      "At sixteen, I served as president of CCNEJ Maradi, part of a national children’s rights and child marriage initiative. I saw how silence around menstruation, puberty, education, marriage, violence, and other taboo subjects could isolate girls and limit the choices available to them.",
-      "I also saw girls reduced to statistics in reports and policy conversations while their own voices remained absent. I wanted to create a place where girls would not be spoken for, but listened to in their own words.",
-      "Muriyar Ta grows from that conviction. A story can restore the person behind the number and help all of us listen with more honesty, care, and responsibility.",
+      "Around the world, we witness countless conversations about child marriage, barriers to girls' education, gender-based violence, and harmful social norms. While these conversations are very important and necessary, I am struck by how rarely we hear directly from the girls and young women most affected by these issues. Too often, their experiences are reduced to statistics, reports, and policy discussions, while their voices remain absent.",
+      "Muriyar Ta was born from a deep personal belief that meaningful change begins with listening and storytelling. Behind every statistic on child marriage is a person, a story, a dream, and a lived experience that deserves to be acknowledged. I want to create a space where girls and young women can share those experiences safely, anonymously, and in their own words. A space where they are not spoken for, but listened to.",
+      "I believe speaking up can be liberating, save lives, and inspire real action.",
     ],
   },
   contact: {
@@ -291,7 +262,7 @@ const en: PrelaunchCopy = {
     founderLabel: "Founder",
     founderName: "Yacine Badamassi Djariri",
     emailLabel: "Email",
-    email: "yacinebadamassi@gmail.com",
+    email: "muriyarta@gmail.com",
     socialLabel: "Social",
     socials: [
       { name: "Instagram", href: "https://www.instagram.com/muriyarta/" },
@@ -314,9 +285,9 @@ const en: PrelaunchCopy = {
 const fr: PrelaunchCopy = {
   hero: {
     eyebrow: "Récits anonymes pour les filles et les jeunes femmes",
-    title: "Un espace pour faire entendre les voix des filles.",
+    title: "Un espace pour briser les tabous et faire entendre la voix des filles.",
     body:
-      "Muriyar Ta signifie « Sa voix » en haoussa. C’est une plateforme de récits anonymes pour les filles et les jeunes femmes dont les expériences sont trop souvent ignorées, réduites au silence ou à des statistiques.",
+      "Muriyar Ta signifie « Sa voix » en haoussa. C’est une plateforme anonyme de récits où les filles et les jeunes femmes, dont les expériences sont trop souvent ignorées, réduites au silence ou ramenées à des statistiques, peuvent prendre la parole, remettre en question les normes néfastes et attirer l’attention sur les injustices au sein de leurs communautés.",
     impact:
       "Partager un récit peut aider une autre fille à se sentir moins seule et faire entrer l’expérience vécue dans la sensibilisation, la solidarité, le plaidoyer et une compréhension plus profonde.",
     primaryCta: "Partager votre récit",
@@ -327,14 +298,6 @@ const fr: PrelaunchCopy = {
     title: "Bientôt disponible",
     body:
       "La plateforme complète Muriyar Ta sera bientôt lancée. Les soumissions de récits sont déjà ouvertes.",
-  },
-  mission: {
-    eyebrow: "Notre mission",
-    title: "Un espace pour parler en son propre nom.",
-    paragraphs: [
-      "Les filles et les jeunes femmes sont souvent évoquées dans les rapports, les programmes et les politiques sans être entendues avec leurs propres mots.",
-      "Muriyar Ta existe pour que les filles ne soient pas seulement représentées par d’autres, mais réellement écoutées. La plateforme crée un espace où l’expérience vécue peut être partagée avec dignité, contexte et attention.",
-    ],
   },
   missionVision: {
     accessibleTitle: "Mission et vision",
@@ -347,14 +310,6 @@ const fr: PrelaunchCopy = {
         title: "Vision",
         body: "Un monde où chaque fille a la possibilité de partager son récit en sécurité, d'être entendue et son histoire contribuera à mettre en lumière les injustices auxquelles les filles et les femmes sont confrontées.",
       },
-    ],
-  },
-  audience: {
-    eyebrow: "À qui s’adresse cet espace",
-    title: "Aucune expérience n’est trop ordinaire pour compter.",
-    paragraphs: [
-      "Muriyar Ta accueille les récits de filles et de jeunes femmes de tous horizons, pays, âges et identités.",
-      "Un récit n’a pas besoin de décrire un événement extrême. Les pressions quotidiennes, les questions intimes, les moments de courage, les choix difficiles et les espoirs pour l’avenir font tous partie de la réalité des filles.",
     ],
   },
   stories: {
@@ -398,7 +353,6 @@ const fr: PrelaunchCopy = {
   },
   sharing: {
     eyebrow: "Après le partage",
-    title: "Votre récit est reçu avec un objectif clair.",
     intro:
       "Le formulaire demande votre récit, sa langue et votre consentement. Il ne vous demande ni de créer un compte ni de donner votre nom.",
     steps: [
@@ -492,10 +446,9 @@ const fr: PrelaunchCopy = {
     eyebrow: "Un mot de la fondatrice",
     title: "J’ai créé Muriyar Ta parce qu’un changement profond commence par l’écoute.",
     paragraphs: [
-      "Je m’appelle Yacine Badamassi Djariri et j’ai grandi à Maradi, au Niger. Très jeune, j’ai interrogé les normes et les silences qui façonnent la vie des filles, en particulier autour des sujets que l’on apprend à ne pas aborder.",
-      "À seize ans, j’ai été présidente du CCNEJ Maradi, dans le cadre d’une initiative nationale pour les droits des enfants et contre le mariage des enfants. J’ai vu comment le silence autour des menstruations, de la puberté, de l’éducation, du mariage, de la violence et d’autres sujets tabous pouvait isoler les filles et limiter leurs choix.",
-      "J’ai aussi vu les filles réduites à des statistiques dans les rapports et les débats politiques, alors que leurs propres voix restaient absentes. Je voulais créer un espace où elles ne seraient pas représentées par d’autres, mais écoutées avec leurs propres mots.",
-      "Muriyar Ta est né de cette conviction. Un récit peut redonner sa place à la personne derrière le chiffre et nous apprendre à écouter avec plus d’honnêteté, d’attention et de responsabilité.",
+      "Partout dans le monde, nous assistons à d’innombrables discussions sur le mariage des enfants, les obstacles à l’éducation des filles, les violences basées sur le genre et les normes sociales néfastes. Ces discussions sont essentielles et nécessaires, mais je suis frappée de constater à quel point nous entendons rarement directement les filles et les jeunes femmes les plus touchées par ces réalités. Trop souvent, leurs expériences sont réduites à des statistiques, des rapports et des débats politiques, tandis que leurs voix restent absentes.",
+      "Muriyar Ta est née d’une conviction personnelle profonde : un changement véritable commence par l’écoute et le récit. Derrière chaque statistique sur le mariage des enfants se trouvent une personne, une histoire, un rêve et une expérience vécue qui méritent d’être reconnus. Je veux créer un espace où les filles et les jeunes femmes peuvent partager ces expériences en sécurité, de manière anonyme et avec leurs propres mots. Un espace où personne ne parle à leur place, mais où elles sont écoutées.",
+      "Je crois que prendre la parole peut libérer, sauver des vies et inspirer des actions concrètes.",
     ],
   },
   contact: {
@@ -504,7 +457,7 @@ const fr: PrelaunchCopy = {
     founderLabel: "Fondatrice",
     founderName: "Yacine Badamassi Djariri",
     emailLabel: "E-mail",
-    email: "yacinebadamassi@gmail.com",
+    email: "muriyarta@gmail.com",
     socialLabel: "Réseaux sociaux",
     socials: [
       { name: "Instagram", href: "https://www.instagram.com/muriyarta/" },

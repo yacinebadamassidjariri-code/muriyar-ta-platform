@@ -74,6 +74,32 @@ export function StoryForm({ copy, locale }: { copy: SubmitCopy; locale: string }
           </Label>
         </div>
         <div data-motion-part="body">
+          <aside
+            aria-labelledby="story-guidance-heading"
+            className="mt-8 border-y border-rose-200/70 bg-cream-100/50 py-6 sm:px-6 md:grid md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-10 md:px-8 md:py-8"
+          >
+            <div>
+              <h2
+                id="story-guidance-heading"
+                className="font-display text-2xl font-medium text-plum-800 md:text-3xl"
+              >
+                {copy.guidance.heading}
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-charcoal-500">
+                {copy.guidance.intro}
+              </p>
+            </div>
+            <ul className="mt-6 border-t border-stone-300/70 md:mt-0">
+              {copy.guidance.questions.map((question) => (
+                <li
+                  key={question}
+                  className="border-b border-stone-300/70 py-3 text-sm leading-relaxed text-charcoal-500"
+                >
+                  {question}
+                </li>
+              ))}
+            </ul>
+          </aside>
           <Textarea
             id="story"
             name="story"
