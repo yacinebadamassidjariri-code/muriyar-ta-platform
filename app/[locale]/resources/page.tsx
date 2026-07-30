@@ -166,7 +166,7 @@ export default async function ResourcesIndexPage({
 
   return (
     <div className="relative mx-auto w-full max-w-3xl px-5 py-16 md:py-20">
-      <BotanicalCorner className="pointer-events-none absolute -right-4 top-10 hidden h-20 w-20 text-rose-200 md:block" />
+      <BotanicalCorner className="pointer-events-none absolute right-0 top-10 hidden h-20 w-20 text-rose-200 md:block" />
 
       <header className="max-w-2xl">
         <p className="text-xs font-medium uppercase tracking-[0.18em] text-plum-600">
