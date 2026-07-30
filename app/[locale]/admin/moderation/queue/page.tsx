@@ -1,0 +1,18 @@
+import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
+import { requirePermission } from "@/lib/auth/guards";
+import { getProfile } from "@/lib/auth/session";
+import { getModerationLookups, listModerationQueue, type ModerationSort } from "@/lib/data/admin/moderation";
+import { getModerationAdminCopy } from "@/components/admin/moderation/content";
+import { ModerationFilters } from "@/components/admin/moderation/moderation-filters";
+import { ModerationQueueTable } from "@/components/admin/moderation/moderation-queue-table";
+import { EditorialPagination } from "@/components/admin/editorial/editorial-pagination";
+
+export const dynamic="force-dynamic";const one=(value:string|string[]|undefined)=>Array.isArray(value)?value[0]:value;const date=/^\d{4}-\d{2}-\d{2}$/;const uuid=/^[0-9a-f-]{36}$/i;
+export async function generateMetadata({params}:{params:Promise<{locale:string}>}):Promise<Metadata>{const{locale}=await params;return{title:getModerationAdminCopy(locale).queueTitle};}
+export default async function ModerationQueuePage({params,searchParams}:{params:Promise<{locale:string}>;searchParams:Promise<Record<string,string|string[]|undefined>>}){const{locale}=await params;setRequestLocale(locale);await requirePermission("submission.queue.read");const sp=await searchParams;const copy=getModerationAdminCopy(locale);const profile=await getProfile();
+  const q=one(sp.q)?.trim()??"";const status=one(sp.status)??"";const language=one(sp.language)??"";const country=one(sp.country)?.trim()??"";const rawAssignee=one(sp.assignee)??"";const risk=one(sp.risk)??"";const from=date.test(one(sp.from)??"")?one(sp.from)!:"";const to=date.test(one(sp.to)??"")?one(sp.to)!:"";const sorts=new Set<ModerationSort>(["submitted_desc","submitted_asc","activity_desc","activity_asc","status","risk"]);const rawSort=one(sp.sort)??"submitted_desc";const sort=sorts.has(rawSort as ModerationSort)?rawSort as ModerationSort:"submitted_desc";const page=Math.max(1,Number.parseInt(one(sp.page)??"1",10)||1);
+  const [list,lookups]=await Promise.all([listModerationQueue({q,status,language,country,assignee:uuid.test(rawAssignee)?rawAssignee:null,unassigned:rawAssignee==="unassigned",risk,dateFrom:from,dateTo:to,sort,page}),getModerationLookups()]);if(!list.ok||!lookups.ok||!profile)return <p role="alert" className="rounded-lg border border-danger/30 bg-danger/5 p-4 text-danger">{copy.error}</p>;
+  const current={q,status,language,country,assignee:rawAssignee,risk,from,to,sort};
+  return <div className="space-y-6"><header><h1 className="font-display text-4xl font-semibold text-ink">{copy.queueTitle}</h1><p className="mt-2 max-w-2xl text-ink-soft">{copy.queueBody}</p></header><ModerationFilters actionPath={`/${locale}/admin/moderation/queue`} copy={copy} lookups={lookups.value} current={current}/>{list.value.items.length?<ModerationQueueTable items={list.value.items} copy={copy} lookups={lookups.value} currentUserId={profile.user_id} canAssign={profile.permissions.includes("submission.assign")} canDisposition={profile.permissions.includes("submission.disposition")} canPublish={profile.permissions.includes("story.publish")} locale={locale}/>:<section className="rounded-xl border border-line bg-surface px-6 py-16 text-center"><h2 className="font-display text-2xl font-semibold text-ink">{copy.emptyTitle}</h2><p className="mt-2 text-ink-soft">{copy.emptyBody}</p></section>}<EditorialPagination basePath="/admin/moderation/queue" current={current} page={list.value.page} pageCount={list.value.pageCount} total={list.value.total} summary={copy.pageSummary} previous={copy.previous} next={copy.next}/></div>;
+}
