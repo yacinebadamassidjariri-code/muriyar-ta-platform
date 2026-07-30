@@ -1,9 +1,8 @@
 import "server-only";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
-import { createClient } from "@/lib/supabase/server";
 import { getUser, getProfile, type Profile } from "./session";
-import { STAFF_ROLES, type AppRole } from "@/lib/constants/roles";
+import type { AppRole } from "@/lib/constants/roles";
 import type { Permission } from "@/lib/constants/permissions";
 
 async function loginRedirect(): Promise<never> {
@@ -18,26 +17,33 @@ export async function requireUser() {
 }
 
 export async function requireProfile(): Promise<Profile> {
+  const user = await getUser();
+  if (!user) return await loginRedirect();
+
   const profile = await getProfile();
 
   if (!profile) {
-    return await loginRedirect();
+    return await permissionDeniedRedirect();
   }
 
-  if (!profile.is_active) notFound();
+  if (!profile.is_active) await permissionDeniedRedirect();
 
   return profile;
 }
 
 export async function requireStaff(): Promise<Profile> {
   const profile = await requireProfile();
-  if (!STAFF_ROLES.includes(profile.role)) notFound();
+  if (!profile.permissions.includes("admin.access")) {
+    await permissionDeniedRedirect();
+  }
   return profile;
 }
 
 export async function requireRole(roles: AppRole[]): Promise<Profile> {
   const profile = await requireProfile();
-  if (!roles.includes(profile.role)) notFound();
+  if (!profile.roles.some((role) => roles.includes(role))) {
+    await permissionDeniedRedirect();
+  }
   return profile;
 }
 
@@ -46,11 +52,17 @@ export async function requirePermission(
   code: Permission,
 ): Promise<Profile> {
   const profile = await requireProfile();
-
-  const supabase = await createClient();
-  const { data, error } = await supabase.rpc("has_permission", { p: code });
-
-  if (error || data !== true) notFound();
+  if (!profile.permissions.includes(code)) await permissionDeniedRedirect();
 
   return profile;
+}
+
+async function permissionDeniedRedirect(): Promise<never> {
+  const locale = await getLocale();
+  redirect(`/${locale}/admin/denied`);
+}
+
+export async function hasPermission(code: Permission): Promise<boolean> {
+  const profile = await getProfile();
+  return !!profile?.is_active && profile.permissions.includes(code);
 }

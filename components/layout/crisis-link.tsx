@@ -15,10 +15,11 @@ export function CrisisLink() {
   return (
     <Link
       href="/resources/crisis"
-      className="inline-flex items-center gap-1.5 rounded-full border border-rose-200/40 bg-rose-500/10 px-3 py-1.5 text-xs font-medium tracking-wide text-rose-200 transition-colors hover:border-rose-200/70 hover:bg-rose-500/20 hover:text-rose-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-300/70"
+      aria-label={t("getHelp")}
+      className="inline-flex items-center gap-1.5 rounded-full border border-rose-200/40 bg-rose-500/10 px-2.5 py-1.5 text-xs font-medium tracking-wide text-rose-200 transition-colors hover:border-rose-200/70 hover:bg-rose-500/20 hover:text-rose-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-300/70 sm:px-3"
     >
       <LifeBuoy className="h-3.5 w-3.5" aria-hidden="true" />
-      {t("getHelp")}
+      <span className="hidden sm:inline">{t("getHelp")}</span>
     </Link>
   );
 }

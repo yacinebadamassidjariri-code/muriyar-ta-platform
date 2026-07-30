@@ -100,7 +100,10 @@
   "podcast_invalid_advisory": "Choisissez un avertissement valide.",
   "podcast_featured_requires_published": "Seuls les épisodes publiés peuvent être mis à la une.",
   "podcast_not_draft": "Cet épisode n'est pas un brouillon, il ne peut donc pas être publié depuis cet écran.",
-  "podcast_not_published": "Cet épisode n'est pas actuellement publié."
+  "podcast_not_published": "Cet épisode n'est pas actuellement publié.",
+  "podcast_not_editable": "Cet épisode ne peut plus être modifié.",
+  "podcast_asset_not_uploading": "Ce téléversement n'est plus en attente de finalisation.",
+  "podcast_storage_delete_failed": "L'épisode a été mis à jour, mais le fichier média privé n'a pas pu être supprimé. Veuillez réessayer."
 },
 "artwork": {
   "sectionTitle": "Illustration de l'épisode",
@@ -217,7 +220,10 @@
       "description": "Tables rondes entre jeunes sur l'éducation, le leadership, l'université, le mariage, les réseaux sociaux, les rêves et le changement communautaire."
     }
   },
-  "artworkPlaceholderAlt": "Aucune illustration d'épisode disponible"
+  "artworkPlaceholderAlt": "Aucune illustration d'épisode disponible",
+  "notFoundTitle": "Épisode introuvable",
+  "notFoundBody": "Cet épisode a peut-être été retiré, archivé, ou n'est pas encore publié.",
+  "notFoundCta": "Retour au podcast"
 },
 
 "home": {
@@ -578,7 +584,13 @@
     "crisisBody": "Cette plateforme examine les récits de manière asynchrone et ne peut pas répondre aux urgences. Si vous êtes en danger, contactez les services d'urgence locaux ou une organisation de soutien.",
     "crisisLink": "Voir les ressources d'urgence",
     "mission": "Un espace sûr et anonyme où les filles et les jeunes femmes peuvent partager leur récit, être entendues et contribuer au changement.",
+    "shareTitle": "Votre voix peut contribuer au changement.",
+    "shareBody": "Partagez votre récit anonymement, avec vos propres mots et à votre rythme.",
+    "shareCta": "Partager votre récit",
     "explore": "Explorer",
+    "orgTitle": "Muriyar Ta",
+    "faq": "Questions fréquentes",
+    "connectTitle": "Nous suivre",
     "contactTitle": "Devenir partenaire",
     "contactBody": "ONG, chercheurs, éducateurs et décideurs sont invités à nous contacter.",
     "rights": "Tous droits réservés.",

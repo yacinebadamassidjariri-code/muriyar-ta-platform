@@ -15,73 +15,45 @@ insert into public.supported_languages (language_code, name, is_active, is_rtl) 
   ('en','English',true,false)
 on conflict (language_code) do nothing;
 
--- ---------- Roles (PRD 3) ----------
+-- ---------- Canonical staff roles ----------
 insert into public.roles (name, description) values
-  ('anonymous_contributor','Conceptual role: submit and browse public content. No login.'),
-  ('registered_reader','Registered reader/advocate: subscribe, download, contact.'),
-  ('moderator','Reviews and de-identifies submissions; sets disposition; escalates.'),
-  ('editor','Content manager: moderation plus publishing, podcast, campaigns.'),
-  ('administrator','Founder/Super Admin: full platform control.')
-on conflict (name) do nothing;
+  ('super_admin','Founder-level platform administration with audited break-glass access.'),
+  ('managing_editor','Manages editorial review and publication.'),
+  ('moderator','Reviews assigned or escalated story submissions.'),
+  ('resource_editor','Maintains and verifies the Resource Library.'),
+  ('translator','Prepares and reviews assigned translations.'),
+  ('researcher','Uses approved aggregate and de-identified research outputs.')
+on conflict (name) do update set description = excluded.description;
 
--- ---------- Permissions (RBAC catalog) ----------
+-- ---------- Canonical administrative capabilities ----------
 insert into public.permissions (code, description) values
-  ('submission.create','Submit a story'),
-  ('public.read','Read public content'),
-  ('newsletter.subscribe','Subscribe to the newsletter'),
-  ('report.download','Download reports'),
-  ('contact.create','Submit a contact/partnership inquiry'),
-  ('submission.review','Open and review the moderation queue'),
-  ('submission.deidentify','Edit/de-identify submission content'),
-  ('submission.disposition','Approve/reject/flag submissions'),
-  ('submission.escalate','Escalate crisis submissions'),
-  ('moderation.note','Add moderation notes'),
-  ('story.publish','Publish/unpublish stories'),
-  ('podcast.manage','Manage podcast episodes'),
-  ('resource.manage','Manage the resource directory'),
-  ('report.manage','Manage reports/insights'),
-  ('campaign.create','Create and send newsletter campaigns'),
-  ('social.schedule','Schedule social posts'),
-  ('partnership.manage','Manage partnership inquiries'),
-  ('user.manage','Create/deactivate users'),
-  ('role.assign','Assign roles'),
-  ('settings.configure','Configure platform settings'),
-  ('analytics.view','View analytics'),
-  ('founder_dashboard.view','View the Founder Dashboard'),
-  ('audit.view','View the audit log'),
-  ('data.export','Export aggregate data')
-on conflict (code) do nothing;
+  ('admin.access','Enter the administrative application'),
+  ('submission.queue.read','View the authorized moderation queue'),
+  ('submission.raw.read','Read original narratives for assigned or escalated cases'),
+  ('submission.location.read','Read optional broad geographic context with audit logging'),
+  ('submission.assign','Assign a submission to a moderator'),
+  ('submission.review','Review an assigned or escalated submission and add notes'),
+  ('submission.disposition','Approve or reject an assigned submission'),
+  ('submission.escalate','Escalate a submission for protected review'),
+  ('story.edit','Edit de-identified story working content'),
+  ('story.publish','Publish or unpublish an approved story'),
+  ('podcast.edit','Create and edit podcast metadata and private media'),
+  ('podcast.publish','Publish or unpublish podcast episodes'),
+  ('resource.edit','Create and edit Resource Library records'),
+  ('resource.verify','Verify Resource Library records'),
+  ('resource.import','Run reviewed Resource Library imports'),
+  ('report.edit','Create and edit research reports'),
+  ('report.publish','Publish or unpublish research reports'),
+  ('translation.edit','Create and edit assigned translations'),
+  ('translation.approve','Approve translations for publication'),
+  ('audit.read','Read protected audit events'),
+  ('research.export','Create approved de-identified research exports'),
+  ('user.manage','Invite and deactivate staff accounts'),
+  ('role.manage','Assign and revoke staff roles'),
+  ('settings.manage','Manage non-secret platform settings')
+on conflict (code) do update set description = excluded.description;
 
--- ---------- Role → Permission mapping (cumulative) ----------
--- registered_reader
-insert into public.role_permissions (role_id, permission_id)
-select r.role_id, p.permission_id from public.roles r, public.permissions p
-where r.name='registered_reader'
-  and p.code in ('public.read','newsletter.subscribe','report.download','contact.create')
-on conflict do nothing;
-
--- moderator
-insert into public.role_permissions (role_id, permission_id)
-select r.role_id, p.permission_id from public.roles r, public.permissions p
-where r.name='moderator'
-  and p.code in ('public.read','submission.review','submission.deidentify','submission.disposition',
-                 'submission.escalate','moderation.note')
-on conflict do nothing;
-
--- editor = moderator + content management
-insert into public.role_permissions (role_id, permission_id)
-select r.role_id, p.permission_id from public.roles r, public.permissions p
-where r.name='editor'
-  and p.code in ('public.read','submission.review','submission.deidentify','submission.disposition',
-                 'submission.escalate','moderation.note','story.publish','podcast.manage',
-                 'resource.manage','report.manage','campaign.create','social.schedule')
-on conflict do nothing;
-
--- administrator = all permissions
-insert into public.role_permissions (role_id, permission_id)
-select r.role_id, p.permission_id from public.roles r cross join public.permissions p
-where r.name='administrator'
-on conflict do nothing;
+-- The deterministic least-privilege role matrix is applied by migration 0024.
 
 -- ---------- Moderation states (PRD 11.1) ----------
 insert into public.moderation_states (state_code, description, sort_order) values

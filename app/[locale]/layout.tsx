@@ -9,6 +9,8 @@ import { Providers } from "@/components/providers";
 import { SkipLink } from "@/components/a11y/skip-link";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { PublicRouteChrome } from "@/components/layout/public-route-chrome";
+import { RouteContent } from "@/components/layout/route-content";
 import "../globals.css";
 
 const inter = Inter({
@@ -69,12 +71,14 @@ export default async function LocaleLayout({
       <body className="flex min-h-dvh flex-col bg-surface font-sans text-ink antialiased">
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            <SkipLink />
-            <Header />
-            <main id="main" tabIndex={-1} className="flex-1 outline-none">
-              {children}
-            </main>
-            <Footer />
+            <PublicRouteChrome>
+              <SkipLink />
+              <Header />
+            </PublicRouteChrome>
+            <RouteContent>{children}</RouteContent>
+            <PublicRouteChrome>
+              <Footer />
+            </PublicRouteChrome>
           </Providers>
         </NextIntlClientProvider>
       </body>

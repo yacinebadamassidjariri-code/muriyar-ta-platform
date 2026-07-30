@@ -12,6 +12,7 @@
 --   • Errors are raised as short string codes the UI maps to localized text
 --
 -- This migration adds NO new tables, enums, views, triggers, or RLS. It only:
+--   • Declares the created_by column required by the draft RPC on clean replay
 --   • Seeds the podcast.edit permission and grants it to administrator
 --   • Adds public.podcast_series_slugs() — the canonical mirror of the TS
 --     series list in lib/content/podcast-series.ts
@@ -22,6 +23,17 @@
 -- Compatibility: depends on 0001–0017. Idempotent (CREATE OR REPLACE; guarded
 -- INSERTs). Transaction-wrapped.
 -- =====================================================================
+
+-- Draft creation does not allocate an editorial episode number. The earlier
+-- standalone copy-suffixed patch is consolidated here before the RPC is used.
+alter table public.podcast_episodes
+  alter column episode_number drop not null;
+
+-- Clean-replay correction: the RPC below writes created_by, but migrations
+-- 0001–0017 never declared the column. Existing environments may already have
+-- it from manual history, so keep the correction additive and idempotent.
+alter table public.podcast_episodes
+  add column if not exists created_by uuid;
 
 
 -- ---------------------------------------------------------------------
@@ -343,7 +355,7 @@ begin
   ----------------------------------------------------------------------
   -- Permission & lock first (so state can't race).
   ----------------------------------------------------------------------
-  if not public.has_permission('podcast.edit') then
+  if not public.has_permission('podcast.publish') then
     raise exception 'forbidden' using errcode = '42501';
   end if;
 
@@ -431,7 +443,7 @@ as $$
 declare
   v_row public.podcast_episodes%rowtype;
 begin
-  if not public.has_permission('podcast.edit') then
+  if not public.has_permission('podcast.publish') then
     raise exception 'forbidden' using errcode = '42501';
   end if;
 

@@ -1,28 +1,31 @@
-// Mirrors the roles seeded in seed.sql.
 export const APP_ROLES = [
-  "anonymous_contributor",
-  "registered_reader",
+  "super_admin",
+  "managing_editor",
   "moderator",
-  "editor",
-  "administrator",
+  "resource_editor",
+  "translator",
+  "researcher",
 ] as const;
 
 export type AppRole = (typeof APP_ROLES)[number];
 
 export const STAFF_ROLES: readonly AppRole[] = [
+  "super_admin",
+  "managing_editor",
   "moderator",
-  "editor",
-  "administrator",
+  "resource_editor",
+  "translator",
+  "researcher",
 ];
 
-export function isStaff(role: AppRole | null | undefined): boolean {
-  return !!role && STAFF_ROLES.includes(role);
+export function isStaff(roles: readonly AppRole[]): boolean {
+  return roles.some((role) => STAFF_ROLES.includes(role));
 }
 
-export function isAdmin(role: AppRole | null | undefined): boolean {
-  return role === "administrator";
+export function isAdmin(roles: readonly AppRole[]): boolean {
+  return roles.includes("super_admin");
 }
 
-export function isEditorOrAdmin(role: AppRole | null | undefined): boolean {
-  return role === "editor" || role === "administrator";
+export function isEditorOrAdmin(roles: readonly AppRole[]): boolean {
+  return roles.includes("managing_editor") || roles.includes("super_admin");
 }

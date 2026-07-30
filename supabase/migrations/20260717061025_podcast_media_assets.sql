@@ -79,23 +79,19 @@ create index if not exists podcast_media_assets_uploaded_by_idx
 
 
 -- ---------------------------------------------------------------------
--- 3) FK the existing podcast_episodes.audio_asset_id column (added in
---    0016 as an unattached uuid) to podcast_media_assets. ON DELETE SET
---    NULL keeps the episode row healthy across asset soft-delete.
+-- 3) Replace the original media_assets FK on audio_asset_id with the
+--    podcast-media lifecycle FK. Migration 0002 already used the same
+--    constraint name, so checking the name alone leaves the wrong target.
+--    ON DELETE SET NULL keeps the episode healthy across asset soft-delete.
 -- ---------------------------------------------------------------------
-do $$
-begin
-  if not exists (
-    select 1 from pg_constraint
-    where conname = 'podcast_episodes_audio_asset_id_fkey'
-  ) then
-    alter table public.podcast_episodes
-      add constraint podcast_episodes_audio_asset_id_fkey
-      foreign key (audio_asset_id)
-      references public.podcast_media_assets(asset_id)
-      on delete set null;
-  end if;
-end $$;
+alter table public.podcast_episodes
+  drop constraint if exists podcast_episodes_audio_asset_id_fkey;
+
+alter table public.podcast_episodes
+  add constraint podcast_episodes_audio_asset_id_fkey
+  foreign key (audio_asset_id)
+  references public.podcast_media_assets(asset_id)
+  on delete set null;
 
 
 -- ---------------------------------------------------------------------
@@ -173,8 +169,9 @@ create trigger set_updated_at_podcast_media_assets
 
 
 -- ---------------------------------------------------------------------
--- 7) Audit trigger. Mirrors aud_podcast — scrubs payloads via
---    audit.scrub() and writes to audit.audit_log.
+-- 7) Audit trigger. Uses the canonical audit schema from 0003. Migration
+--    0024 replaces this with the trusted write helper while retaining the
+--    same non-sensitive event shape.
 -- ---------------------------------------------------------------------
 create or replace function public.aud_podcast_media_assets_fn()
 returns trigger
@@ -182,17 +179,16 @@ language plpgsql
 security definer
 set search_path = public, audit
 as $$
-declare
-  v_row_pk uuid;
 begin
-  v_row_pk := coalesce(new.asset_id, old.asset_id);
-
-  insert into audit.audit_log (op, table_name, row_pk, actor, payload)
+  insert into audit.audit_log (
+    actor_user_id, actor_role, action, entity_type, entity_id, metadata
+  )
   values (
-    tg_op,
-    'podcast_media_assets',
-    v_row_pk,
     auth.uid(),
+    public.current_app_role(),
+    'podcast.media.' || lower(tg_op),
+    'podcast_media_asset',
+    coalesce(new.asset_id, old.asset_id)::text,
     audit.scrub(
       case tg_op
         when 'DELETE' then to_jsonb(old)

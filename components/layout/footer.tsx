@@ -75,7 +75,7 @@ function FooterBotanical() {
       focusable="false"
       viewBox="0 0 260 300"
       fill="none"
-      className="pointer-events-none absolute bottom-0 right-0 h-[320px] w-[280px] translate-x-4 translate-y-2 text-rose-200 opacity-[0.2] md:h-[430px] md:w-[370px]"
+      className="pointer-events-none absolute bottom-0 right-0 h-[320px] w-[280px] translate-y-2 text-rose-200 opacity-[0.2] md:h-[430px] md:w-[370px]"
     >
       <g stroke="currentColor" strokeLinecap="round" fill="none" strokeWidth="1.2">
         <path d="M236 300 C 218 252, 216 214, 198 176 C 182 142, 152 124, 140 88 C 133 68, 135 46, 142 26" />

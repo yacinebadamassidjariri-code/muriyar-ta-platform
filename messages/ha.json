@@ -101,7 +101,10 @@
   "podcast_invalid_advisory": "Choose a valid content advisory.",
   "podcast_featured_requires_published": "Only published episodes can be featured.",
   "podcast_not_draft": "This episode is not a draft, so it can't be published from here.",
-  "podcast_not_published": "This episode is not currently published."
+  "podcast_not_published": "This episode is not currently published.",
+  "podcast_not_editable": "This episode can no longer be edited.",
+  "podcast_asset_not_uploading": "This media upload is no longer awaiting finalization.",
+  "podcast_storage_delete_failed": "The episode was updated, but the private media file could not be removed. Please try deleting it again."
 },
 "artwork": {
   "sectionTitle": "Episode artwork",
@@ -218,7 +221,10 @@
       "description": "Roundtables between young people on education, leadership, university, marriage, social media, dreams, and community change."
     }
   },
-  "artworkPlaceholderAlt": "No episode artwork available"
+  "artworkPlaceholderAlt": "No episode artwork available",
+  "notFoundTitle": "Episode not found",
+  "notFoundBody": "This episode may have been removed, archived, or is not yet published.",
+  "notFoundCta": "Back to podcast"
 },
 
 
@@ -569,7 +575,13 @@
     "crisisBody": "This platform reviews stories asynchronously and cannot respond to emergencies. If you are in danger, contact local emergency services or a support organization.",
     "crisisLink": "View crisis resources",
     "mission": "A safe, anonymous space where girls and young women can share their stories, be heard, and help shape change.",
+    "shareTitle": "Your voice can help shape change.",
+    "shareBody": "Share your story anonymously, in your own words and at your own pace.",
+    "shareCta": "Share your story",
     "explore": "Explore",
+    "orgTitle": "Muriyar Ta",
+    "faq": "Frequently asked questions",
+    "connectTitle": "Connect",
     "contactTitle": "Partner with us",
     "contactBody": "NGOs, researchers, educators, and policymakers are welcome to reach out.",
     "rights": "All rights reserved.",

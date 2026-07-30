@@ -1,4 +1,4 @@
-import type { AppRole } from "./roles";
+import type { Permission } from "./permissions";
 
 // Public navigation. `key` indexes the "nav" message namespace; `href` is a
 // locale-agnostic path (the i18n <Link> adds the locale prefix).
@@ -31,18 +31,21 @@ export const footerNav = [
   { key: "about", href: "/about" },
 ] as const;
 
-// Admin sidebar. Labels are English-first (internal staff tool); each item is
-// gated by role to match the RLS/permission model.
-export const adminNav: { href: string; label: string; roles: AppRole[] }[] = [
-  { href: "/admin/moderation", label: "Moderation", roles: ["moderator", "editor", "administrator"] },
-  { href: "/admin/stories", label: "Stories", roles: ["editor", "administrator"] },
-  { href: "/admin/podcast", label: "Podcast", roles: ["editor", "administrator"] },
-  { href: "/admin/resources", label: "Resources", roles: ["editor", "administrator"] },
-  { href: "/admin/newsletter", label: "Newsletter", roles: ["editor", "administrator"] },
-  { href: "/admin/report", label: "Reports", roles: ["editor", "administrator"] },
-  { href: "/admin/partnerships", label: "Partnerships", roles: ["administrator"] },
-  { href: "/admin/users", label: "Users", roles: ["administrator"] },
-  { href: "/admin/audit", label: "Audit Log", roles: ["administrator"] },
-  { href: "/admin/founder", label: "Founder Dashboard", roles: ["administrator"] },
-  { href: "/admin/settings", label: "Settings", roles: ["administrator"] },
+export type AdminNavKey = "overview" | "moderation" | "podcast" | "resources";
+
+// Phase 1 exposes only routes that exist. The shell filters this list against
+// the caller's capabilities; database/RPC checks remain authoritative.
+export const adminNav: {
+  href: string;
+  key: AdminNavKey;
+  permission: Permission;
+}[] = [
+  { href: "/admin", key: "overview", permission: "admin.access" },
+  {
+    href: "/admin/moderation",
+    key: "moderation",
+    permission: "submission.queue.read",
+  },
+  { href: "/admin/podcasts", key: "podcast", permission: "podcast.edit" },
+  { href: "/admin/resources", key: "resources", permission: "resource.edit" },
 ];

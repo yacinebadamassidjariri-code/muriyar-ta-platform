@@ -8,12 +8,10 @@
 --   • delete_podcast_media           — soft-delete + unset pointer
 --   • get_podcast_media_playback_url — DB-side visibility gate for public
 --
--- IMPORTANT — no custom enum types are referenced anywhere in this file.
--- All internal variables are `text`. Values only meet their column types
--- at the INSERT/UPDATE boundary, where Postgres casts implicitly. This
--- migration compiles regardless of whether podcast_media_kind,
--- podcast_media_asset_status, or podcast_media_origin exist as enum
--- types or as varchar/text columns in the underlying schema.
+-- IMPORTANT — local variables remain `text`, but the upload INSERT casts
+-- kind, status, and origin explicitly to the enum types created by the
+-- preceding podcast-media-assets migration. This keeps the boundary
+-- deterministic while later reads continue comparing enum values via text.
 --
 -- Signed URL creation belongs to the M4 server action layer — the URL
 -- API isn't callable from plpgsql. These RPCs return storage coordinates
@@ -42,6 +40,7 @@ as $$
 $$;
 
 revoke all on function public._pod_bucket_for_kind(text) from public;
+revoke all on function public._pod_bucket_for_kind(text) from anon, authenticated, service_role;
 
 
 -- ---------------------------------------------------------------------
@@ -68,13 +67,14 @@ as $$
 $$;
 
 revoke all on function public._pod_ext_for_mime(text) from public;
+revoke all on function public._pod_ext_for_mime(text) from anon, authenticated, service_role;
 
 
 -- ---------------------------------------------------------------------
 -- 1) request_podcast_media_upload
 --
---    All local variables are text. Kind, origin, and status meet the
---    columns' actual types at the INSERT boundary (Postgres casts).
+--    All local variables are text. Kind, origin, and status are cast
+--    explicitly to their enum types at the INSERT boundary.
 -- ---------------------------------------------------------------------
 create or replace function public.request_podcast_media_upload(
   p_episode_id        uuid,
@@ -157,14 +157,18 @@ begin
 
   v_origin := case when v_has_prior_ready then 'replacement' else 'upload' end;
 
-  -- INSERT. Text values cast to the columns' actual types automatically.
+  -- INSERT. PL/pgSQL text variables do not implicitly cast to enum columns,
+  -- so cast the already-validated kind, status, and origin explicitly.
   insert into public.podcast_media_assets (
     asset_id, episode_id, kind, status, origin,
     storage_bucket, storage_path,
     original_filename, mime_type, size_bytes,
     uploaded_by
   ) values (
-    v_asset_id, p_episode_id, p_kind, 'uploading', v_origin,
+    v_asset_id, p_episode_id,
+    p_kind::public.podcast_media_kind,
+    'uploading'::public.podcast_media_asset_status,
+    v_origin::public.podcast_media_origin,
     v_bucket, v_storage_path,
     nullif(btrim(p_original_filename), ''),
     p_mime_type, p_size_bytes,
@@ -181,6 +185,7 @@ end;
 $$;
 
 revoke all on function public.request_podcast_media_upload(uuid, text, text, bigint, text) from public;
+revoke all on function public.request_podcast_media_upload(uuid, text, text, bigint, text) from anon, authenticated, service_role;
 grant execute on function public.request_podcast_media_upload(uuid, text, text, bigint, text) to authenticated;
 
 
@@ -322,6 +327,7 @@ end;
 $$;
 
 revoke all on function public.finalize_podcast_media_upload(uuid, int, text) from public;
+revoke all on function public.finalize_podcast_media_upload(uuid, int, text) from anon, authenticated, service_role;
 grant execute on function public.finalize_podcast_media_upload(uuid, int, text) to authenticated;
 
 
@@ -415,6 +421,7 @@ end;
 $$;
 
 revoke all on function public.delete_podcast_media(uuid, text) from public;
+revoke all on function public.delete_podcast_media(uuid, text) from anon, authenticated, service_role;
 grant execute on function public.delete_podcast_media(uuid, text) to authenticated;
 
 
@@ -492,6 +499,7 @@ end;
 $$;
 
 revoke all on function public.get_podcast_media_playback_url(uuid, text) from public;
+revoke all on function public.get_podcast_media_playback_url(uuid, text) from anon, authenticated, service_role;
 grant execute on function public.get_podcast_media_playback_url(uuid, text) to anon, authenticated;
 
 
