@@ -2,11 +2,9 @@ import {
   ArrowRight,
   ArrowUpRight,
   BookOpen,
-  LifeBuoy,
   PenLine,
-  ShieldCheck,
-  UserRound,
 } from "lucide-react";
+import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import { type Locale } from "@/lib/i18n/routing";
@@ -146,9 +144,11 @@ export default async function HomePage({
 
   {/* Right column — illustration */}
   <div className="flex items-center justify-end">
-    <img
+    <Image
       src="/illustrations/home-hero.png"
       alt={t("home.hero.illustrationAlt")}
+      width={1536}
+      height={1024}
       className="
       w-full
       max-w-[42rem]

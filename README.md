@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Muriyar Ta
 
-## Getting Started
+Muriyar Ta is a multilingual editorial platform for anonymous story sharing,
+public-interest resources, podcasts, and reports. The application uses Next.js
+16, React 19, `next-intl`, and Supabase.
 
-First, run the development server:
+## Local setup
+
+1. Install dependencies with `npm ci`.
+2. Copy the required development values into `.env.local`. Environment files
+   are ignored and must never be committed.
+3. Start the disposable Supabase stack with `npx supabase start`.
+4. Rebuild the local database with `npx supabase db reset`.
+5. Start the application with `npm run dev`.
+
+Required application configuration:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+
+Trusted server-only configuration:
+
+- `SUPABASE_SERVICE_ROLE_KEY` for signed private podcast media operations
+- `ADMIN_MFA_ENFORCEMENT=true` only after staff MFA enrollment and recovery
+  have been verified
+
+Optional presentation configuration:
+
+- `PRELAUNCH_MODE=true` changes only the public homepage and navigation
+  presentation
+- `NEXT_PUBLIC_BASE_URL` supplies the canonical public origin
+
+Never create a `NEXT_PUBLIC_` version of the service-role key.
+
+## Canonical project layout
+
+- `app/[locale]`: localized public and administrative routes
+- `components/admin`: Resources, Moderation, Podcast, and shared editorial UI
+- `lib/actions/admin`: server-authorized editorial mutations
+- `lib/data/admin`: permission-aware administrative reads
+- `supabase/migrations`: the only executable migration chain
+- `supabase/seed`: deterministic, non-sensitive seed data
+- `supabase/tests/database`: SQL behavior and security verification
+- `docs/admin-platform-architecture.md`: administrative architecture and
+  workflow inventory
+
+The old `database/migrations`, `database/seed`, and
+`lib/supabase/migrations` locations are intentionally obsolete.
+
+## Validation
+
+Before release work, run:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npx tsc --noEmit
+npm run lint
+npm run build
+python3 scripts/check_migration_chain.py
+node --test tests/podcast-media-delete.test.mjs
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Run SQL suites only against a disposable local database after
+`npx supabase db reset`; never use these commands as an implicit linked or
+Production rollout.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See [the migration runbook](supabase/MIGRATIONS.md) for reconciliation and
+deployment safety requirements.
