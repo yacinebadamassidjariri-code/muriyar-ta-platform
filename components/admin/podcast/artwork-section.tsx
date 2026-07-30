@@ -118,7 +118,11 @@ export function ArtworkSection({ episodeId, initialAsset, labels }: Props) {
 
     let cancelled = false;
     (async () => {
-      const result = await mediaGetSignedPreviewUrl({ assetId });
+      const result = await mediaGetSignedPreviewUrl({
+        episodeId,
+        assetId,
+        kind: "artwork",
+      });
       if (cancelled) return;
       setPreview({
         assetId,
@@ -130,7 +134,7 @@ export function ArtworkSection({ episodeId, initialAsset, labels }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [assetId]);
+  }, [assetId, episodeId]);
 
   function openFilePicker() {
     setError(null);
@@ -250,6 +254,7 @@ export function ArtworkSection({ episodeId, initialAsset, labels }: Props) {
         episodeId,
         kind: "artwork",
         assetId,
+        mimeType: asset?.mimeType ?? null,
       });
       if (!result.ok) {
         setError(friendlyError(result.error));

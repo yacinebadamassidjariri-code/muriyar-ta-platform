@@ -31,8 +31,8 @@ export default async function PodcastPreviewPage({ params }: { params: Promise<{
   const audioId = text(workspace.value.audio?.asset_id);
   const artworkId = text(workspace.value.artwork?.asset_id);
   const [audio, artwork, tp] = await Promise.all([
-    audioId ? mediaGetSignedPreviewUrl({ assetId: audioId }) : Promise.resolve(null),
-    artworkId ? mediaGetSignedPreviewUrl({ assetId: artworkId }) : Promise.resolve(null),
+    audioId ? mediaGetSignedPreviewUrl({ episodeId, assetId: audioId, kind: "audio" }) : Promise.resolve(null),
+    artworkId ? mediaGetSignedPreviewUrl({ episodeId, assetId: artworkId, kind: "artwork" }) : Promise.resolve(null),
     getTranslations({ locale }),
   ]);
   const audioUrl = audio?.ok ? audio.value.signedUrl : text(episode.external_audio_url) || null;

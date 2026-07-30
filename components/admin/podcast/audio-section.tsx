@@ -134,7 +134,11 @@ export function AudioSection({ episodeId, initialAsset, labels }: Props) {
 
     let cancelled = false;
     (async () => {
-      const result = await mediaGetSignedPreviewUrl({ assetId });
+      const result = await mediaGetSignedPreviewUrl({
+        episodeId,
+        assetId,
+        kind: "audio",
+      });
       if (cancelled) return;
       setPreview({
         assetId,
@@ -145,7 +149,7 @@ export function AudioSection({ episodeId, initialAsset, labels }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [assetId]);
+  }, [assetId, episodeId]);
 
   function openFilePicker() {
     setError(null);
@@ -209,7 +213,11 @@ export function AudioSection({ episodeId, initialAsset, labels }: Props) {
     //    duration in the browser via a hidden <audio> loadedmetadata.
     setUi({ phase: "probing" });
     let durationSeconds: number | null = null;
-    const preview = await mediaGetSignedPreviewUrl({ assetId });
+    const preview = await mediaGetSignedPreviewUrl({
+      episodeId,
+      assetId,
+      kind: "audio",
+    });
     if (preview.ok) {
       const captured = await probeAudioDuration(preview.value.signedUrl);
       if (
@@ -264,6 +272,7 @@ export function AudioSection({ episodeId, initialAsset, labels }: Props) {
         episodeId,
         kind: "audio",
         assetId,
+        mimeType: asset?.mimeType ?? null,
       });
       if (!result.ok) {
         setError(friendlyError(result.error));

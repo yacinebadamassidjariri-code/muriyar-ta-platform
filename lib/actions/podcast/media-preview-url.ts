@@ -1,7 +1,13 @@
 "use server";
 
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
-import { normalizeError, type Result } from "./media-shared";
+import {
+  canonicalMediaStorageCoordinates,
+  isValidMediaKind,
+  normalizeError,
+  type MediaKind,
+  type Result,
+} from "./media-shared";
 import {
   authorizeAdminAction,
   isUuid,
@@ -15,7 +21,9 @@ import {
 const PREVIEW_URL_TTL_SECONDS = 300;
 
 export type PreviewUrlInput = {
+  episodeId: string;
   assetId: string;
+  kind: MediaKind;
 };
 
 export type PreviewUrlResult = {
@@ -38,31 +46,49 @@ export async function mediaGetSignedPreviewUrl(
 ): Promise<Result<PreviewUrlResult>> {
   const auth = await authorizeAdminAction("podcast.edit");
   if (!auth.ok) return { ok: false, error: auth.error };
-  if (!isUuid(input.assetId)) return { ok: false, error: "not_found" };
+  if (
+    !isUuid(input.episodeId) ||
+    !isUuid(input.assetId) ||
+    !isValidMediaKind(input.kind)
+  ) {
+    return { ok: false, error: "not_found" };
+  }
 
   const { supabase } = auth.value;
 
-  // Staff RLS on podcast_media_assets restricts this to podcast.edit holders.
-  const { data, error } = await supabase
-    .from("podcast_media_assets")
-    .select("storage_bucket, storage_path, status")
-    .eq("asset_id", input.assetId)
-    .maybeSingle();
-
-  if (error) return { ok: false, error: normalizeError(error.message) };
-  if (!data) return { ok: false, error: "not_found" };
-
-  // Don't hand out preview URLs for deleted assets.
-  if (data.status === "deleted") {
+  const { data, error } = await supabase.rpc("podcast_admin_workspace", {
+    p_episode_id: input.episodeId,
+  });
+  if (error || !data) {
+    return { ok: false, error: normalizeError(error?.message) };
+  }
+  const workspace = data as Record<string, unknown>;
+  const media = workspace[input.kind] as
+    | Record<string, unknown>
+    | null
+    | undefined;
+  if (
+    !media ||
+    media.asset_id !== input.assetId ||
+    typeof media.mime_type !== "string" ||
+    media.status === "deleted"
+  ) {
     return { ok: false, error: "not_found" };
   }
+  const coordinates = canonicalMediaStorageCoordinates({
+    episodeId: input.episodeId,
+    assetId: input.assetId,
+    kind: input.kind,
+    mimeType: media.mime_type,
+  });
+  if (!coordinates) return { ok: false, error: "podcast_invalid_mime" };
 
   let signed: { signedUrl: string } | null = null;
   let signErr: unknown = null;
   try {
     const result = await createServiceRoleClient().storage
-      .from(data.storage_bucket)
-      .createSignedUrl(data.storage_path, PREVIEW_URL_TTL_SECONDS);
+      .from(coordinates.storageBucket)
+      .createSignedUrl(coordinates.storagePath, PREVIEW_URL_TTL_SECONDS);
     signed = result.data;
     signErr = result.error;
   } catch {
@@ -77,8 +103,8 @@ export async function mediaGetSignedPreviewUrl(
     ok: true,
     value: {
       signedUrl: signed.signedUrl,
-      storageBucket: data.storage_bucket,
-      storagePath: data.storage_path,
+      storageBucket: coordinates.storageBucket,
+      storagePath: coordinates.storagePath,
     },
   };
 }

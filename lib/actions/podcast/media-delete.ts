@@ -12,6 +12,7 @@ import {
   type PodcastMediaDeletionResult,
 } from "./media-delete-core";
 import {
+  canonicalMediaStorageCoordinates,
   isValidMediaKind,
   normalizeError,
   type MediaKind,
@@ -22,14 +23,7 @@ export type DeleteMediaInput = {
   kind: MediaKind;
   /** Keeps the durable Storage coordinates addressable for idempotent retries. */
   assetId?: string | null;
-};
-
-type PodcastMediaAssetRow = {
-  asset_id: string;
-  episode_id: string;
-  kind: MediaKind;
-  storage_bucket: string;
-  storage_path: string;
+  mimeType?: string | null;
 };
 
 /**
@@ -50,7 +44,6 @@ export async function mediaDeleteAction(
   if (input.assetId != null && !isUuid(input.assetId)) {
     return { ok: false, error: "not_found" };
   }
-
   const { supabase, locale, requestId } = auth.value;
   const pointerColumn =
     input.kind === "audio" ? "audio_asset_id" : "artwork_asset_id";
@@ -65,39 +58,75 @@ export async function mediaDeleteAction(
     .maybeSingle();
 
   if (episodeError) {
+    console.error("podcast.media.episode_lookup_failed", {
+      requestId,
+      code: episodeError.code,
+    });
     return { ok: false, error: normalizeError(episodeError.message) };
   }
   if (!episode) return { ok: false, error: "not_found" };
 
   const pointerAssetId = episode[pointerColumn] as string | null;
-  const targetAssetId = pointerAssetId ?? input.assetId ?? null;
-  let target: MediaDeletionTarget | null = null;
-
-  if (targetAssetId) {
-    const { data: asset, error: assetError } = await supabase
-      .from("podcast_media_assets")
-      .select(
-        "asset_id, episode_id, kind, storage_bucket, storage_path",
-      )
-      .eq("asset_id", targetAssetId)
-      .eq("episode_id", input.episodeId)
-      .eq("kind", input.kind)
-      .maybeSingle();
-
-    if (assetError) {
-      return { ok: false, error: normalizeError(assetError.message) };
-    }
-    if (!asset) return { ok: false, error: "not_found" };
-
-    const row = asset as PodcastMediaAssetRow;
-    target = {
-      assetId: row.asset_id,
-      episodeId: row.episode_id,
-      kind: row.kind,
-      storageBucket: row.storage_bucket,
-      storagePath: row.storage_path,
-    };
+  if (
+    pointerAssetId &&
+    input.assetId &&
+    pointerAssetId !== input.assetId
+  ) {
+    return { ok: false, error: "not_found" };
   }
+  const targetAssetId = pointerAssetId ?? input.assetId ?? null;
+
+  let trustedMimeType = input.mimeType ?? null;
+  if (pointerAssetId) {
+    const { data: workspace, error: workspaceError } = await supabase.rpc(
+      "podcast_admin_workspace",
+      { p_episode_id: input.episodeId },
+    );
+    if (workspaceError || !workspace) {
+      console.error("podcast.media.workspace_lookup_failed", {
+        requestId,
+        code: workspaceError?.code ?? "empty_response",
+      });
+      return { ok: false, error: normalizeError(workspaceError?.message) };
+    }
+    const workspaceRow = workspace as Record<string, unknown>;
+    const media = workspaceRow[input.kind] as
+      | Record<string, unknown>
+      | null
+      | undefined;
+    if (
+      !media ||
+      media.asset_id !== pointerAssetId ||
+      typeof media.mime_type !== "string"
+    ) {
+      return { ok: false, error: "not_found" };
+    }
+    trustedMimeType = media.mime_type;
+  }
+
+  const coordinates =
+    targetAssetId && trustedMimeType
+      ? canonicalMediaStorageCoordinates({
+          episodeId: input.episodeId,
+          assetId: targetAssetId,
+          kind: input.kind,
+          mimeType: trustedMimeType,
+        })
+      : null;
+  if (targetAssetId && !coordinates) {
+    return { ok: false, error: "podcast_invalid_mime" };
+  }
+
+  const target: MediaDeletionTarget | null =
+    targetAssetId && coordinates
+      ? {
+          assetId: targetAssetId,
+          episodeId: input.episodeId,
+          kind: input.kind,
+          storageBucket: coordinates.storageBucket,
+          storagePath: coordinates.storagePath,
+        }
+      : null;
 
   const result = await executePodcastMediaDeletion({
     kind: input.kind,
@@ -109,6 +138,10 @@ export async function mediaDeleteAction(
       });
 
       if (error || !data) {
+        console.error("podcast.media.database_delete_failed", {
+          requestId,
+          code: error?.code ?? "empty_response",
+        });
         return { ok: false, error: normalizeError(error?.message) };
       }
 
@@ -125,11 +158,10 @@ export async function mediaDeleteAction(
       // makes retries and already-missing objects idempotent.
     },
     auditStorageFailure: async (asset) => {
-      // The canonical asset audit trigger is append-only and omits private
-      // storage paths. Reasserting the deleted lifecycle state with the
-      // caller-bound client emits a durable database audit row under the same
-      // capability/RLS boundary. The structured server event supplies the
-      // specific operational failure code without exposing the path.
+      // A successful delete_podcast_media call committed the immutable
+      // podcast.media.UPDATE audit row in the same database transaction. This
+      // structured server event adds the Storage-specific partial-failure
+      // signal without exposing the private path.
       console.error("podcast.media.storage_delete_failed", {
         requestId,
         assetId: asset.assetId,
@@ -137,26 +169,6 @@ export async function mediaDeleteAction(
         kind: asset.kind,
         storageBucket: asset.storageBucket,
       });
-
-      const { data, error } = await supabase
-        .from("podcast_media_assets")
-        .update({ status: "deleted" })
-        .eq("asset_id", asset.assetId)
-        .eq("episode_id", asset.episodeId)
-        .eq("kind", asset.kind)
-        .select("asset_id")
-        .maybeSingle();
-
-      if (error || !data) {
-        console.error("podcast.media.storage_delete_failure_audit_failed", {
-          requestId,
-          assetId: asset.assetId,
-          episodeId: asset.episodeId,
-          kind: asset.kind,
-        });
-        return { recorded: false };
-      }
-
       return { recorded: true };
     },
   });
