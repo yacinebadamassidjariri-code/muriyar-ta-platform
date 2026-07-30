@@ -1,8 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getLocale } from "next-intl/server";
-import { createClient } from "@/lib/supabase/server";
+import {
+  authorizeAdminAction,
+  isUuid,
+} from "@/lib/actions/admin/safe-action";
 import { normalizeError, type Result } from "./media-shared";
 
 export type FinalizeUploadInput = {
@@ -36,11 +38,13 @@ export type FinalizeUploadResult = {
 export async function mediaFinalizeUploadAction(
   input: FinalizeUploadInput,
 ): Promise<Result<FinalizeUploadResult>> {
-  if (!input.assetId) return { ok: false, error: "not_found" };
-  if (!input.episodeId) return { ok: false, error: "not_found" };
+  const auth = await authorizeAdminAction("podcast.edit");
+  if (!auth.ok) return { ok: false, error: auth.error };
+  if (!isUuid(input.assetId) || !isUuid(input.episodeId)) {
+    return { ok: false, error: "not_found" };
+  }
 
-  const supabase = await createClient();
-  const locale = await getLocale();
+  const { supabase, locale } = auth.value;
 
   const duration =
     input.durationSeconds != null && Number.isFinite(input.durationSeconds)
@@ -68,8 +72,8 @@ export async function mediaFinalizeUploadAction(
     duration_seconds: number | null;
   };
 
-  revalidatePath(`/${locale}/admin/podcast`);
-  revalidatePath(`/${locale}/admin/podcast/${input.episodeId}`);
+  revalidatePath(`/${locale}/admin/podcasts`);
+  revalidatePath(`/${locale}/admin/podcasts/${input.episodeId}`);
 
   return {
     ok: true,

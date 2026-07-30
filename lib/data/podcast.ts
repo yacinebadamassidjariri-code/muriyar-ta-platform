@@ -1,5 +1,7 @@
 import "server-only";
+
 import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient } from "@/lib/supabase/service-role";
 
 /**
  * The ONLY read path for public podcast data. Reads exclusively from
@@ -340,8 +342,6 @@ export async function listRelatedResources(
   if (error || !data) return [];
   return data as RelatedResource[];
 }
-
-import { createServiceRoleClient } from "@/lib/supabase/service-role";
 
 /**
  * Signed URL TTL for public media playback. One hour is long enough to

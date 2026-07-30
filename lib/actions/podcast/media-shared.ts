@@ -3,18 +3,21 @@ import "server-only";
 // Stable error codes the client maps to friendly messages. Anything from the
 // RPC layer that isn't in this set becomes `rpc_error` (generic banner).
 export const KNOWN_MEDIA_ERROR_CODES = new Set<string>([
+  "unauthenticated",
   "forbidden",
+  "invalid_input",
   "not_found",
   "podcast_invalid_kind",
   "podcast_invalid_mime",
   "podcast_invalid_size",
   "podcast_not_editable",
   "podcast_asset_not_uploading",
+  "podcast_storage_delete_failed",
   "podcast_invalid_duration",
   "wrong_asset_kind", // from the M2 kind-check trigger
 ]);
 
-// Discriminated result — same shape as lib/data/admin/podcast.ts.
+// Discriminated result shared by the canonical podcast CMS media actions.
 export type Result<T> =
   | { ok: true; value: T }
   | { ok: false; error: string };

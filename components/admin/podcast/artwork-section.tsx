@@ -71,6 +71,7 @@ type Labels = {
     podcast_invalid_size: string;
     podcast_not_editable: string;
     podcast_asset_not_uploading: string;
+    podcast_storage_delete_failed: string;
     wrong_asset_kind: string;
   };
 };
@@ -87,43 +88,49 @@ type UiState =
   | { phase: "uploading"; progress: number }
   | { phase: "finalizing" };
 
+type PreviewState = {
+  assetId: string | null;
+  url: string | null;
+};
+
 export function ArtworkSection({ episodeId, initialAsset, labels }: Props) {
   const [asset, setAsset] = useState<ArtworkAsset | null>(initialAsset);
   const [ui, setUi] = useState<UiState>({ phase: "idle" });
   const [error, setError] = useState<string | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [previewLoading, setPreviewLoading] = useState(false);
+  const [preview, setPreview] = useState<PreviewState>({
+    assetId: null,
+    url: null,
+  });
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isPendingDelete, startDeleteTransition] = useTransition();
+  const assetId = asset?.assetId ?? null;
+  const previewUrl = preview.assetId === assetId ? preview.url : null;
+  const previewLoading = assetId !== null && preview.assetId !== assetId;
 
   const busy =
     ui.phase !== "idle" || isPendingDelete || confirmingDelete || previewLoading;
 
   // Fetch a signed preview URL whenever the underlying asset changes.
   useEffect(() => {
-    let cancelled = false;
-    setPreviewUrl(null);
-    if (!asset) return;
+    if (!assetId) return;
 
-    setPreviewLoading(true);
+    let cancelled = false;
     (async () => {
-      const result = await mediaGetSignedPreviewUrl({ assetId: asset.assetId });
+      const result = await mediaGetSignedPreviewUrl({ assetId });
       if (cancelled) return;
-      if (result.ok) {
-        setPreviewUrl(result.value.signedUrl);
-      } else {
-        // Non-fatal: show the metadata card without an image.
-        setPreviewUrl(null);
-      }
-      setPreviewLoading(false);
+      setPreview({
+        assetId,
+        // Non-fatal: show the metadata card without an image on failure.
+        url: result.ok ? result.value.signedUrl : null,
+      });
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [asset?.assetId]);
+  }, [assetId]);
 
   function openFilePicker() {
     setError(null);
@@ -239,13 +246,17 @@ export function ArtworkSection({ episodeId, initialAsset, labels }: Props) {
     setError(null);
     setConfirmingDelete(false);
     startDeleteTransition(async () => {
-      const result = await mediaDeleteAction({ episodeId, kind: "artwork" });
+      const result = await mediaDeleteAction({
+        episodeId,
+        kind: "artwork",
+        assetId,
+      });
       if (!result.ok) {
         setError(friendlyError(result.error));
         return;
       }
       setAsset(null);
-      setPreviewUrl(null);
+      setPreview({ assetId: null, url: null });
     });
   }
 

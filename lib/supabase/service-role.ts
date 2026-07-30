@@ -5,9 +5,9 @@ import { createClient } from "@supabase/supabase-js";
 /**
  * Service-role Supabase client. USE ONLY IN SERVER ACTIONS THAT NEED IT.
  *
- * Currently the only legitimate consumer is media-request-upload.ts, which
- * needs to create a signed upload URL for a private bucket where only
- * service_role has INSERT permission (M1 policy).
+ * Legitimate consumers are restricted to trusted server-side podcast media
+ * helpers that create short-lived signed upload, preview, or playback URLs,
+ * or remove a single private object after an authorized database deletion.
  *
  * DO NOT use for reads or general RPC calls — those go through the
  * per-request `createClient()` helper so they're bound to the user's JWT.

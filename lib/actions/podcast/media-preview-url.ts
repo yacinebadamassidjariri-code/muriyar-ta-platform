@@ -1,8 +1,11 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { normalizeError, type Result } from "./media-shared";
+import {
+  authorizeAdminAction,
+  isUuid,
+} from "@/lib/actions/admin/safe-action";
 
 /**
  * TTL for staff preview URLs. Short — these are for CMS previews, not
@@ -33,9 +36,11 @@ export type PreviewUrlResult = {
 export async function mediaGetSignedPreviewUrl(
   input: PreviewUrlInput,
 ): Promise<Result<PreviewUrlResult>> {
-  if (!input.assetId) return { ok: false, error: "not_found" };
+  const auth = await authorizeAdminAction("podcast.edit");
+  if (!auth.ok) return { ok: false, error: auth.error };
+  if (!isUuid(input.assetId)) return { ok: false, error: "not_found" };
 
-  const supabase = await createClient();
+  const { supabase } = auth.value;
 
   // Staff RLS on podcast_media_assets restricts this to podcast.edit holders.
   const { data, error } = await supabase
@@ -52,10 +57,17 @@ export async function mediaGetSignedPreviewUrl(
     return { ok: false, error: "not_found" };
   }
 
-  const serviceClient = createServiceRoleClient();
-  const { data: signed, error: signErr } = await serviceClient.storage
-    .from(data.storage_bucket)
-    .createSignedUrl(data.storage_path, PREVIEW_URL_TTL_SECONDS);
+  let signed: { signedUrl: string } | null = null;
+  let signErr: unknown = null;
+  try {
+    const result = await createServiceRoleClient().storage
+      .from(data.storage_bucket)
+      .createSignedUrl(data.storage_path, PREVIEW_URL_TTL_SECONDS);
+    signed = result.data;
+    signErr = result.error;
+  } catch {
+    signErr = true;
+  }
 
   if (signErr || !signed?.signedUrl) {
     return { ok: false, error: "rpc_error" };
