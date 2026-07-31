@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { Link } from "@/lib/i18n/navigation";
 import type { AuthCopy } from "./content";
 
 export function LoginForm({ locale, copy }: { locale: string; copy: AuthCopy }) {
@@ -51,9 +52,20 @@ export function LoginForm({ locale, copy }: { locale: string; copy: AuthCopy }) 
         />
       </div>
       <div>
-        <label htmlFor="staff-password" className="text-sm font-semibold text-stone-700">
-          {copy.password}
-        </label>
+        <div className="flex items-center justify-between gap-3">
+          <label
+            htmlFor="staff-password"
+            className="text-sm font-semibold text-stone-700"
+          >
+            {copy.password}
+          </label>
+          <Link
+            href="/forgot-password"
+            className="text-sm font-medium text-plum-700 underline-offset-4 hover:underline"
+          >
+            {copy.forgotPassword}
+          </Link>
+        </div>
         <input
           id="staff-password"
           name="password"
