@@ -81,44 +81,24 @@ export async function listPublishedStories(
 }
 
 /**
- * Homepage selection: lead with the active locale, then fill the remaining
- * editorial slots with the newest stories published in other languages.
+ * Homepage selection: newest published stories across every language.
  * The locale-specific Stories index continues to use listPublishedStories.
  */
 export async function listHomepageStories(
-  locale: string,
   limit = 4,
 ): Promise<StoryListItem[]> {
   const normalizedLimit = Math.max(0, Math.floor(limit));
   if (normalizedLimit === 0) return [];
 
   const supabase = await createClient();
-  const { data: localized, error: localizedError } = await supabase
+  const { data, error } = await supabase
     .from("published_stories_public")
     .select(LIST_COLS)
-    .eq("language_code", locale)
     .order("published_at", { ascending: false })
     .limit(normalizedLimit);
 
-  if (localizedError || !localized) return [];
-
-  const rows = localized as Omit<StoryListItem, "tags">[];
-  const remaining = normalizedLimit - rows.length;
-  if (remaining === 0) return attachTagsList(rows);
-
-  const { data: additional, error: additionalError } = await supabase
-    .from("published_stories_public")
-    .select(LIST_COLS)
-    .neq("language_code", locale)
-    .order("published_at", { ascending: false })
-    .limit(remaining);
-
-  if (additionalError || !additional) return attachTagsList(rows);
-
-  return attachTagsList([
-    ...rows,
-    ...(additional as Omit<StoryListItem, "tags">[]),
-  ]);
+  if (error || !data) return [];
+  return attachTagsList(data as Omit<StoryListItem, "tags">[]);
 }
 
 /**

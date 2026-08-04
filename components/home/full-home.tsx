@@ -33,6 +33,14 @@ import { StoryImagePlaceholder } from "@/components/home/story-image-placeholder
 
 const missionIcons = [ShieldCheck, Languages, HeartHandshake, BarChart3] as const;
 
+function StoryLanguageBadge({ languageCode }: { languageCode: string }) {
+  return (
+    <span className="inline-flex rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-plum-700">
+      {languageCode.toUpperCase()}
+    </span>
+  );
+}
+
 export async function FullHome({ locale }: { locale: Locale }) {
   setRequestLocale(locale);
 
@@ -41,7 +49,7 @@ export async function FullHome({ locale }: { locale: Locale }) {
 
   // Newest stories + the featured podcast episode, via existing data readers.
   const [latest, featuredEpisode] = await Promise.all([
-    listHomepageStories(locale, 4),
+    listHomepageStories(4),
     getFeaturedEpisode(locale),
   ]);
   // Signed artwork URL for the featured episode (existing reader; may be null).
@@ -248,9 +256,14 @@ export async function FullHome({ locale }: { locale: Locale }) {
                     className="aspect-[16/7]"
                   />
                   <div className="p-5 sm:p-6">
-                    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-plum-600">
-                      {c.latest.eyebrow}
-                    </p>
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-plum-600">
+                        {c.latest.eyebrow}
+                      </p>
+                      <StoryLanguageBadge
+                        languageCode={featuredStory.language_code}
+                      />
+                    </div>
                     <h3 className="mt-3 break-words text-3xl font-medium leading-[1.05] text-plum-900 transition-colors duration-200 group-hover:text-plum-700 [font-family:var(--font-display),Georgia,serif] sm:text-4xl">
                       {featuredStory.title}
                     </h3>
@@ -285,7 +298,10 @@ export async function FullHome({ locale }: { locale: Locale }) {
                           index={index + 1}
                         />
                         <div className="min-w-0 py-1 sm:px-1 sm:pb-2 lg:px-0 lg:pb-1">
-                          <h3 className="break-words text-xl font-medium leading-[1.08] text-plum-900 transition-colors duration-200 group-hover:text-plum-700 [font-family:var(--font-display),Georgia,serif]">
+                          <StoryLanguageBadge
+                            languageCode={story.language_code}
+                          />
+                          <h3 className="mt-2 break-words text-xl font-medium leading-[1.08] text-plum-900 transition-colors duration-200 group-hover:text-plum-700 [font-family:var(--font-display),Georgia,serif]">
                             {story.title}
                           </h3>
                           <div className="mt-3 [&_div]:gap-y-1 [&_div]:text-xs [&_span]:border-rose-200 [&_span]:bg-transparent [&_span]:px-2 [&_span]:py-0.5 [&_span]:text-[0.68rem] [&_span]:font-medium [&_span]:text-plum-700">
