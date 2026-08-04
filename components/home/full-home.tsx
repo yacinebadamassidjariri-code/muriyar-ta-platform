@@ -1,8 +1,12 @@
 import {
   ArrowRight,
   ArrowUpRight,
+  BarChart3,
   BookOpen,
+  HeartHandshake,
+  Languages,
   PenLine,
+  ShieldCheck,
 } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
@@ -25,6 +29,9 @@ import {
   PencilStroke,
 } from "@/components/home/botanical";
 import { FullHomeHeroMedia } from "@/components/home/full-home-hero-media";
+import { StoryImagePlaceholder } from "@/components/home/story-image-placeholder";
+
+const missionIcons = [ShieldCheck, Languages, HeartHandshake, BarChart3] as const;
 
 export async function FullHome({ locale }: { locale: Locale }) {
   setRequestLocale(locale);
@@ -34,7 +41,7 @@ export async function FullHome({ locale }: { locale: Locale }) {
 
   // Newest stories + the featured podcast episode, via existing data readers.
   const [latest, featuredEpisode] = await Promise.all([
-    listPublishedStories(locale, 3),
+    listPublishedStories(locale, 4),
     getFeaturedEpisode(locale),
   ]);
   // Signed artwork URL for the featured episode (existing reader; may be null).
@@ -128,111 +135,159 @@ export async function FullHome({ locale }: { locale: Locale }) {
       </section>
 
       {/* ---------------- Mission (editorial feature) ---------------- */}
-      <HomeSection
-        id="mission-heading"
-        eyebrow={c.mission.eyebrow}
-        title={c.mission.title}
-        className="mt-16 md:mt-20"
+      <section
+        aria-labelledby="mission-heading"
+        className="relative mt-20 overflow-hidden md:mt-28"
       >
-        <p className="-mt-2 max-w-3xl text-lg leading-relaxed text-charcoal-500">
-          {t("footer.mission")}
-        </p>
+        <BotanicalCorner className="absolute -right-5 -top-5 hidden h-44 w-44 rotate-90 text-rose-200/55 md:block" />
 
-        {/* Subtle organic divider — the bordered cards are gone; whitespace
-            and typography carry the structure now. */}
-        <FloralSeparator className="mt-12 max-w-3xl text-rose-200" />
+        <div className="relative max-w-3xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-plum-600">
+            {c.mission.eyebrow}
+          </p>
+          <h2
+            id="mission-heading"
+            className="mt-4 max-w-2xl text-[clamp(2.75rem,5vw,4.25rem)] font-medium leading-[0.98] tracking-[-0.025em] text-plum-900 [font-family:var(--font-display),Georgia,serif]"
+          >
+            {c.mission.title}
+          </h2>
+          <p className="mt-6 max-w-xl text-lg leading-[1.7] text-charcoal-500">
+            {t("footer.mission")}
+          </p>
+          <FloralSeparator className="mt-8 max-w-md text-rose-200" />
+        </div>
 
-        <ul className="mt-12 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-          {c.mission.pillars.map((p) => (
-            <li key={p.title} className="flex flex-col">
-              <p className="font-semibold leading-snug text-plum-800">{p.title}</p>
-              <p className="mt-2 text-sm leading-relaxed text-charcoal-500">
-                {p.body}
-              </p>
-            </li>
-          ))}
+        <ul className="relative mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {c.mission.pillars.map((pillar, index) => {
+            const Icon = missionIcons[index];
+
+            return (
+              <li
+                key={pillar.title}
+                className="flex min-h-64 flex-col rounded-2xl border border-rose-100/90 bg-cream-50/65 p-6 shadow-[0_18px_45px_-34px_rgba(64,38,56,0.45)]"
+              >
+                <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 text-plum-700">
+                  <Icon className="h-5 w-5" strokeWidth={1.6} aria-hidden="true" />
+                </span>
+                <h3 className="mt-6 text-xl font-semibold leading-tight text-plum-900 [font-family:var(--font-display),Georgia,serif]">
+                  {pillar.title}
+                </h3>
+                <p className="mt-3 text-sm leading-[1.7] text-charcoal-500">
+                  {pillar.body}
+                </p>
+              </li>
+            );
+          })}
         </ul>
-      </HomeSection>
+      </section>
 
       {/* ---------------- Latest Stories ---------------- */}
-      <HomeSection
-        id="latest-stories-heading"
-        eyebrow={c.latest.eyebrow}
-        title={c.latest.title}
-        description={c.latest.description}
-        className="mt-20 md:mt-28"
+      <section
+        aria-labelledby="latest-stories-heading"
+        className="relative left-1/2 mt-20 w-dvw -translate-x-1/2 bg-[#FBF7F5] py-20 md:mt-28 md:py-24"
       >
-        {latest.length === 0 ? (
-          <Card className="flex flex-col items-center gap-3 p-10 text-center">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-plum-50 text-plum-700">
-              <BookOpen className="h-6 w-6" aria-hidden="true" />
-            </span>
-            <h3 className="text-xl font-semibold text-plum-800">
-              {c.latest.emptyTitle}
-            </h3>
-            <p className="max-w-md text-charcoal-500">{c.latest.emptyBody}</p>
-            <Button asChild variant="secondary" className="mt-2">
-              <Link href="/submit">
-                <PenLine className="h-4 w-4" aria-hidden="true" />
-                {t("nav.submit")}
-              </Link>
-            </Button>
-          </Card>
-        ) : (
-          <>
+        <div className="mx-auto w-full max-w-6xl px-4">
+          <div className="flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-plum-600">
+                {c.latest.eyebrow}
+              </p>
+              <h2
+                id="latest-stories-heading"
+                className="mt-3 text-[clamp(2.75rem,5vw,4rem)] font-medium leading-none tracking-[-0.025em] text-plum-900 [font-family:var(--font-display),Georgia,serif]"
+              >
+                {c.latest.title}
+              </h2>
+              <p className="mt-4 max-w-2xl text-base leading-relaxed text-charcoal-500">
+                {c.latest.description}
+              </p>
+              <PencilStroke className="mt-4 h-1 w-12 text-rose-300" />
+            </div>
+
+            <Link
+              href="/stories"
+              className="inline-flex w-fit items-center gap-2 rounded-sm text-sm font-medium text-plum-700 transition-colors duration-200 hover:text-plum-900 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
+            >
+              {c.latest.viewAll}
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </div>
+
+          {latest.length === 0 ? (
+            <Card className="mt-10 flex flex-col items-center gap-3 border-rose-100 bg-cream-50/80 p-10 text-center">
+              <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-plum-50 text-plum-700">
+                <BookOpen className="h-6 w-6" aria-hidden="true" />
+              </span>
+              <h3 className="text-xl font-semibold text-plum-800">
+                {c.latest.emptyTitle}
+              </h3>
+              <p className="max-w-md text-charcoal-500">{c.latest.emptyBody}</p>
+              <Button asChild variant="secondary" className="mt-2">
+                <Link href="/submit">
+                  <PenLine className="h-4 w-4" aria-hidden="true" />
+                  {t("nav.submit")}
+                </Link>
+              </Button>
+            </Card>
+          ) : (
             <div
-              className={`grid gap-x-12 gap-y-12 ${
+              className={`mt-10 grid items-start gap-6 ${
                 supportingStories.length > 0
-                  ? "lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-x-16"
+                  ? "lg:grid-cols-[minmax(0,1.65fr)_minmax(22rem,0.95fr)]"
                   : ""
               }`}
             >
-              {/* Featured story — editorial article treatment, no card */}
-              <article className="flex flex-col">
-                {/* Editorial accent distinguishing the featured story */}
-                <PencilStroke className="mb-4 w-12 text-plum-600" />
+              <article>
                 <Link
                   href={`/stories/${featuredStory.slug}`}
-                  className="group flex flex-col rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-600"
+                  className="group block overflow-hidden rounded-[1.25rem] border border-rose-100 bg-cream-50 shadow-[0_24px_65px_-42px_rgba(64,38,56,0.5)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
                 >
-                  <h3 className="text-2xl font-semibold leading-tight text-plum-800 transition-colors duration-200 group-hover:text-plum-700 md:text-3xl">
-                    {featuredStory.title}
-                  </h3>
-                  <p className="mt-4 text-base leading-relaxed text-charcoal-500">
-                    {featuredStory.seo_description?.trim() ||
-                      deriveExcerpt(featuredStory.body_text, 400)}
-                  </p>
-                  <div className="mt-5">
-                    <StoryMeta
-                      publishedAt={featuredStory.published_at}
-                      tags={featuredStory.tags}
-                      locale={locale}
-                    />
+                  <StoryImagePlaceholder variant="featured" index={0} />
+                  <div className="p-6 sm:p-8">
+                    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-plum-600">
+                      {c.latest.eyebrow}
+                    </p>
+                    <h3 className="mt-3 break-words text-3xl font-medium leading-[1.05] text-plum-900 transition-colors duration-200 group-hover:text-plum-700 [font-family:var(--font-display),Georgia,serif] sm:text-4xl">
+                      {featuredStory.title}
+                    </h3>
+                    <p className="mt-5 line-clamp-5 text-base leading-[1.7] text-charcoal-500">
+                      {featuredStory.seo_description?.trim() ||
+                        deriveExcerpt(featuredStory.body_text, 400)}
+                    </p>
+                    <div className="mt-6 border-t border-rose-100 pt-5 [&_div]:text-xs [&_span]:border-rose-200 [&_span]:bg-transparent [&_span]:px-2.5 [&_span]:py-0.5 [&_span]:text-xs [&_span]:font-medium [&_span]:text-plum-700">
+                      <StoryMeta
+                        publishedAt={featuredStory.published_at}
+                        tags={featuredStory.tags}
+                        locale={locale}
+                      />
+                    </div>
                   </div>
                 </Link>
               </article>
 
-              {/* Supporting stories — lighter list, hairline dividers, no cards */}
               {supportingStories.length > 0 ? (
-                <ul className="flex flex-col divide-y divide-stone-200">
-                  {supportingStories.map((story) => (
-                    <li
-                      key={story.story_id}
-                      className="py-6 first:pt-0 last:pb-0"
-                    >
+                <ul className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+                  {supportingStories.map((story, index) => (
+                    <li key={story.story_id}>
                       <Link
                         href={`/stories/${story.slug}`}
-                        className="group block rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-600"
+                        className="group grid h-full grid-cols-[6.75rem_minmax(0,1fr)] gap-4 rounded-2xl border border-rose-100 bg-cream-50/90 p-3 shadow-[0_18px_45px_-38px_rgba(64,38,56,0.45)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-plum-600 sm:flex sm:flex-col lg:grid lg:grid-cols-[9rem_minmax(0,1fr)]"
                       >
-                        <h4 className="font-semibold leading-snug text-plum-800 transition-colors duration-200 group-hover:text-plum-700">
-                          {story.title}
-                        </h4>
-                        <div className="mt-2">
-                          <StoryMeta
-                            publishedAt={story.published_at}
-                            tags={story.tags}
-                            locale={locale}
-                          />
+                        <StoryImagePlaceholder
+                          variant="thumbnail"
+                          index={index + 1}
+                        />
+                        <div className="min-w-0 py-1 sm:px-1 sm:pb-2 lg:px-0 lg:pb-1">
+                          <h3 className="break-words text-xl font-medium leading-[1.08] text-plum-900 transition-colors duration-200 group-hover:text-plum-700 [font-family:var(--font-display),Georgia,serif]">
+                            {story.title}
+                          </h3>
+                          <div className="mt-3 [&_div]:gap-y-1 [&_div]:text-xs [&_span]:border-rose-200 [&_span]:bg-transparent [&_span]:px-2 [&_span]:py-0.5 [&_span]:text-[0.68rem] [&_span]:font-medium [&_span]:text-plum-700">
+                            <StoryMeta
+                              publishedAt={story.published_at}
+                              tags={story.tags}
+                              locale={locale}
+                            />
+                          </div>
                         </div>
                       </Link>
                     </li>
@@ -240,19 +295,29 @@ export async function FullHome({ locale }: { locale: Locale }) {
                 </ul>
               ) : null}
             </div>
+          )}
 
-            <div className="mt-10">
-              <Link
-                href="/stories"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-plum-800 transition-colors duration-200 hover:text-plum-700"
-              >
-                {c.latest.viewAll}
-                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
+          <div className="relative mt-10 overflow-hidden rounded-2xl border border-rose-100 bg-rose-50/70 px-6 py-7 sm:px-8">
+            <BotanicalCorner className="absolute -bottom-6 -left-5 h-28 w-28 text-rose-200/60" />
+            <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-4">
+                <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-rose-200 bg-cream-50 text-plum-700">
+                  <PenLine className="h-5 w-5" strokeWidth={1.6} aria-hidden="true" />
+                </span>
+                <p className="max-w-xl text-lg font-semibold leading-snug text-plum-900 [font-family:var(--font-display),Georgia,serif]">
+                  {c.share.title}
+                </p>
+              </div>
+              <Button asChild className="shrink-0 bg-plum-800 hover:bg-plum-900">
+                <Link href="/submit">
+                  {t("nav.submit")}
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </Button>
             </div>
-          </>
-        )}
-      </HomeSection>
+          </div>
+        </div>
+      </section>
 
       {/* ---------------- Podcast (featured editorial moment) ---------------- */}
       {featuredEpisode ? (
