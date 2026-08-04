@@ -19,44 +19,12 @@ import { Card } from "@/components/ui/card";
 import { HomeSection } from "@/components/home/home-section";
 import { homeCopy } from "@/components/home/content";
 import {
+  BotanicalSprig,
   BotanicalCorner,
   FloralSeparator,
   PencilStroke,
 } from "@/components/home/botanical";
 import { FullHomeHeroMedia } from "@/components/home/full-home-hero-media";
-/**
- * Pencil underline for the phrase "worth hearing" in the hero title.
- *
- * The Human Mark: a hand-drawn SVG stroke sitting on top of a real
- * text-decoration underline. If the SVG renders (all modern browsers),
- * it visually replaces the underline. If it fails (screen readers,
- * print, forced-colors mode, RSS extraction), the plain underline on
- * the wrapping span remains as a graceful fallback.
- *
- * Static. Does not animate. Marked aria-hidden — the emphasis is visual
- * only; the semantic content is the underlined text itself.
- */
-
-function PencilUnderline() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 200 8"
-      preserveAspectRatio="none"
-      className="absolute inset-x-0 -bottom-1 w-full text-rose-200"
-      style={{ height: "0.55em" }}
-    >
-      {/* Hand-drawn imperfect stroke. Slight variance, tapered ends. */}
-      <path
-        d="M2 5 C 20 3, 45 6, 68 4 S 110 5, 132 3.5 S 172 5, 198 4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
 
 export async function FullHome({ locale }: { locale: Locale }) {
   setRequestLocale(locale);
@@ -86,61 +54,75 @@ export async function FullHome({ locale }: { locale: Locale }) {
       {/* ---------------- Full-width editorial video hero ---------------- */}
       <section
         aria-labelledby="full-home-hero-title"
-        className="relative left-1/2 isolate -mt-8 min-h-[42rem] w-dvw -translate-x-1/2 overflow-hidden bg-[#2D2038] sm:min-h-[40rem] lg:min-h-[44rem]"
+        className="relative left-1/2 isolate -mt-8 min-h-[calc(100svh-4.375rem)] w-dvw -translate-x-1/2 overflow-hidden border-b border-cream-100/40 bg-[#2D2038]"
       >
         <FullHomeHeroMedia />
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-[#2D2038]/55"
+          className="absolute inset-0 bg-[#2D2038]/20 sm:bg-[#2D2038]/15"
         />
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-r from-[#211627]/95 via-[#2D2038]/80 to-[#2D2038]/45"
+          className="absolute inset-0 bg-[linear-gradient(90deg,rgba(28,17,33,0.97)_0%,rgba(45,32,56,0.89)_34%,rgba(45,32,56,0.58)_58%,rgba(45,32,56,0.16)_100%)] sm:bg-[linear-gradient(90deg,rgba(28,17,33,0.98)_0%,rgba(45,32,56,0.88)_36%,rgba(45,32,56,0.4)_64%,rgba(45,32,56,0.08)_100%)]"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#24192d]/35 to-transparent"
         />
 
-        <div className="relative mx-auto flex min-h-[42rem] w-full max-w-6xl items-center px-6 py-16 sm:min-h-[40rem] sm:px-8 md:py-20 lg:min-h-[44rem] lg:px-10">
-          <div className="flex max-w-3xl flex-col justify-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-100">
+        <div className="relative mx-auto flex min-h-[calc(100svh-4.375rem)] w-full max-w-[80rem] items-center px-6 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24">
+          <div className="flex w-full max-w-[42rem] flex-col justify-center">
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-rose-200 sm:text-xs">
               {t("home.hero.eyebrow")}
             </p>
+            <PencilStroke className="mt-3 h-1 w-9 text-rose-200" />
 
             <h1
               id="full-home-hero-title"
-              className="mt-7 max-w-3xl font-display text-[clamp(2.75rem,8vw,5.5rem)] font-semibold leading-[1.02] tracking-tight text-cream-50"
+              className="mt-7 max-w-[39rem] text-[clamp(3.15rem,7.2vw,5.75rem)] font-medium leading-[0.96] tracking-[-0.025em] text-cream-50 [font-family:var(--font-display),Georgia,serif]"
             >
               {t.rich("home.hero.title", {
-                emphasis: (chunks) => (
-                  <span className="relative inline-block underline decoration-transparent [text-underline-offset:0.2em]">
+                line: (chunks) => (
+                  <span className="block">
                     {chunks}
-                    <PencilUnderline />
+                    {" "}
                   </span>
+                ),
+                emphasis: (chunks) => (
+                  <em className="font-normal text-rose-200">{chunks}</em>
                 ),
               })}
             </h1>
 
-            <p className="mt-7 max-w-2xl text-base leading-[1.75] text-cream-50/90 md:text-lg">
+            <p className="mt-7 max-w-[36rem] text-base leading-[1.65] text-cream-50/90 md:text-[1.08rem]">
               {t("home.hero.subtitle")}
             </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-x-7 gap-y-5">
+            <div className="mt-9 flex flex-wrap items-center gap-x-9 gap-y-5">
               <Button
                 asChild
-                className="bg-cream-50 text-plum-900 hover:bg-rose-100 focus-visible:outline-cream-50"
+                className="min-h-14 rounded-md bg-[#B96880] px-6 text-base text-white shadow-none hover:bg-[#A85670] focus-visible:outline-cream-50"
               >
-                <Link href="/submit">{t("home.hero.ctaShareStory")}</Link>
+                <Link href="/submit">
+                  {t("home.hero.ctaShareStory")}
+                  <span aria-hidden="true">→</span>
+                </Link>
               </Button>
               <Link
                 href="/stories"
-                className="inline-flex items-center gap-1.5 rounded-sm text-sm font-medium text-cream-50 underline-offset-4 transition-colors duration-200 hover:text-rose-100 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cream-50"
+                className="inline-flex items-center gap-2 rounded-sm border-b border-rose-200/80 pb-1 text-sm font-medium text-cream-50 transition-colors duration-200 hover:border-rose-100 hover:text-rose-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cream-50 sm:text-base"
               >
                 {t("home.hero.ctaExploreStories")}
                 <span aria-hidden="true">→</span>
               </Link>
             </div>
 
-            <p className="mt-10 max-w-md text-sm leading-relaxed text-cream-50/80 sm:mt-12">
-              {t("home.hero.reassurance")}
-            </p>
+            <div className="mt-10 flex max-w-lg items-center gap-3 text-cream-50/85 sm:mt-12">
+              <BotanicalSprig className="h-8 w-6 shrink-0 text-rose-200" />
+              <p className="text-sm leading-relaxed">
+                {t("home.hero.reassurance")}
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -150,7 +132,7 @@ export async function FullHome({ locale }: { locale: Locale }) {
         id="mission-heading"
         eyebrow={c.mission.eyebrow}
         title={c.mission.title}
-        className="mt-20 md:mt-28"
+        className="mt-16 md:mt-20"
       >
         <p className="-mt-2 max-w-3xl text-lg leading-relaxed text-charcoal-500">
           {t("footer.mission")}

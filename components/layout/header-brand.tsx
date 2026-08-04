@@ -20,14 +20,14 @@ export function HeaderBrand({ prelaunchMode }: { prelaunchMode: boolean }) {
             alt=""
             width={365}
             height={88}
-            className="hidden h-10 w-auto sm:block"
+            className="hidden h-11 w-auto sm:block lg:h-12"
           />
           <Image
             src="/brand/muriyar-ta-header-symbol.png"
             alt=""
             width={88}
             height={88}
-            className="h-10 w-10 sm:hidden"
+            className="h-11 w-11 sm:hidden"
           />
         </>
       ) : (

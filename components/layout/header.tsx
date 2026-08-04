@@ -5,6 +5,7 @@ import { Nav } from "./nav";
 import { LocaleSwitcher } from "./locale-switcher";
 import { CrisisLink } from "./crisis-link";
 import { HeaderBrand } from "./header-brand";
+import { HeaderFrame } from "./header-frame";
 
 /**
  * Editorial masthead. Painted on the footer's deep-plum surface (#2D2038, the
@@ -25,29 +26,27 @@ export function Header() {
   }));
 
   return (
-    <header className="relative bg-[#2D2038] text-stone-300">
-      <div className="mx-auto flex h-[70px] max-w-6xl items-center justify-between gap-6 px-5">
-        <HeaderBrand prelaunchMode={prelaunchMode} />
+    <HeaderFrame prelaunchMode={prelaunchMode}>
+      <HeaderBrand prelaunchMode={prelaunchMode} />
 
-        <div className="flex items-center gap-5">
-          <Nav items={items} />
+      <div className="flex items-center gap-5">
+        <Nav items={items} />
 
-          {/* Hairline separating the primary nav from the standing utilities. */}
-          <span
-            aria-hidden="true"
-            className="hidden h-5 w-px bg-white/15 lg:inline-block"
-          />
+        {/* Hairline separating the primary nav from the standing utilities. */}
+        <span
+          aria-hidden="true"
+          className="hidden h-5 w-px bg-white/15 lg:inline-block"
+        />
 
-          <div className="flex items-center gap-3">
-            {/*
-              Reserved slot: a future archive search entry point drops in here,
-              first in the utility cluster, without reflowing the masthead.
-            */}
-            <CrisisLink />
-            <LocaleSwitcher variant="dark" />
-          </div>
+        <div className="flex items-center gap-3">
+          {/*
+            Reserved slot: a future archive search entry point drops in here,
+            first in the utility cluster, without reflowing the masthead.
+          */}
+          <CrisisLink />
+          <LocaleSwitcher variant="dark" />
         </div>
       </div>
-    </header>
+    </HeaderFrame>
   );
 }

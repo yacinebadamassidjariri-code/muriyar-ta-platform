@@ -102,6 +102,45 @@ export function BotanicalCorner({ className }: { className?: string }) {
   );
 }
 
+/** A compact upright sprig for short editorial reassurance notes. */
+export function BotanicalSprig({ className }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 24 34"
+      fill="none"
+      className={cn("h-8 w-6 text-rose-200", className)}
+    >
+      <path
+        d="M7 31 C 9 24, 12 18, 17 10 C 19 7, 20 4, 20 2"
+        stroke="currentColor"
+        strokeWidth="1.15"
+        strokeLinecap="round"
+        opacity="0.8"
+      />
+      <path
+        d="M11 21 C 7 18, 4 18, 2 20 C 5 23, 8 23, 11 21 Z"
+        fill="currentColor"
+        opacity="0.48"
+      />
+      <path
+        d="M15 14 C 12 10, 12 7, 14 5 C 17 8, 17 11, 15 14 Z"
+        fill="currentColor"
+        opacity="0.45"
+      />
+      <path
+        d="M17 10 C 20 9, 22 10, 23 12 C 20 14, 18 13, 16 12"
+        stroke="currentColor"
+        strokeWidth="0.85"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+      <circle cx="20" cy="2.5" r="1.7" fill="currentColor" opacity="0.58" />
+    </svg>
+  );
+}
+
 /**
  * A slim organic divider: two hairlines tapering toward a small central sprig
  * (paired leaves + bud). Separates editorial sections without the weight of a

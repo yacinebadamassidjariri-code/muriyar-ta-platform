@@ -231,7 +231,7 @@
 "home": {
   "hero": {
     "eyebrow": "HER VOICE. HER STORY. OUR FUTURE.",
-    "title": "Every girl has a story <emphasis>worth hearing.</emphasis>",
+    "title": "<line>Every girl has</line><line>a <emphasis>story</emphasis></line><line>worth hearing.</line>",
     "subtitle": "Muriyar Ta is a safe, anonymous space where girls and young women share their stories. Together, we turn stories into awareness, podcasts, research, and advocacy.",
     "ctaShareStory": "Share Your Story",
     "ctaExploreStories": "Explore Stories",
