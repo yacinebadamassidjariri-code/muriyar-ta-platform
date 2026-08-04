@@ -30,6 +30,7 @@ import {
 } from "@/components/home/botanical";
 import { FullHomeHeroMedia } from "@/components/home/full-home-hero-media";
 import { StoryImagePlaceholder } from "@/components/home/story-image-placeholder";
+import styles from "@/components/home/full-home.module.css";
 
 const missionIcons = [ShieldCheck, Languages, HeartHandshake, BarChart3] as const;
 
@@ -69,7 +70,7 @@ export async function FullHome({ locale }: { locale: Locale }) {
       {/* ---------------- Full-width editorial video hero ---------------- */}
       <section
         aria-labelledby="full-home-hero-title"
-        className="relative left-1/2 isolate -mt-8 min-h-[calc(100svh-4.375rem)] w-dvw -translate-x-1/2 overflow-hidden border-b border-cream-100/40 bg-[#2D2038]"
+        className="relative left-1/2 isolate -mt-8 min-h-[calc(100svh-4.375rem)] w-dvw -translate-x-1/2 overflow-hidden bg-[#2D2038]"
       >
         <FullHomeHeroMedia />
         <div
@@ -140,6 +141,7 @@ export async function FullHome({ locale }: { locale: Locale }) {
             </div>
           </div>
         </div>
+        <div aria-hidden="true" className={styles.heroPageSweep} />
       </section>
 
       {/* ---------------- Mission (editorial feature) ---------------- */}
@@ -403,45 +405,6 @@ export async function FullHome({ locale }: { locale: Locale }) {
           </div>
         </section>
       ) : null}
-
-      {/* ---------------- Share Your Story CTA (editorial) ---------------- */}
-      <section aria-labelledby="share-heading" className="mt-20 md:mt-28">
-        <div className="bg-cream-200 px-6 py-16 text-center md:px-10 md:py-24">
-          <div className="mx-auto flex max-w-3xl flex-col items-center">
-            <FloralSeparator className="mb-8 w-40 max-w-full text-rose-200" />
-            <h2
-              id="share-heading"
-              className="text-2xl font-semibold leading-tight text-plum-800 md:text-3xl"
-            >
-              {c.share.title}
-            </h2>
-            <p className="mt-5 max-w-2xl text-left text-lg leading-relaxed text-charcoal-500">
-              {c.share.body}
-            </p>
-
-            {/* Reassurances as a calm inline row — no check-mark iconography */}
-            <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-xs tracking-wide text-charcoal-500">
-              {c.share.points.map((point, i) => (
-                <li key={point} className="flex items-center gap-3">
-                  {i > 0 ? (
-                    <span aria-hidden="true" className="text-stone-300">
-                      ·
-                    </span>
-                  ) : null}
-                  <span>{point}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-12">
-              <Button asChild size="lg">
-                <Link href="/submit">{t("nav.submit")}</Link>
-              </Button>
-              <p className="mt-3 text-xs text-charcoal-500">{c.share.noAccount}</p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ---------------- Resources Preview (informational only, now links) ---------------- */}
 <HomeSection
