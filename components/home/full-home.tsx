@@ -184,7 +184,7 @@ export async function FullHome({ locale }: { locale: Locale }) {
       {/* ---------------- Latest Stories ---------------- */}
       <section
         aria-labelledby="latest-stories-heading"
-        className="relative left-1/2 mt-20 w-dvw -translate-x-1/2 bg-[#FBF7F5] py-20 md:mt-28 md:py-24"
+        className="relative left-1/2 mt-20 w-dvw -translate-x-1/2 bg-[#FBF7F5] py-16 md:mt-28 md:py-20"
       >
         <div className="mx-auto w-full max-w-6xl px-4">
           <div className="flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
@@ -231,7 +231,7 @@ export async function FullHome({ locale }: { locale: Locale }) {
             </Card>
           ) : (
             <div
-              className={`mt-10 grid items-start gap-6 ${
+              className={`mt-8 grid items-start gap-6 ${
                 supportingStories.length > 0
                   ? "lg:grid-cols-[minmax(0,1.65fr)_minmax(22rem,0.95fr)]"
                   : ""
@@ -242,19 +242,26 @@ export async function FullHome({ locale }: { locale: Locale }) {
                   href={`/stories/${featuredStory.slug}`}
                   className="group block overflow-hidden rounded-[1.25rem] border border-rose-100 bg-cream-50 shadow-[0_24px_65px_-42px_rgba(64,38,56,0.5)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
                 >
-                  <StoryImagePlaceholder variant="featured" index={0} />
-                  <div className="p-6 sm:p-8">
+                  <StoryImagePlaceholder
+                    variant="featured"
+                    index={0}
+                    className="aspect-[16/7]"
+                  />
+                  <div className="p-5 sm:p-6">
                     <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-plum-600">
                       {c.latest.eyebrow}
                     </p>
                     <h3 className="mt-3 break-words text-3xl font-medium leading-[1.05] text-plum-900 transition-colors duration-200 group-hover:text-plum-700 [font-family:var(--font-display),Georgia,serif] sm:text-4xl">
                       {featuredStory.title}
                     </h3>
-                    <p className="mt-5 line-clamp-5 text-base leading-[1.7] text-charcoal-500">
-                      {featuredStory.seo_description?.trim() ||
-                        deriveExcerpt(featuredStory.body_text, 400)}
+                    <p className="mt-4 line-clamp-3 text-base leading-[1.65] text-charcoal-500">
+                      {deriveExcerpt(
+                        featuredStory.seo_description?.trim() ||
+                          featuredStory.body_text,
+                        260,
+                      )}
                     </p>
-                    <div className="mt-6 border-t border-rose-100 pt-5 [&_div]:text-xs [&_span]:border-rose-200 [&_span]:bg-transparent [&_span]:px-2.5 [&_span]:py-0.5 [&_span]:text-xs [&_span]:font-medium [&_span]:text-plum-700">
+                    <div className="mt-5 border-t border-rose-100 pt-4 [&_div]:text-xs [&_span]:border-rose-200 [&_span]:bg-transparent [&_span]:px-2.5 [&_span]:py-0.5 [&_span]:text-xs [&_span]:font-medium [&_span]:text-plum-700">
                       <StoryMeta
                         publishedAt={featuredStory.published_at}
                         tags={featuredStory.tags}
@@ -297,7 +304,7 @@ export async function FullHome({ locale }: { locale: Locale }) {
             </div>
           )}
 
-          <div className="relative mt-10 overflow-hidden rounded-2xl border border-rose-100 bg-rose-50/70 px-6 py-7 sm:px-8">
+          <div className="relative mt-8 overflow-hidden rounded-2xl border border-rose-100 bg-rose-50/70 px-6 py-5 sm:px-8 sm:py-6">
             <BotanicalCorner className="absolute -bottom-6 -left-5 h-28 w-28 text-rose-200/60" />
             <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
