@@ -1,10 +1,10 @@
 import { useTranslations } from "next-intl";
-import { Link } from "@/lib/i18n/navigation";
 import { mainNav, prelaunchNav } from "@/lib/constants/navigation";
 import { isPrelaunchMode } from "@/lib/config/prelaunch";
 import { Nav } from "./nav";
 import { LocaleSwitcher } from "./locale-switcher";
 import { CrisisLink } from "./crisis-link";
+import { HeaderBrand } from "./header-brand";
 
 /**
  * Editorial masthead. Painted on the footer's deep-plum surface (#2D2038, the
@@ -17,7 +17,8 @@ import { CrisisLink } from "./crisis-link";
  */
 export function Header() {
   const t = useTranslations("nav");
-  const navigation = isPrelaunchMode() ? prelaunchNav : mainNav;
+  const prelaunchMode = isPrelaunchMode();
+  const navigation = prelaunchMode ? prelaunchNav : mainNav;
   const items = navigation.map((item) => ({
     href: item.href,
     label: t(item.key),
@@ -26,12 +27,7 @@ export function Header() {
   return (
     <header className="relative bg-[#2D2038] text-stone-300">
       <div className="mx-auto flex h-[70px] max-w-6xl items-center justify-between gap-6 px-5">
-        <Link
-          href="/"
-          className="font-display text-2xl font-medium tracking-[0.01em] text-cream-50 transition-[color,transform] duration-200 hover:-translate-y-px hover:text-white active:translate-y-0 motion-reduce:transform-none focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-300/70"
-        >
-          Muriyar&nbsp;Ta
-        </Link>
+        <HeaderBrand prelaunchMode={prelaunchMode} />
 
         <div className="flex items-center gap-5">
           <Nav items={items} />

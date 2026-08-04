@@ -4,7 +4,6 @@ import {
   BookOpen,
   PenLine,
 } from "lucide-react";
-import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import { type Locale } from "@/lib/i18n/routing";
@@ -24,6 +23,7 @@ import {
   FloralSeparator,
   PencilStroke,
 } from "@/components/home/botanical";
+import { FullHomeHeroMedia } from "@/components/home/full-home-hero-media";
 /**
  * Pencil underline for the phrase "worth hearing" in the hero title.
  *
@@ -43,14 +43,14 @@ function PencilUnderline() {
       aria-hidden="true"
       viewBox="0 0 200 8"
       preserveAspectRatio="none"
-      className="absolute inset-x-0 -bottom-1 w-full bg-surface"
+      className="absolute inset-x-0 -bottom-1 w-full text-rose-200"
       style={{ height: "0.55em" }}
     >
       {/* Hand-drawn imperfect stroke. Slight variance, tapered ends. */}
       <path
         d="M2 5 C 20 3, 45 6, 68 4 S 110 5, 132 3.5 S 172 5, 198 4"
         fill="none"
-        stroke="#5B4D53"
+        stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
@@ -83,68 +83,67 @@ export async function FullHome({ locale }: { locale: Locale }) {
 
   return (
     <>
-      {/* ---------------- Hero (calm, white surface) ---------------- */}
-
-
-{/* ─── Hero ─────────────────────────────────────────────────────── */}
-<header className="mx-auto grid w-full max-w-screen-2xl items-center gap-10 px-6 py-15 md:grid-cols-[1fr_1fr] md:gap-14 md:px-10 md:py-20 lg:gap-20 lg:py-24 lg:px-14">
-  {/* Left column — editorial text */}
-  <div className="flex flex-col justify-center md:pr-4 lg:pr-8">
-    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-700">
-      {t("home.hero.eyebrow")}
-    </p>
-
-    <h1 className="mt-7 font-display text-[3.25rem] font-semibold leading-[1.04] tracking-tight text-ink md:text-[4rem] text-[clamp(3.5rem,5vw,5.5rem)]">
-      {t.rich("home.hero.title", {
-        emphasis: (chunks) => (
-          <span className="relative inline-block underline decoration-transparent [text-underline-offset:0.2em]">
-            {chunks}
-            <PencilUnderline />
-          </span>
-        ),
-      })}
-    </h1>
-
-    <p className="mt-7 max-w-xl text-base leading-[1.7] text-ink-soft md:text-lg">
-      {t("home.hero.subtitle")}
-    </p>
-
-    <div className="mt-10 flex flex-wrap items-center gap-7">
-      <Button asChild>
-        <Link href="/submit">{t("home.hero.ctaShareStory")}</Link>
-      </Button>
-      <Link
-        href="/stories"
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-ink transition-colors duration-200 hover:text-brand-700"
+      {/* ---------------- Full-width editorial video hero ---------------- */}
+      <section
+        aria-labelledby="full-home-hero-title"
+        className="relative left-1/2 isolate -mt-8 min-h-[42rem] w-dvw -translate-x-1/2 overflow-hidden bg-[#2D2038] sm:min-h-[40rem] lg:min-h-[44rem]"
       >
-        {t("home.hero.ctaExploreStories")}
-        <span aria-hidden="true">→</span>
-      </Link>
-    </div>
+        <FullHomeHeroMedia />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[#2D2038]/55"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-r from-[#211627]/95 via-[#2D2038]/80 to-[#2D2038]/45"
+        />
 
-    <p className="mt-12 max-w-sm text-sm leading-relaxed text-ink-soft">
-      {t("home.hero.reassurance")}
-    </p>
-  </div>
+        <div className="relative mx-auto flex min-h-[42rem] w-full max-w-6xl items-center px-6 py-16 sm:min-h-[40rem] sm:px-8 md:py-20 lg:min-h-[44rem] lg:px-10">
+          <div className="flex max-w-3xl flex-col justify-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-100">
+              {t("home.hero.eyebrow")}
+            </p>
 
-  {/* Right column — illustration */}
-  <div className="flex items-center justify-end">
-    <Image
-      src="/illustrations/home-hero.png"
-      alt={t("home.hero.illustrationAlt")}
-      width={1536}
-      height={1024}
-      className="
-      w-full
-      max-w-[42rem]
-      md:max-w-[48rem]
-      lg:max-w-[56rem]
-      select-none
-      "
-draggable={false}
-    />
-  </div>
-</header>
+            <h1
+              id="full-home-hero-title"
+              className="mt-7 max-w-3xl font-display text-[clamp(2.75rem,8vw,5.5rem)] font-semibold leading-[1.02] tracking-tight text-cream-50"
+            >
+              {t.rich("home.hero.title", {
+                emphasis: (chunks) => (
+                  <span className="relative inline-block underline decoration-transparent [text-underline-offset:0.2em]">
+                    {chunks}
+                    <PencilUnderline />
+                  </span>
+                ),
+              })}
+            </h1>
+
+            <p className="mt-7 max-w-2xl text-base leading-[1.75] text-cream-50/90 md:text-lg">
+              {t("home.hero.subtitle")}
+            </p>
+
+            <div className="mt-10 flex flex-wrap items-center gap-x-7 gap-y-5">
+              <Button
+                asChild
+                className="bg-cream-50 text-plum-900 hover:bg-rose-100 focus-visible:outline-cream-50"
+              >
+                <Link href="/submit">{t("home.hero.ctaShareStory")}</Link>
+              </Button>
+              <Link
+                href="/stories"
+                className="inline-flex items-center gap-1.5 rounded-sm text-sm font-medium text-cream-50 underline-offset-4 transition-colors duration-200 hover:text-rose-100 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cream-50"
+              >
+                {t("home.hero.ctaExploreStories")}
+                <span aria-hidden="true">→</span>
+              </Link>
+            </div>
+
+            <p className="mt-10 max-w-md text-sm leading-relaxed text-cream-50/80 sm:mt-12">
+              {t("home.hero.reassurance")}
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* ---------------- Mission (editorial feature) ---------------- */}
       <HomeSection
