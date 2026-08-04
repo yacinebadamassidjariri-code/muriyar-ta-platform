@@ -3,6 +3,7 @@ import type { Locale } from "@/lib/i18n/routing";
 type EditorialItem = { title: string; body: string };
 
 export type PrelaunchCopy = {
+  fullPlatformCta: string;
   hero: {
     eyebrow: string;
     title: string;
@@ -88,6 +89,7 @@ export type PrelaunchCopy = {
 };
 
 const en: PrelaunchCopy = {
+  fullPlatformCta: "Explore the full Muriyar Ta platform",
   hero: {
     eyebrow: "Anonymous storytelling for girls and young women",
     title: "A place to break taboos and make girls’ voices heard.",
@@ -283,6 +285,7 @@ const en: PrelaunchCopy = {
 };
 
 const fr: PrelaunchCopy = {
+  fullPlatformCta: "Découvrir la plateforme complète Muriyar Ta",
   hero: {
     eyebrow: "Récits anonymes pour les filles et les jeunes femmes",
     title: "Un espace pour briser les tabous et faire entendre la voix des filles.",

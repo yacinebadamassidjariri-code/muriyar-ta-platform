@@ -97,7 +97,11 @@ export function PrelaunchHome({ locale }: { locale: Locale }) {
               {c.hero.impact}
             </p>
             <div
-              className={cn("mt-9", styles.heroEntrance, styles.heroCta)}
+              className={cn(
+                "mt-9 flex flex-col items-start gap-4",
+                styles.heroEntrance,
+                styles.heroCta,
+              )}
             >
               <Link
                 href="/submit"
@@ -107,6 +111,20 @@ export function PrelaunchHome({ locale }: { locale: Locale }) {
                 )}
               >
                 {c.hero.primaryCta}
+              </Link>
+              <Link
+                href="/home"
+                className={cn(
+                  "inline-flex min-h-11 max-w-full items-center gap-2 px-1 text-sm font-semibold text-plum-700 underline decoration-rose-300 underline-offset-4 hover:text-plum-900 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600",
+                  styles.interactiveLink,
+                  styles.arrowCta,
+                )}
+              >
+                <span>{c.fullPlatformCta}</span>
+                <ArrowRight
+                  className={cn("h-4 w-4 shrink-0", styles.ctaArrow)}
+                  aria-hidden="true"
+                />
               </Link>
             </div>
             <p
