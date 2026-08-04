@@ -11,7 +11,7 @@ import {
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import { type Locale } from "@/lib/i18n/routing";
-import { listPublishedStories } from "@/lib/data/stories";
+import { listHomepageStories } from "@/lib/data/stories";
 import {
   getFeaturedEpisode,
   getPodcastPlaybackUrl,
@@ -41,7 +41,7 @@ export async function FullHome({ locale }: { locale: Locale }) {
 
   // Newest stories + the featured podcast episode, via existing data readers.
   const [latest, featuredEpisode] = await Promise.all([
-    listPublishedStories(locale, 4),
+    listHomepageStories(locale, 4),
     getFeaturedEpisode(locale),
   ]);
   // Signed artwork URL for the featured episode (existing reader; may be null).
