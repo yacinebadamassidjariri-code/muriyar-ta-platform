@@ -67,129 +67,138 @@ export async function FullHome({ locale }: { locale: Locale }) {
 
   return (
     <>
-      {/* ---------------- Full-width editorial video hero ---------------- */}
-      <section
-        aria-labelledby="full-home-hero-title"
-        className="relative left-1/2 isolate -mt-8 min-h-[calc(100svh-4.375rem)] w-dvw -translate-x-1/2 overflow-hidden bg-[#2D2038]"
-      >
-        <FullHomeHeroMedia />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-[#2D2038]/20 sm:bg-[#2D2038]/15"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-[linear-gradient(90deg,rgba(28,17,33,0.97)_0%,rgba(45,32,56,0.89)_34%,rgba(45,32,56,0.58)_58%,rgba(45,32,56,0.16)_100%)] sm:bg-[linear-gradient(90deg,rgba(28,17,33,0.98)_0%,rgba(45,32,56,0.88)_36%,rgba(45,32,56,0.4)_64%,rgba(45,32,56,0.08)_100%)]"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#24192d]/35 to-transparent"
-        />
-
-        <div className="relative mx-auto flex min-h-[calc(100svh-4.375rem)] w-full max-w-[80rem] items-center px-6 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24">
-          <div className="flex w-full max-w-[42rem] flex-col justify-center">
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-rose-200 sm:text-xs">
-              {t("home.hero.eyebrow")}
-            </p>
-            <PencilStroke className="mt-3 h-1 w-9 text-rose-200" />
-
-            <h1
-              id="full-home-hero-title"
-              className="mt-7 max-w-[39rem] text-[clamp(3.15rem,7.2vw,5.75rem)] font-medium leading-[0.96] tracking-[-0.025em] text-cream-50 [font-family:var(--font-display),Georgia,serif]"
-            >
-              {t.rich("home.hero.title", {
-                line: (chunks) => (
-                  <span className="block">
-                    {chunks}
-                    {" "}
-                  </span>
-                ),
-                emphasis: (chunks) => (
-                  <em className="font-normal text-rose-200">{chunks}</em>
-                ),
-              })}
-            </h1>
-
-            <p className="mt-7 max-w-[36rem] text-base leading-[1.65] text-cream-50/90 md:text-[1.08rem]">
-              {t("home.hero.subtitle")}
-            </p>
-
-            <div className="mt-9 flex flex-wrap items-center gap-x-9 gap-y-5">
-              <Button
-                asChild
-                className="min-h-14 rounded-md bg-[#B96880] px-6 text-base text-white shadow-none hover:bg-[#A85670] focus-visible:outline-cream-50"
-              >
-                <Link href="/submit">
-                  {t("home.hero.ctaShareStory")}
-                  <span aria-hidden="true">→</span>
-                </Link>
-              </Button>
-              <Link
-                href="/stories"
-                className="inline-flex items-center gap-2 rounded-sm border-b border-rose-200/80 pb-1 text-sm font-medium text-cream-50 transition-colors duration-200 hover:border-rose-100 hover:text-rose-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cream-50 sm:text-base"
-              >
-                {t("home.hero.ctaExploreStories")}
-                <span aria-hidden="true">→</span>
-              </Link>
-            </div>
-
-            <div className="mt-10 flex max-w-lg items-center gap-3 text-cream-50/85 sm:mt-12">
-              <BotanicalSprig className="h-8 w-6 shrink-0 text-rose-200" />
-              <p className="text-sm leading-relaxed">
-                {t("home.hero.reassurance")}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div aria-hidden="true" className={styles.heroPageSweep} />
-      </section>
-
-      {/* ---------------- Mission (editorial feature) ---------------- */}
-      <section
-        aria-labelledby="mission-heading"
-        className="relative mt-20 overflow-hidden md:mt-28"
-      >
-        <BotanicalCorner className="absolute -right-5 -top-5 hidden h-44 w-44 rotate-90 text-rose-200/55 md:block" />
-
-        <div className="relative max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-plum-600">
-            {c.mission.eyebrow}
-          </p>
-          <h2
-            id="mission-heading"
-            className="mt-4 max-w-2xl text-[clamp(2.75rem,5vw,4.25rem)] font-medium leading-[0.98] tracking-[-0.025em] text-plum-900 [font-family:var(--font-display),Georgia,serif]"
+      <div className={styles.heroMissionTransition}>
+        <div className={styles.heroStage}>
+          {/* ---------------- Full-width editorial video hero ---------------- */}
+          <section
+            aria-labelledby="full-home-hero-title"
+            className={`${styles.stickyHero} isolate -mt-8 min-h-[calc(100svh-4.375rem)] overflow-hidden bg-[#2D2038]`}
           >
-            {c.mission.title}
-          </h2>
-          <p className="mt-6 max-w-xl text-lg leading-[1.7] text-charcoal-500">
-            {t("footer.mission")}
-          </p>
-          <FloralSeparator className="mt-8 max-w-md text-rose-200" />
+            <FullHomeHeroMedia />
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 bg-[#2D2038]/20 sm:bg-[#2D2038]/15"
+            />
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 bg-[linear-gradient(90deg,rgba(28,17,33,0.97)_0%,rgba(45,32,56,0.89)_34%,rgba(45,32,56,0.58)_58%,rgba(45,32,56,0.16)_100%)] sm:bg-[linear-gradient(90deg,rgba(28,17,33,0.98)_0%,rgba(45,32,56,0.88)_36%,rgba(45,32,56,0.4)_64%,rgba(45,32,56,0.08)_100%)]"
+            />
+            <div
+              aria-hidden="true"
+              className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#24192d]/35 to-transparent"
+            />
+
+            <div className="relative mx-auto flex min-h-[calc(100svh-4.375rem)] w-full max-w-[80rem] items-center px-6 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24">
+              <div className="flex w-full max-w-[42rem] flex-col justify-center">
+                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-rose-200 sm:text-xs">
+                  {t("home.hero.eyebrow")}
+                </p>
+                <PencilStroke className="mt-3 h-1 w-9 text-rose-200" />
+
+                <h1
+                  id="full-home-hero-title"
+                  className="mt-7 max-w-[39rem] text-[clamp(3.15rem,7.2vw,5.75rem)] font-medium leading-[0.96] tracking-[-0.025em] text-cream-50 [font-family:var(--font-display),Georgia,serif]"
+                >
+                  {t.rich("home.hero.title", {
+                    line: (chunks) => (
+                      <span className="block">
+                        {chunks}
+                        {" "}
+                      </span>
+                    ),
+                    emphasis: (chunks) => (
+                      <em className="font-normal text-rose-200">{chunks}</em>
+                    ),
+                  })}
+                </h1>
+
+                <p className="mt-7 max-w-[36rem] text-base leading-[1.65] text-cream-50/90 md:text-[1.08rem]">
+                  {t("home.hero.subtitle")}
+                </p>
+
+                <div className="mt-9 flex flex-wrap items-center gap-x-9 gap-y-5">
+                  <Button
+                    asChild
+                    className="min-h-14 rounded-md bg-[#B96880] px-6 text-base text-white shadow-none hover:bg-[#A85670] focus-visible:outline-cream-50"
+                  >
+                    <Link href="/submit">
+                      {t("home.hero.ctaShareStory")}
+                      <span aria-hidden="true">→</span>
+                    </Link>
+                  </Button>
+                  <Link
+                    href="/stories"
+                    className="inline-flex items-center gap-2 rounded-sm border-b border-rose-200/80 pb-1 text-sm font-medium text-cream-50 transition-colors duration-200 hover:border-rose-100 hover:text-rose-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cream-50 sm:text-base"
+                  >
+                    {t("home.hero.ctaExploreStories")}
+                    <span aria-hidden="true">→</span>
+                  </Link>
+                </div>
+
+                <div className="mt-10 flex max-w-lg items-center gap-3 text-cream-50/85 sm:mt-12">
+                  <BotanicalSprig className="h-8 w-6 shrink-0 text-rose-200" />
+                  <p className="text-sm leading-relaxed">
+                    {t("home.hero.reassurance")}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
 
-        <ul className="relative mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {c.mission.pillars.map((pillar, index) => {
-            const Icon = missionIcons[index];
+        {/* ---------------- Mission (editorial feature) ---------------- */}
+        <section
+          aria-labelledby="mission-heading"
+          className={`${styles.missionPanel} left-1/2 w-dvw -translate-x-1/2 overflow-hidden`}
+        >
+          <div className="relative mx-auto w-full max-w-6xl px-4 py-20 md:py-28">
+            <BotanicalCorner className="absolute -right-5 -top-5 hidden h-44 w-44 rotate-90 text-rose-200/55 md:block" />
 
-            return (
-              <li
-                key={pillar.title}
-                className="flex min-h-64 flex-col rounded-2xl border border-rose-100/90 bg-cream-50/65 p-6 shadow-[0_18px_45px_-34px_rgba(64,38,56,0.45)]"
+            <div className="relative max-w-3xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-plum-600">
+                {c.mission.eyebrow}
+              </p>
+              <h2
+                id="mission-heading"
+                className="mt-4 max-w-2xl text-[clamp(2.75rem,5vw,4.25rem)] font-medium leading-[0.98] tracking-[-0.025em] text-plum-900 [font-family:var(--font-display),Georgia,serif]"
               >
-                <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 text-plum-700">
-                  <Icon className="h-5 w-5" strokeWidth={1.6} aria-hidden="true" />
-                </span>
-                <h3 className="mt-6 text-xl font-semibold leading-tight text-plum-900 [font-family:var(--font-display),Georgia,serif]">
-                  {pillar.title}
-                </h3>
-                <p className="mt-3 text-sm leading-[1.7] text-charcoal-500">
-                  {pillar.body}
-                </p>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+                {c.mission.title}
+              </h2>
+              <p className="mt-6 max-w-xl text-lg leading-[1.7] text-charcoal-500">
+                {t("footer.mission")}
+              </p>
+              <FloralSeparator className="mt-8 max-w-md text-rose-200" />
+            </div>
+
+            <ul className="relative mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {c.mission.pillars.map((pillar, index) => {
+                const Icon = missionIcons[index];
+
+                return (
+                  <li
+                    key={pillar.title}
+                    className="flex min-h-64 flex-col rounded-2xl border border-rose-100/90 bg-cream-50/65 p-6 shadow-[0_18px_45px_-34px_rgba(64,38,56,0.45)]"
+                  >
+                    <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 text-plum-700">
+                      <Icon
+                        className="h-5 w-5"
+                        strokeWidth={1.6}
+                        aria-hidden="true"
+                      />
+                    </span>
+                    <h3 className="mt-6 text-xl font-semibold leading-tight text-plum-900 [font-family:var(--font-display),Georgia,serif]">
+                      {pillar.title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-[1.7] text-charcoal-500">
+                      {pillar.body}
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+      </div>
 
       {/* ---------------- Latest Stories ---------------- */}
       <section
