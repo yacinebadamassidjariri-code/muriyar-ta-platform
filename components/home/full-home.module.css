@@ -20,9 +20,8 @@
   margin-left: calc(50% - 50dvw);
 }
 
-.missionPanel {
+.layerPanel {
   position: relative;
-  z-index: 1;
   min-height: 100svh;
   border-radius: clamp(0.75rem, 1.5vw, 1.25rem)
     clamp(0.75rem, 1.5vw, 1.25rem) 0 0;
@@ -30,13 +29,37 @@
   box-shadow: 0 -18px 46px -34px rgb(44 21 33 / 38%);
 }
 
+.missionStoriesTransition {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+}
+
+.stickyMission {
+  position: sticky;
+  z-index: 0;
+  top: 0;
+}
+
+.storiesPanel {
+  z-index: 1;
+  background: #fbf7f5;
+}
+
+@media (max-width: 39.999rem) {
+  .stickyMission {
+    top: -85svh;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .stickyHero {
+  .stickyHero,
+  .stickyMission {
     position: relative;
     top: auto;
   }
 
-  .missionPanel {
+  .layerPanel {
     border-radius: 0;
     box-shadow: none;
   }

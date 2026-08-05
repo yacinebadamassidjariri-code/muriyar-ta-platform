@@ -146,11 +146,12 @@ export async function FullHome({ locale }: { locale: Locale }) {
           </section>
         </div>
 
-        {/* ---------------- Mission (editorial feature) ---------------- */}
-        <section
-          aria-labelledby="mission-heading"
-          className={`${styles.missionPanel} left-1/2 w-dvw -translate-x-1/2 overflow-hidden`}
-        >
+        <div className={styles.missionStoriesTransition}>
+          {/* ---------------- Mission (editorial feature) ---------------- */}
+          <section
+            aria-labelledby="mission-heading"
+            className={`${styles.layerPanel} ${styles.stickyMission} left-1/2 w-dvw -translate-x-1/2 overflow-hidden`}
+          >
           <div className="relative mx-auto w-full max-w-6xl px-4 py-20 md:py-28">
             <BotanicalCorner className="absolute -right-5 -top-5 hidden h-44 w-44 rotate-90 text-rose-200/55 md:block" />
 
@@ -197,14 +198,13 @@ export async function FullHome({ locale }: { locale: Locale }) {
               })}
             </ul>
           </div>
-        </section>
-      </div>
+          </section>
 
-      {/* ---------------- Latest Stories ---------------- */}
-      <section
-        aria-labelledby="latest-stories-heading"
-        className="relative left-1/2 mt-20 w-dvw -translate-x-1/2 bg-[#FBF7F5] py-16 md:mt-28 md:py-20"
-      >
+          {/* ---------------- Latest Stories ---------------- */}
+          <section
+            aria-labelledby="latest-stories-heading"
+            className={`${styles.layerPanel} ${styles.storiesPanel} left-1/2 mt-20 w-dvw -translate-x-1/2 overflow-hidden py-16 md:mt-28 md:py-20`}
+          >
         <div className="mx-auto w-full max-w-6xl px-4">
           <div className="flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -351,7 +351,9 @@ export async function FullHome({ locale }: { locale: Locale }) {
             </div>
           </div>
         </div>
-      </section>
+          </section>
+        </div>
+      </div>
 
       {/* ---------------- Podcast (featured editorial moment) ---------------- */}
       {featuredEpisode ? (
