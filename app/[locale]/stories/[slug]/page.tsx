@@ -7,6 +7,7 @@ import { getPublishedStoryBySlug } from "@/lib/data/stories";
 import { deriveExcerpt } from "@/lib/utils/excerpt";
 import { storiesEditorial } from "@/components/stories/content";
 import { FloralSeparator } from "@/components/home/botanical";
+import { StoryImage } from "@/components/stories/story-image";
 
 export const revalidate = 300;
 
@@ -83,6 +84,8 @@ export default async function StoryDetailPage({
           {t("authoredBy", { author: story.author_display })}
         </p>
       </header>
+
+      <StoryImage slug={story.slug} variant="detail" className="mt-8" />
 
       <FloralSeparator className="my-8 w-40 max-w-full text-rose-200" />
 

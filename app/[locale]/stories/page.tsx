@@ -8,6 +8,7 @@ import {
 import { deriveExcerpt } from "@/lib/utils/excerpt";
 import { StoriesEmptyState } from "@/components/stories/empty-state";
 import { storiesEditorial, type StoriesEditorial } from "@/components/stories/content";
+import { StoryImage } from "@/components/stories/story-image";
 import { BotanicalCorner, FloralSeparator } from "@/components/home/botanical";
 
 export const revalidate = 300;
@@ -81,6 +82,7 @@ function FeaturedStory({
   const excerpt = story.seo_description?.trim() || deriveExcerpt(story.body_text, 360);
   return (
     <article>
+      <StoryImage slug={story.slug} variant="archive" className="mb-8" />
       <Dateline story={story} locale={locale} ed={ed} />
       <h2 className="mt-4 font-display text-[2rem] font-medium leading-tight text-plum-800 md:text-[2.4rem]">
         <Link
@@ -113,6 +115,7 @@ function ArchiveEntry({
   const excerpt = story.seo_description?.trim() || deriveExcerpt(story.body_text, 240);
   return (
     <article className="py-10">
+      <StoryImage slug={story.slug} variant="archive" className="mb-6" />
       <Dateline story={story} locale={locale} ed={ed} />
       <h3 className="mt-3 font-display text-2xl font-medium leading-snug text-plum-800">
         <Link

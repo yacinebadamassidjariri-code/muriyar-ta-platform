@@ -17,6 +17,7 @@ import {
   getPodcastPlaybackUrl,
 } from "@/lib/data/podcast";
 import { StoryMeta } from "@/components/stories/story-meta";
+import { StoryImage } from "@/components/stories/story-image";
 import { deriveExcerpt } from "@/lib/utils/excerpt";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -258,10 +259,16 @@ export async function FullHome({ locale }: { locale: Locale }) {
                   href={`/stories/${featuredStory.slug}`}
                   className="group block overflow-hidden rounded-[1.25rem] border border-rose-100 bg-cream-50 shadow-[0_24px_65px_-42px_rgba(64,38,56,0.5)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
                 >
-                  <StoryImagePlaceholder
-                    variant="featured"
-                    index={0}
-                    className="aspect-[16/7]"
+                  <StoryImage
+                    slug={featuredStory.slug}
+                    variant="home-featured"
+                    fallback={
+                      <StoryImagePlaceholder
+                        variant="featured"
+                        index={0}
+                        className="aspect-[16/7]"
+                      />
+                    }
                   />
                   <div className="p-5 sm:p-6">
                     <div className="flex items-center justify-between gap-3">
@@ -301,9 +308,15 @@ export async function FullHome({ locale }: { locale: Locale }) {
                         href={`/stories/${story.slug}`}
                         className="group grid h-full grid-cols-[6.75rem_minmax(0,1fr)] gap-4 rounded-2xl border border-rose-100 bg-cream-50/90 p-3 shadow-[0_18px_45px_-38px_rgba(64,38,56,0.45)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-plum-600 sm:flex sm:flex-col lg:grid lg:grid-cols-[9rem_minmax(0,1fr)]"
                       >
-                        <StoryImagePlaceholder
-                          variant="thumbnail"
-                          index={index + 1}
+                        <StoryImage
+                          slug={story.slug}
+                          variant="home-thumbnail"
+                          fallback={
+                            <StoryImagePlaceholder
+                              variant="thumbnail"
+                              index={index + 1}
+                            />
+                          }
                         />
                         <div className="min-w-0 py-1 sm:px-1 sm:pb-2 lg:px-0 lg:pb-1">
                           <StoryLanguageBadge
