@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
-import { Section } from "@/components/ui/section";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export const revalidate = 300;
@@ -40,26 +38,6 @@ const COLLABORATIONS = [
   "grants",
 ] as const;
 
-const PRINCIPLES = [
-  "privacy",
-  "ethics",
-  "community",
-  "respect",
-  "collaboration",
-  "evidence",
-] as const;
-
-const PRIORITIES = [
-  "regional",
-  "translation",
-  "academic",
-  "guests",
-  "organizational",
-  "funding",
-] as const;
-
-const PROCESS_STEPS = ["reach", "talk", "explore", "build"] as const;
-
 export default async function PartnerPage({
   params,
 }: {
@@ -70,173 +48,161 @@ export default async function PartnerPage({
   const t = await getTranslations({ locale, namespace: "partner" });
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 pb-20">
-      {/* Hero */}
-      <header className="pt-12">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
-          {t("heroEyebrow")}
-        </p>
-        <h1 className="mt-3 text-3xl font-display font-semibold leading-tight text-ink md:text-4xl">
-          {t("heroTitle")}
-        </h1>
-        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">
-          {t("heroBody")}
-        </p>
+    <div className="w-full overflow-hidden bg-[#FCFAF7] text-charcoal-900">
+      <header className="border-b border-rose-100 bg-[#F8F3EC]">
+        <div className="mx-auto grid w-full max-w-6xl gap-10 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[minmax(0,1.05fr)_minmax(20rem,0.8fr)] lg:items-end lg:gap-20 lg:px-10 lg:py-24">
+          <div>
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-plum-600 sm:text-xs">
+              {t("heroEyebrow")}
+            </p>
+            <span
+              aria-hidden="true"
+              className="mt-4 block h-px w-12 bg-rose-300"
+            />
+            <h1 className="mt-7 max-w-3xl text-[clamp(3.5rem,8vw,6.75rem)] font-medium leading-[0.9] tracking-[-0.035em] text-plum-900 [font-family:var(--font-display),Georgia,serif]">
+              {t("heroTitle")}
+            </h1>
+          </div>
+          <p className="max-w-xl border-l border-rose-200 pl-6 text-lg leading-[1.75] text-charcoal-500 sm:pl-8 sm:text-xl">
+            {t("heroBody")}
+          </p>
+        </div>
       </header>
 
-      {/* Why We Partner */}
-      <Section
-        id="partner-why"
-        eyebrow={t("whyEyebrow")}
-        title={t("whyTitle")}
-      >
-        <div className="max-w-2xl space-y-4 text-base leading-relaxed text-ink">
-          <p>{t("whyPara1")}</p>
-          <p>{t("whyPara2")}</p>
-        </div>
-      </Section>
+      <div>
+        <section
+          id="partner-why"
+          aria-labelledby="partner-why-heading"
+          className="mx-auto grid w-full max-w-6xl gap-9 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[minmax(15rem,0.72fr)_minmax(0,1.28fr)] lg:gap-20 lg:px-10 lg:py-24"
+        >
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-plum-600">
+              {t("whyEyebrow")}
+            </p>
+            <h2
+              id="partner-why-heading"
+              className="mt-4 text-[clamp(2.75rem,5vw,4.5rem)] font-medium leading-[0.96] tracking-[-0.025em] text-plum-900 [font-family:var(--font-display),Georgia,serif]"
+            >
+              {t("whyTitle")}
+            </h2>
+          </div>
+          <div className="space-y-6 border-t border-rose-200 pt-7 text-base leading-[1.8] text-charcoal-700 sm:text-lg lg:mt-1">
+            <p>{t("whyPara1")}</p>
+            <p>{t("whyPara2")}</p>
+          </div>
+        </section>
 
-      {/* Who We Work With */}
-      <Section
-        id="partner-audiences"
-        eyebrow={t("audiencesEyebrow")}
-        title={t("audiencesTitle")}
-        description={t("audiencesDescription")}
-      >
-        <ul className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-          {AUDIENCES.map((key) => (
-            <li key={key}>
-              <Card className="flex h-full flex-col gap-2 p-5">
-                <h3 className="text-base font-semibold text-ink">
-                  {t(`audiences.${key}.title`)}
-                </h3>
-                <p className="text-sm leading-relaxed text-ink-soft">
-                  {t(`audiences.${key}.body`)}
+        <section
+          id="partner-audiences"
+          aria-labelledby="partner-audiences-heading"
+          className="border-y border-rose-100 bg-[#FBF7F2]"
+        >
+          <div className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24">
+            <div className="grid gap-6 lg:grid-cols-[minmax(15rem,0.72fr)_minmax(0,1.28fr)] lg:gap-20">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-plum-600">
+                  {t("audiencesEyebrow")}
                 </p>
-              </Card>
-            </li>
-          ))}
-        </ul>
-      </Section>
+                <h2
+                  id="partner-audiences-heading"
+                  className="mt-4 text-[clamp(2.75rem,5vw,4.25rem)] font-medium leading-[0.98] tracking-[-0.025em] text-plum-900 [font-family:var(--font-display),Georgia,serif]"
+                >
+                  {t("audiencesTitle")}
+                </h2>
+              </div>
+              <p className="max-w-2xl text-base leading-[1.75] text-charcoal-500 sm:text-lg lg:pt-9">
+                {t("audiencesDescription")}
+              </p>
+            </div>
 
-      {/* Ways We Can Collaborate */}
-      <Section
-        id="partner-collaborations"
-        eyebrow={t("collaborationsEyebrow")}
-        title={t("collaborationsTitle")}
-        description={t("collaborationsDescription")}
-      >
-        <ul className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-          {COLLABORATIONS.map((key) => (
-            <li key={key}>
-              <Card className="flex h-full flex-col gap-2 p-5">
-                <h3 className="text-base font-semibold text-ink">
-                  {t(`collaborations.${key}.title`)}
-                </h3>
-                <p className="text-sm leading-relaxed text-ink-soft">
-                  {t(`collaborations.${key}.body`)}
-                </p>
-              </Card>
-            </li>
-          ))}
-        </ul>
-      </Section>
+            <ul className="mt-10 grid border-b border-rose-200 sm:grid-cols-2 lg:mt-14 lg:grid-cols-3">
+              {AUDIENCES.map((key, index) => (
+                <li
+                  key={key}
+                  className="group border-t border-rose-200 py-6 sm:px-6 sm:nth-[2n+1]:pl-0 sm:nth-[2n]:pr-0 lg:px-7 lg:nth-[2n+1]:pl-7 lg:nth-[2n]:pr-7 lg:nth-[3n+1]:pl-0 lg:nth-[3n]:pr-0"
+                >
+                  <p className="text-[0.65rem] font-semibold tracking-[0.18em] text-rose-500">
+                    {String(index + 1).padStart(2, "0")}
+                  </p>
+                  <h3 className="mt-3 text-2xl font-semibold leading-tight text-plum-900 [font-family:var(--font-display),Georgia,serif]">
+                    {t(`audiences.${key}.title`)}
+                  </h3>
+                  <p className="mt-3 text-sm leading-[1.7] text-charcoal-500">
+                    {t(`audiences.${key}.body`)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
 
-      {/* Our Principles — no descriptions per spec */}
-      <Section
-        id="partner-principles"
-        eyebrow={t("principlesEyebrow")}
-        title={t("principlesTitle")}
-      >
-        <ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-          {PRINCIPLES.map((key) => (
-            <li key={key}>
-              <Card className="h-full p-5">
-                <p className="text-base font-semibold text-ink">
-                  {t(`principles.${key}`)}
-                </p>
-              </Card>
-            </li>
-          ))}
-        </ul>
-      </Section>
+        <section
+          id="partner-collaborations"
+          aria-labelledby="partner-collaborations-heading"
+          className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24"
+        >
+          <div className="max-w-3xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-plum-600">
+              {t("collaborationsEyebrow")}
+            </p>
+            <h2
+              id="partner-collaborations-heading"
+              className="mt-4 text-[clamp(2.75rem,5vw,4.25rem)] font-medium leading-[0.98] tracking-[-0.025em] text-plum-900 [font-family:var(--font-display),Georgia,serif]"
+            >
+              {t("collaborationsTitle")}
+            </h2>
+            <p className="mt-6 max-w-2xl text-base leading-[1.75] text-charcoal-500 sm:text-lg">
+              {t("collaborationsDescription")}
+            </p>
+          </div>
 
-      {/* Current Priorities */}
-      <Section
-        id="partner-priorities"
-        eyebrow={t("prioritiesEyebrow")}
-        title={t("prioritiesTitle")}
-        description={t("prioritiesDescription")}
-      >
-        <Card className="p-6">
-          <ul className="grid gap-3 sm:grid-cols-2">
-            {PRIORITIES.map((key) => (
+          <ul className="mt-10 grid gap-x-12 sm:grid-cols-2 lg:mt-14">
+            {COLLABORATIONS.map((key) => (
               <li
                 key={key}
-                className="flex items-start gap-2 text-base text-ink"
+                className="grid gap-3 border-t border-rose-200 py-6 sm:grid-cols-[minmax(9rem,0.75fr)_minmax(0,1.25fr)] sm:gap-7"
               >
-                <span
-                  aria-hidden="true"
-                  className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-brand-600"
-                />
-                <span>{t(`priorities.${key}`)}</span>
+                <h3 className="text-xl font-semibold leading-tight text-plum-900 [font-family:var(--font-display),Georgia,serif] sm:text-2xl">
+                  {t(`collaborations.${key}.title`)}
+                </h3>
+                <p className="text-sm leading-[1.7] text-charcoal-500">
+                  {t(`collaborations.${key}.body`)}
+                </p>
               </li>
             ))}
           </ul>
-        </Card>
-      </Section>
+        </section>
 
-      {/* Partnership Process */}
-      <Section
-        id="partner-process"
-        eyebrow={t("processEyebrow")}
-        title={t("processTitle")}
-        description={t("processDescription")}
-      >
-        <ol className="flex flex-col gap-3 md:flex-row md:items-stretch md:gap-2">
-          {PROCESS_STEPS.map((key, i) => (
-            <li
-              key={key}
-              className="flex flex-col items-stretch gap-3 md:flex-1 md:flex-row md:items-center"
+        <section
+          id="partner-cta"
+          aria-labelledby="partner-cta-heading"
+          className="bg-[#2D2038] text-cream-50"
+        >
+          <div className="mx-auto grid w-full max-w-6xl gap-9 px-5 py-14 sm:px-8 sm:py-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-16 lg:px-10 lg:py-20">
+            <div className="max-w-3xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rose-200">
+                {t("ctaEyebrow")}
+              </p>
+              <h2
+                id="partner-cta-heading"
+                className="mt-4 text-[clamp(2.6rem,5vw,4.5rem)] font-medium leading-[0.96] tracking-[-0.025em] text-cream-50 [font-family:var(--font-display),Georgia,serif]"
+              >
+                {t("ctaTitle")}
+              </h2>
+              <p className="mt-6 max-w-2xl text-base leading-[1.75] text-cream-50/75 sm:text-lg">
+                {t("ctaBody")}
+              </p>
+            </div>
+            <Button
+              asChild
+              size="lg"
+              className="min-h-12 w-fit bg-[#B96880] px-7 text-cream-50 hover:bg-[#A85670] focus-visible:outline-cream-50"
             >
-              <Card className="flex h-full flex-1 flex-col gap-1 p-5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-brand-700">
-                  {t("processStepLabel", { step: i + 1 })}
-                </p>
-                <h3 className="text-base font-semibold text-ink">
-                  {t(`process.${key}.title`)}
-                </h3>
-                <p className="text-sm leading-relaxed text-ink-soft">
-                  {t(`process.${key}.body`)}
-                </p>
-              </Card>
-              {i < PROCESS_STEPS.length - 1 ? (
-                <span
-                  aria-hidden="true"
-                  className="self-center text-xl font-semibold text-brand-600 md:mx-1"
-                >
-                  <span className="md:hidden">↓</span>
-                  <span className="hidden md:inline">→</span>
-                </span>
-              ) : null}
-            </li>
-          ))}
-        </ol>
-      </Section>
-
-      {/* Closing CTA */}
-      <Section
-        id="partner-cta"
-        eyebrow={t("ctaEyebrow")}
-        title={t("ctaTitle")}
-        description={t("ctaBody")}
-      >
-        <div className="flex flex-wrap gap-3">
-          <Button asChild size="lg">
-<Link href="/partner">{t("ctaPartnerWithUs")}</Link>
-</Button>
-        </div>
-      </Section>
+              <Link href="/partner">{t("ctaPartnerWithUs")}</Link>
+            </Button>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
