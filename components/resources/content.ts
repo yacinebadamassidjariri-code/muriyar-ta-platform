@@ -99,6 +99,7 @@ export function isRecommended(
 
 export type ResourcesEditorial = {
   heroEyebrow: string;
+  heroTitle: string;
   intro: string;
   trust: string;
   crisisHeading: string;
@@ -107,6 +108,10 @@ export type ResourcesEditorial = {
   searchLabel: string;
   searchPlaceholder: string;
   searchSubmit: string;
+  browseHeading: string;
+  categoryNavLabel: string;
+  searchHeading: string;
+  directoryHeading: string;
   resultsHeading: string;
   localTag: string;
   visit: string;
@@ -123,9 +128,10 @@ export type ResourcesEditorial = {
 };
 
 const en: ResourcesEditorial = {
-  heroEyebrow: "Where to turn",
+  heroEyebrow: "Resources",
+  heroTitle: "Support, guidance, and somewhere to turn.",
   intro:
-    "Reading these stories, you may have felt a little less alone. This is where you find what to do next — trusted organizations that can help with your safety, your health, your rights, and your education.",
+    "Find trusted organizations that can support your safety, health, rights, and education.",
   trust:
     "Muriyar Ta does not provide these services directly. We choose and check each organization with care, and keep this library small on purpose, so that what you find here feels trustworthy rather than overwhelming.",
   crisisHeading: "If you need help now",
@@ -135,6 +141,10 @@ const en: ResourcesEditorial = {
   searchLabel: "Search the library",
   searchPlaceholder: "Search by name or need…",
   searchSubmit: "Search",
+  browseHeading: "Browse by need",
+  categoryNavLabel: "Resource categories",
+  searchHeading: "Search all resources",
+  directoryHeading: "Resource directory",
   resultsHeading: "What we found",
   localTag: "In Niger",
   visit: "Visit",
@@ -188,9 +198,10 @@ const en: ResourcesEditorial = {
 };
 
 const fr: ResourcesEditorial = {
-  heroEyebrow: "Vers qui se tourner",
+  heroEyebrow: "Ressources",
+  heroTitle: "Du soutien, des conseils et un point d'appui.",
   intro:
-    "En lisant ces récits, vous vous êtes peut-être sentie un peu moins seule. Voici où trouver la suite — des organisations de confiance qui peuvent aider pour votre sécurité, votre santé, vos droits et votre éducation.",
+    "Trouvez des organisations de confiance qui peuvent vous soutenir pour votre sécurité, votre santé, vos droits et votre éducation.",
   trust:
     "Muriyar Ta ne fournit pas ces services directement. Nous choisissons et vérifions chaque organisation avec soin, et gardons cette bibliothèque volontairement réduite, afin que ce que vous y trouvez inspire confiance plutôt que de vous submerger.",
   crisisHeading: "Besoin d'aide maintenant ?",
@@ -200,6 +211,10 @@ const fr: ResourcesEditorial = {
   searchLabel: "Rechercher dans la bibliothèque",
   searchPlaceholder: "Rechercher par nom ou par besoin…",
   searchSubmit: "Rechercher",
+  browseHeading: "Parcourir selon vos besoins",
+  categoryNavLabel: "Catégories de ressources",
+  searchHeading: "Rechercher toutes les ressources",
+  directoryHeading: "Répertoire des ressources",
   resultsHeading: "Ce que nous avons trouvé",
   localTag: "Au Niger",
   visit: "Visiter",

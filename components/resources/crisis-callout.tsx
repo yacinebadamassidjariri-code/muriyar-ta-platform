@@ -1,4 +1,3 @@
-import { LifeBuoy } from "lucide-react";
 import { Link } from "@/lib/i18n/navigation";
 
 /**
@@ -16,19 +15,24 @@ export function CrisisCallout({
   cta: string;
 }) {
   return (
-    <div className="mt-8 rounded-lg border border-rose-200/70 bg-rose-50/50 px-5 py-4">
-      <p className="flex items-center gap-2 font-display text-lg font-medium text-plum-800">
-        <LifeBuoy className="h-4 w-4 text-rose-500" aria-hidden="true" />
-        {heading}
-      </p>
-      <p className="mt-1 text-sm leading-relaxed text-charcoal-500">{body}</p>
-      <Link
-        href="/resources/crisis"
-        className="mt-2 inline-flex items-center gap-1 text-sm font-medium uppercase tracking-[0.12em] text-rose-700 transition-colors hover:text-rose-500"
-      >
-        {cta}
-        <span aria-hidden="true">→</span>
-      </Link>
-    </div>
+    <aside className="mt-10 border-y border-rose-200 bg-rose-50 px-5 py-5 sm:px-7">
+      <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-8">
+        <div>
+          <p className="font-display text-xl font-medium text-plum-900">
+            {heading}
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-charcoal-500">
+            {body}
+          </p>
+        </div>
+        <Link
+          href="/resources/crisis"
+          className="inline-flex w-fit items-center gap-2 border-b border-rose-400 pb-1 text-sm font-semibold text-plum-800 transition-colors hover:border-plum-700 hover:text-plum-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
+        >
+          {cta}
+          <span aria-hidden="true">→</span>
+        </Link>
+      </div>
+    </aside>
   );
 }

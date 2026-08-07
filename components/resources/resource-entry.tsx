@@ -6,6 +6,13 @@ export type ResourceEntryLabels = {
   localTag: string;
 };
 
+function editorialDescription(description: string): string {
+  return description
+    .replace(/(?:^|\s)(?:Focus|Services|Notes):\s*/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 /**
  * One organization, typography-first — no card, no icon stack. The name leads,
  * a concise description invites, and a single quiet text line carries the
@@ -17,11 +24,13 @@ export function ResourceEntry({
   resource,
   regionLabel,
   isLocal = false,
+  categoryLabels = [],
   labels,
 }: {
   resource: Resource;
   regionLabel?: string;
   isLocal?: boolean;
+  categoryLabels?: string[];
   labels: ResourceEntryLabels;
 }) {
   const langs =
@@ -31,42 +40,46 @@ export function ResourceEntry({
       : null;
   // For local entries the "In Niger" tag already carries the region, so it is
   // omitted from the metadata line to avoid repeating it.
-  const meta = [isLocal ? null : regionLabel, langs].filter(Boolean).join(" · ");
+  const meta = [...categoryLabels, isLocal ? null : regionLabel, langs]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
-    <article className="py-6">
-      {isLocal ? (
-        <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-plum-600">
-          {labels.localTag}
-        </p>
-      ) : null}
-      <h3
-        className={cn(
-          "font-display text-xl font-medium leading-snug text-plum-800",
-          isLocal && "mt-1",
-        )}
-      >
-        {resource.name}
-      </h3>
+    <article className="grid gap-5 py-7 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-10 sm:py-8">
+      <div className="min-w-0">
+        {isLocal ? (
+          <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-plum-600">
+            {labels.localTag}
+          </p>
+        ) : null}
+        <h3
+          className={cn(
+            "font-display text-2xl font-medium leading-tight text-plum-900 sm:text-[1.7rem]",
+            isLocal && "mt-1",
+          )}
+        >
+          {resource.name}
+        </h3>
 
-      {resource.description ? (
-        <p className="mt-2 leading-relaxed text-charcoal-500">
-          {resource.description}
-        </p>
-      ) : null}
+        {resource.description ? (
+          <p className="mt-3 max-w-3xl leading-[1.7] text-charcoal-500">
+            {editorialDescription(resource.description)}
+          </p>
+        ) : null}
 
-      {meta ? (
-        <p className="mt-2 text-xs uppercase tracking-[0.12em] text-stone-500">
-          {meta}
-        </p>
-      ) : null}
+        {meta ? (
+          <p className="mt-3 text-xs leading-relaxed tracking-[0.08em] text-stone-500">
+            {meta}
+          </p>
+        ) : null}
+      </div>
 
       {resource.contact_phone || resource.contact_email ? (
-        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-charcoal-500">
+        <div className="flex min-w-0 flex-col items-start gap-2 text-sm text-charcoal-500 sm:items-end sm:text-right">
           {resource.contact_phone ? (
             <a
               href={`tel:${resource.contact_phone}`}
-              className="transition-colors hover:text-plum-700"
+              className="break-all transition-colors hover:text-plum-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
             >
               {resource.contact_phone}
             </a>
@@ -74,23 +87,34 @@ export function ResourceEntry({
           {resource.contact_email ? (
             <a
               href={`mailto:${resource.contact_email}`}
-              className="transition-colors hover:text-plum-700"
+              className="break-all transition-colors hover:text-plum-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
             >
               {resource.contact_email}
             </a>
           ) : null}
+          {resource.website_url ? (
+            <a
+              href={resource.website_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${labels.visit}: ${resource.name}`}
+              className="mt-1 inline-flex items-center gap-1.5 border-b border-rose-300 pb-1 text-sm font-semibold text-plum-800 transition-colors hover:border-plum-700 hover:text-plum-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
+            >
+              {labels.visit}
+              <span aria-hidden="true">↗</span>
+            </a>
+          ) : null}
         </div>
-      ) : null}
-
-      {resource.website_url ? (
+      ) : resource.website_url ? (
         <a
           href={resource.website_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-flex items-center gap-1 text-sm font-medium uppercase tracking-[0.14em] text-plum-700 transition-colors hover:text-plum-900"
+          aria-label={`${labels.visit}: ${resource.name}`}
+          className="inline-flex h-fit w-fit items-center gap-1.5 border-b border-rose-300 pb-1 text-sm font-semibold text-plum-800 transition-colors hover:border-plum-700 hover:text-plum-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600 sm:justify-self-end"
         >
           {labels.visit}
-          <span aria-hidden="true">→</span>
+          <span aria-hidden="true">↗</span>
         </a>
       ) : null}
     </article>

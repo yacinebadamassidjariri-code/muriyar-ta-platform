@@ -1,6 +1,3 @@
-import { HeartHandshake } from "lucide-react";
-import { Card } from "@/components/ui/card";
-
 export function ResourcesEmptyState({
   title,
   body,
@@ -9,12 +6,13 @@ export function ResourcesEmptyState({
   body: string;
 }) {
   return (
-    <Card className="flex flex-col items-center gap-3 p-10 text-center">
-      <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
-        <HeartHandshake className="h-6 w-6" aria-hidden="true" />
-      </span>
-      <h2 className="text-xl font-semibold text-ink">{title}</h2>
-      <p className="max-w-md text-ink-soft">{body}</p>
-    </Card>
+    <div className="border-y border-stone-200 py-12 text-center">
+      <h2 className="font-display text-2xl font-medium text-plum-900">
+        {title}
+      </h2>
+      <p className="mx-auto mt-3 max-w-md leading-relaxed text-charcoal-500">
+        {body}
+      </p>
+    </div>
   );
 }

@@ -10,6 +10,7 @@ export type SectionEntry = {
   resourceId: string;
   regionLabel?: string;
   isLocal: boolean;
+  categoryLabels: string[];
   // The resource itself is passed through untouched.
   resource: import("@/lib/data/resources").Resource;
 };
@@ -54,18 +55,23 @@ export function ResourceSection({
   const canExpand = total > INITIAL_VISIBLE_COUNT;
 
   return (
-    <section aria-labelledby={id} className="mt-14">
-      <h2
-        id={id}
-        className="font-display text-2xl font-medium text-plum-800"
-      >
-        {label}
-      </h2>
-      <p className="mt-2 max-w-2xl leading-relaxed text-charcoal-500">{intro}</p>
+    <section
+      aria-labelledby={id}
+      className="mt-14 border-t border-stone-200 pt-10 md:mt-16 md:pt-12"
+    >
+      <div className="grid gap-3 md:grid-cols-[minmax(14rem,0.8fr)_minmax(0,1.2fr)] md:gap-12">
+        <h2
+          id={id}
+          className="font-display text-3xl font-medium leading-tight text-plum-900 md:text-4xl"
+        >
+          {label}
+        </h2>
+        <p className="max-w-2xl leading-[1.7] text-charcoal-500">{intro}</p>
+      </div>
 
       <div id={`${id}-resources`}>
         {visibleRecommended.length > 0 ? (
-          <div className="mt-6">
+          <div className="mt-8">
             <p className="text-xs font-medium uppercase tracking-[0.16em] text-plum-600">
               {recommendedHint}
             </p>
@@ -76,6 +82,7 @@ export function ResourceSection({
                   resource={e.resource}
                   regionLabel={e.regionLabel}
                   isLocal={e.isLocal}
+                  categoryLabels={e.categoryLabels}
                   labels={entryLabels}
                 />
               ))}
@@ -87,7 +94,7 @@ export function ResourceSection({
           <div
             className={cn(
               "divide-y divide-stone-200/60 border-t border-stone-200/60",
-              visibleRecommended.length > 0 ? "mt-8" : "mt-6",
+              visibleRecommended.length > 0 ? "mt-9" : "mt-8",
             )}
           >
             {visibleRest.map((e) => (
@@ -96,6 +103,7 @@ export function ResourceSection({
                 resource={e.resource}
                 regionLabel={e.regionLabel}
                 isLocal={e.isLocal}
+                categoryLabels={e.categoryLabels}
                 labels={entryLabels}
               />
             ))}
@@ -109,7 +117,7 @@ export function ResourceSection({
           aria-expanded={expanded}
           aria-controls={`${id}-resources`}
           onClick={() => setExpanded((value) => !value)}
-          className="mt-4 text-sm font-medium uppercase tracking-[0.14em] text-plum-700 transition-colors hover:text-plum-900 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
+          className="mt-5 border-b border-rose-300 pb-1 text-sm font-semibold text-plum-800 transition-colors hover:border-plum-700 hover:text-plum-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
         >
           {expanded ? showLessLabel : showMoreLabel}
         </button>

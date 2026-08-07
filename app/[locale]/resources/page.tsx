@@ -23,7 +23,7 @@ import { ResourceEntry } from "@/components/resources/resource-entry";
 import { CrisisCallout } from "@/components/resources/crisis-callout";
 import { SearchBar } from "@/components/resources/search-bar";
 import { ResourcesEmptyState } from "@/components/resources/empty-state";
-import { BotanicalCorner, FloralSeparator } from "@/components/home/botanical";
+import { CategoryNav } from "@/components/resources/category-nav";
 
 export const revalidate = 300;
 const RESULTS_PER_PAGE = 10;
@@ -74,6 +74,7 @@ export default async function ResourcesIndexPage({
       .filter((id): id is number => id !== null),
   );
   const catSlug = new Map(categories.map((c) => [c.category_id, c.slug]));
+  const catName = new Map(categories.map((c) => [c.category_id, c.name]));
 
   const regionOf = (r: Resource): string | undefined =>
     r.geographic_region_id != null
@@ -82,11 +83,20 @@ export default async function ResourcesIndexPage({
 
   const toEntry = (r: Resource): SectionEntry => {
     const region = regionOf(r);
+    const categoryIds =
+      r.category_ids.length > 0
+        ? r.category_ids
+        : r.category_id != null
+          ? [r.category_id]
+          : [];
     return {
       resourceId: r.resource_id,
       resource: r,
       regionLabel: region,
       isLocal: isLocalRegion(region),
+      categoryLabels: categoryIds
+        .map((id) => catName.get(id))
+        .filter((name): name is string => name !== undefined),
     };
   };
 
@@ -164,26 +174,31 @@ export default async function ResourcesIndexPage({
     return qs ? `/resources?${qs}` : "/resources";
   };
 
+  const categoryDescriptions = Object.fromEntries(
+    categories.map((category) => [
+      category.slug,
+      ed.clusters[clusterKeyForSlug(category.slug)].intro,
+    ]),
+  );
+
   return (
-    <div className="relative mx-auto w-full max-w-3xl px-5 py-16 md:py-20">
-      <BotanicalCorner className="pointer-events-none absolute right-0 top-10 hidden h-20 w-20 text-rose-200 md:block" />
-
-      <header className="max-w-2xl">
-        <p className="text-xs font-medium uppercase tracking-[0.18em] text-plum-600">
-          {ed.heroEyebrow}
-        </p>
-        <h1 className="mt-4 font-display text-4xl font-medium leading-tight text-plum-800 md:text-5xl">
-          {t("listTitle")}
-        </h1>
-        <p className="mt-4 text-lg leading-relaxed text-charcoal-500">
-          {ed.intro}
-        </p>
+    <article className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-6 md:py-24">
+      <header className="grid gap-9 border-b border-stone-200 pb-14 md:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)] md:items-end md:gap-16 md:pb-20">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-plum-600">
+            {ed.heroEyebrow}
+          </p>
+          <h1 className="mt-5 max-w-4xl font-display text-[clamp(3.25rem,7vw,6rem)] font-medium leading-[0.95] tracking-[-0.025em] text-plum-900">
+            {ed.heroTitle}
+          </h1>
+        </div>
+        <div className="max-w-xl md:pb-1">
+          <p className="text-lg leading-[1.7] text-charcoal-500">{ed.intro}</p>
+          <p className="mt-5 border-l border-rose-300 pl-4 text-sm leading-relaxed text-charcoal-500">
+            {ed.trust}
+          </p>
+        </div>
       </header>
-
-      {/* Trust statement — Muriyar Ta curates but does not provide services. */}
-      <p className="mt-6 max-w-2xl border-l border-rose-200 pl-5 leading-relaxed text-charcoal-700">
-        {ed.trust}
-      </p>
 
       <CrisisCallout
         heading={ed.crisisHeading}
@@ -191,24 +206,55 @@ export default async function ResourcesIndexPage({
         cta={ed.crisisCta}
       />
 
-      <FloralSeparator className="my-12 text-rose-200" />
+      <section aria-labelledby="resource-needs" className="mt-20 md:mt-24">
+        <h2
+          id="resource-needs"
+          className="font-display text-[clamp(2.5rem,5vw,4rem)] font-medium leading-none tracking-[-0.02em] text-plum-900"
+        >
+          {ed.browseHeading}
+        </h2>
+        <div className="mt-8">
+          <CategoryNav
+            categories={categories}
+            activeCategoryId={catId}
+            q={q}
+            allLabel={t("allCategories")}
+            ariaLabel={ed.categoryNavLabel}
+            descriptions={categoryDescriptions}
+          />
+        </div>
+      </section>
 
-      <div className="max-w-md">
-        <SearchBar
-          label={ed.searchLabel}
-          placeholder={ed.searchPlaceholder}
-          submitLabel={ed.searchSubmit}
-          defaultValue={q ?? ""}
-          activeCategoryId={catId}
-          action={`/${locale}/resources`}
-        />
-      </div>
+      <section
+        aria-labelledby="resource-search"
+        className="mt-20 border-t border-stone-200 pt-12 md:mt-24 md:pt-16"
+      >
+        <h2
+          id="resource-search"
+          className="font-display text-3xl font-medium text-plum-900 md:text-4xl"
+        >
+          {ed.searchHeading}
+        </h2>
+        <div className="mt-7 max-w-3xl">
+          <SearchBar
+            label={ed.searchLabel}
+            placeholder={ed.searchPlaceholder}
+            submitLabel={ed.searchSubmit}
+            defaultValue={q ?? ""}
+            activeCategoryId={catId}
+            action={`/${locale}/resources`}
+          />
+        </div>
+      </section>
 
       {searching ? (
-        <section aria-labelledby="res-results" className="mt-12">
+        <section
+          aria-labelledby="res-results"
+          className="mt-16 border-t border-stone-200 pt-12"
+        >
           <h2
             id="res-results"
-            className="font-display text-2xl font-medium text-plum-800"
+            className="font-display text-3xl font-medium text-plum-900 md:text-4xl"
           >
             {ed.resultsHeading}
           </h2>
@@ -217,13 +263,14 @@ export default async function ResourcesIndexPage({
               <ResourcesEmptyState title={ed.emptyTitle} body={ed.emptyBody} />
             </div>
           ) : (
-            <div className="mt-4 divide-y divide-stone-200/60 border-t border-stone-200/60">
+            <div className="mt-7 divide-y divide-stone-200 border-t border-stone-200">
               {visibleResults.map((e) => (
                 <ResourceEntry
                   key={e.resourceId}
                   resource={e.resource}
                   regionLabel={e.regionLabel}
                   isLocal={e.isLocal}
+                  categoryLabels={e.categoryLabels}
                   labels={entryLabels}
                 />
               ))}
@@ -239,14 +286,14 @@ export default async function ResourcesIndexPage({
                 {currentPage > 1 ? (
                   <Link
                     href={pageHref(currentPage - 1)}
-                    className="rounded-md border border-stone-200 bg-white px-3 py-1.5 font-medium text-plum-700 transition-colors hover:bg-rose-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-600"
+                    className="border-b border-rose-300 pb-1 font-semibold text-plum-800 transition-colors hover:border-plum-700 hover:text-plum-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
                   >
                     {ed.previousPage}
                   </Link>
                 ) : (
                   <span
                     aria-disabled="true"
-                    className="cursor-not-allowed rounded-md border border-stone-200 bg-stone-50 px-3 py-1.5 font-medium text-stone-400"
+                    className="cursor-not-allowed border-b border-stone-200 pb-1 font-medium text-stone-400"
                   >
                     {ed.previousPage}
                   </span>
@@ -254,14 +301,14 @@ export default async function ResourcesIndexPage({
                 {currentPage < pageCount ? (
                   <Link
                     href={pageHref(currentPage + 1)}
-                    className="rounded-md border border-stone-200 bg-white px-3 py-1.5 font-medium text-plum-700 transition-colors hover:bg-rose-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-600"
+                    className="border-b border-rose-300 pb-1 font-semibold text-plum-800 transition-colors hover:border-plum-700 hover:text-plum-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
                   >
                     {ed.nextPage}
                   </Link>
                 ) : (
                   <span
                     aria-disabled="true"
-                    className="cursor-not-allowed rounded-md border border-stone-200 bg-stone-50 px-3 py-1.5 font-medium text-stone-400"
+                    className="cursor-not-allowed border-b border-stone-200 pb-1 font-medium text-stone-400"
                   >
                     {ed.nextPage}
                   </span>
@@ -271,25 +318,33 @@ export default async function ResourcesIndexPage({
           ) : null}
         </section>
       ) : resources.length === 0 ? (
-        <div className="mt-12">
+        <div className="mt-16">
           <ResourcesEmptyState title={t("emptyTitle")} body={t("emptyBody")} />
         </div>
       ) : (
-        sections.map(({ cluster, recommended, rest }) => (
-          <ResourceSection
-            key={cluster.key}
-            id={`res-${cluster.key}`}
-            label={ed.clusters[cluster.key].label}
-            intro={ed.clusters[cluster.key].intro}
-            recommended={recommended}
-            rest={rest}
-            recommendedHint={ed.recommendedHint}
-            entryLabels={entryLabels}
-            showMoreLabel={ed.showMore}
-            showLessLabel={ed.showLess}
-          />
-        ))
+        <section aria-labelledby="resource-directory" className="mt-20 md:mt-24">
+          <h2
+            id="resource-directory"
+            className="font-display text-[clamp(2.5rem,5vw,4rem)] font-medium leading-none tracking-[-0.02em] text-plum-900"
+          >
+            {ed.directoryHeading}
+          </h2>
+          {sections.map(({ cluster, recommended, rest }) => (
+            <ResourceSection
+              key={cluster.key}
+              id={`res-${cluster.key}`}
+              label={ed.clusters[cluster.key].label}
+              intro={ed.clusters[cluster.key].intro}
+              recommended={recommended}
+              rest={rest}
+              recommendedHint={ed.recommendedHint}
+              entryLabels={entryLabels}
+              showMoreLabel={ed.showMore}
+              showLessLabel={ed.showLess}
+            />
+          ))}
+        </section>
       )}
-    </div>
+    </article>
   );
 }
