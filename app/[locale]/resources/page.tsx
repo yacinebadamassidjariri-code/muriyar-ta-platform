@@ -11,6 +11,8 @@ import {
   resourcesEditorial,
   RESOURCE_CLUSTERS,
   clusterKeyForSlug,
+  isPublicResourceThemeCategory,
+  publicResourceThemeCategoryName,
   regionRank,
   isLocalRegion,
   isRecommended,
@@ -53,9 +55,18 @@ export default async function ResourcesIndexPage({
     resourcesEditorial[locale as keyof typeof resourcesEditorial] ??
     resourcesEditorial.en;
 
-  const activeCategoryId = sp.category ? Number(sp.category) : null;
-  const catId = Number.isFinite(activeCategoryId as number)
-    ? (activeCategoryId as number)
+  const categories = await listCategories();
+  const themeCategories = categories
+    .filter((category) => isPublicResourceThemeCategory(category.slug))
+    .map((category) => ({
+      ...category,
+      name: publicResourceThemeCategoryName(category.slug, category.name),
+    }));
+  const requestedCategoryId = sp.category ? Number(sp.category) : null;
+  const catId = themeCategories.some(
+    (category) => category.category_id === requestedCategoryId,
+  )
+    ? requestedCategoryId
     : null;
   const q = sp.q?.trim() || null;
   const searching = !!q || catId != null;
@@ -63,10 +74,23 @@ export default async function ResourcesIndexPage({
   const page =
     Number.isFinite(requestedPage) && requestedPage > 0 ? requestedPage : 1;
 
-  const [categories, resources] = await Promise.all([
-    listCategories(),
-    listResources({ categoryId: catId, q }),
-  ]);
+  const queriedResources = await listResources({ categoryId: catId, q });
+
+  const categoryIdsFor = (resource: Resource): number[] =>
+    resource.category_ids.length > 0
+      ? resource.category_ids
+      : resource.category_id != null
+        ? [resource.category_id]
+        : [];
+
+  // Keep public category results strictly scoped to the selected many-to-many
+  // assignment, even if the backing view or query behavior changes later.
+  const resources =
+    catId == null
+      ? queriedResources
+      : queriedResources.filter((resource) =>
+          categoryIdsFor(resource).includes(catId),
+        );
 
   const regionLabels = await getRegionLabels(
     resources
@@ -74,7 +98,12 @@ export default async function ResourcesIndexPage({
       .filter((id): id is number => id !== null),
   );
   const catSlug = new Map(categories.map((c) => [c.category_id, c.slug]));
-  const catName = new Map(categories.map((c) => [c.category_id, c.name]));
+  const catName = new Map(
+    categories.map((category) => [
+      category.category_id,
+      publicResourceThemeCategoryName(category.slug, category.name),
+    ]),
+  );
 
   const regionOf = (r: Resource): string | undefined =>
     r.geographic_region_id != null
@@ -83,12 +112,7 @@ export default async function ResourcesIndexPage({
 
   const toEntry = (r: Resource): SectionEntry => {
     const region = regionOf(r);
-    const categoryIds =
-      r.category_ids.length > 0
-        ? r.category_ids
-        : r.category_id != null
-          ? [r.category_id]
-          : [];
+    const categoryIds = categoryIdsFor(r);
     return {
       resourceId: r.resource_id,
       resource: r,
@@ -113,12 +137,7 @@ export default async function ResourcesIndexPage({
   if (!searching) {
     const seenByCluster = new Map<string, Set<string>>();
     for (const r of resources) {
-      const categoryIds =
-        r.category_ids.length > 0
-          ? r.category_ids
-          : r.category_id != null
-            ? [r.category_id]
-            : [];
+      const categoryIds = categoryIdsFor(r);
       const clusterKeys = new Set(
         categoryIds.map((id) => clusterKeyForSlug(catSlug.get(id))),
       );
@@ -175,7 +194,7 @@ export default async function ResourcesIndexPage({
   };
 
   const categoryDescriptions = Object.fromEntries(
-    categories.map((category) => [
+    themeCategories.map((category) => [
       category.slug,
       ed.clusters[clusterKeyForSlug(category.slug)].intro,
     ]),
@@ -215,7 +234,7 @@ export default async function ResourcesIndexPage({
         </h2>
         <div className="mt-8">
           <CategoryNav
-            categories={categories}
+            categories={themeCategories}
             activeCategoryId={catId}
             q={q}
             allLabel={t("allCategories")}

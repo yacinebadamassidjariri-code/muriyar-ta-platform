@@ -4,8 +4,9 @@ import type { Category } from "@/lib/data/resources";
 
 /**
  * Server-rendered category navigation driven entirely by URL params.
- * "All" link clears the category. Categories come straight from the DB
- * (resource_categories) so new ones appear automatically.
+ * "All" clears the category. The page passes only the thematic categories
+ * approved for public browsing; the complete category set remains available
+ * to the CMS and data model.
  */
 export function CategoryNav({
   categories,

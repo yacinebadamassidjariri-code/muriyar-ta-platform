@@ -25,6 +25,39 @@ export type ClusterKey =
   | "orgs";
 
 /**
+ * Categories offered as public browsing themes. Operational directory
+ * groupings such as "Find Local Organizations" and "NGOs & Organizations"
+ * remain available to the CMS and the compatibility model, but are not public
+ * filters.
+ */
+export const PUBLIC_RESOURCE_THEME_CATEGORY_SLUGS = new Set([
+  "education-and-scholarships",
+  "mental-health-support",
+  "legal-support",
+  "gbv-support-services",
+  "gender-based-violence-support-services",
+  "gender-based-violence-support",
+  "child-marriage-support",
+  "health-services",
+  "helplines-and-crisis-support",
+]);
+
+export function isPublicResourceThemeCategory(slug: string): boolean {
+  return PUBLIC_RESOURCE_THEME_CATEGORY_SLUGS.has(slug);
+}
+
+export function publicResourceThemeCategoryName(
+  slug: string,
+  databaseName: string,
+): string {
+  return slug === "gbv-support-services" ||
+    slug === "gender-based-violence-support-services" ||
+    slug === "gender-based-violence-support"
+    ? "Gender-Based Violence Support"
+    : databaseName;
+}
+
+/**
  * Cluster structure (locale-independent). `categorySlugs` are matched against
  * the slug derived from each database category name. `recommend` is a small,
  * hand-curated set of organizations surfaced under a gentle "if you're not sure
