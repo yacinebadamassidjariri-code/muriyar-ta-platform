@@ -26,8 +26,8 @@ export function Header() {
   }));
 
   return (
-    <HeaderFrame prelaunchMode={prelaunchMode}>
-      <HeaderBrand prelaunchMode={prelaunchMode} />
+    <HeaderFrame>
+      <HeaderBrand />
 
       <div className="flex items-center gap-5">
         <Nav items={items} />
