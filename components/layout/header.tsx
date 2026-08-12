@@ -19,8 +19,11 @@ import { HeaderFrame } from "./header-frame";
 export function Header() {
   const t = useTranslations("nav");
   const prelaunchMode = isPrelaunchMode();
-  const navigation = prelaunchMode ? prelaunchNav : mainNav;
-  const items = navigation.map((item) => ({
+  const items = mainNav.map((item) => ({
+    href: item.href,
+    label: t(item.key),
+  }));
+  const prelaunchItems = prelaunchNav.map((item) => ({
     href: item.href,
     label: t(item.key),
   }));
@@ -30,7 +33,11 @@ export function Header() {
       <HeaderBrand />
 
       <div className="flex items-center gap-5">
-        <Nav items={items} />
+        <Nav
+          items={items}
+          prelaunchItems={prelaunchItems}
+          usePrelaunchNavigation={prelaunchMode}
+        />
 
         {/* Hairline separating the primary nav from the standing utilities. */}
         <span

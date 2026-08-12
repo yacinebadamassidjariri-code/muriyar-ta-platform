@@ -13,11 +13,23 @@ function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-export function Nav({ items }: { items: NavItem[] }) {
+export function Nav({
+  items,
+  prelaunchItems = items,
+  usePrelaunchNavigation = false,
+}: {
+  items: NavItem[];
+  prelaunchItems?: NavItem[];
+  usePrelaunchNavigation?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  // Pre-launch changes only the root landing page presentation. Once a reader
+  // enters the full platform, every public route uses the canonical navigation.
+  const visibleItems =
+    usePrelaunchNavigation && pathname === "/" ? prelaunchItems : items;
 
   // Escape closes the mobile sheet; focus moves to the first link on open.
   useEffect(() => {
@@ -41,7 +53,7 @@ export function Nav({ items }: { items: NavItem[] }) {
         aria-label="Primary"
         className="hidden items-center gap-6 lg:flex xl:gap-8"
       >
-        {items.map((item) => {
+        {visibleItems.map((item) => {
           const active = isActive(pathname, item.href);
           return (
             <Link
@@ -101,7 +113,7 @@ export function Nav({ items }: { items: NavItem[] }) {
           aria-label="Primary"
           className="mx-auto flex max-w-6xl flex-col px-5 py-1"
         >
-          {items.map((item) => {
+          {visibleItems.map((item) => {
             const active = isActive(pathname, item.href);
             return (
               <Link
