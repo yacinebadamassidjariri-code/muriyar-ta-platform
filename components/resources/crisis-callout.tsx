@@ -1,4 +1,5 @@
 import { Link } from "@/lib/i18n/navigation";
+import styles from "./resources.module.css";
 
 /**
  * A calm but clearly distinct pointer to crisis support, in the platform's rose
@@ -15,19 +16,17 @@ export function CrisisCallout({
   cta: string;
 }) {
   return (
-    <aside className="mt-10 border-y border-rose-200 bg-rose-50 px-5 py-5 sm:px-7">
-      <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-8">
+    <aside className={styles.crisisCallout}>
+      <div>
         <div>
-          <p className="font-display text-xl font-medium text-plum-900">
+          <h2>
             {heading}
-          </p>
-          <p className="mt-1 text-sm leading-relaxed text-charcoal-500">
-            {body}
-          </p>
+          </h2>
+          <p>{body}</p>
         </div>
         <Link
           href="/resources/crisis"
-          className="inline-flex w-fit items-center gap-2 border-b border-rose-400 pb-1 text-sm font-semibold text-plum-800 transition-colors hover:border-plum-700 hover:text-plum-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
+          className={styles.textLink}
         >
           {cta}
           <span aria-hidden="true">→</span>

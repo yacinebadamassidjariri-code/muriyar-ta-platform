@@ -7,15 +7,7 @@ import { CrisisLink } from "./crisis-link";
 import { HeaderBrand } from "./header-brand";
 import { HeaderFrame } from "./header-frame";
 
-/**
- * Editorial masthead. Painted on the footer's deep-plum surface (#2D2038, the
- * top of the footer gradient) so the platform is framed by one consistent
- * editorial palette top and bottom. The whole color system is designed for the
- * dark surface — a cream wordmark set as a publication name, quiet stone
- * navigation that brightens to cream, warm rose accents — not a mechanical
- * inversion. Static by design: it scrolls away so stories and transcripts own
- * the viewport. No shadow, gradient, or sticky behavior.
- */
+/** Shared public masthead. Static so stories and transcripts own the viewport. */
 export function Header() {
   const t = useTranslations("nav");
   const prelaunchMode = isPrelaunchMode();
@@ -39,17 +31,12 @@ export function Header() {
           usePrelaunchNavigation={prelaunchMode}
         />
 
-        {/* Hairline separating the primary nav from the standing utilities. */}
         <span
           aria-hidden="true"
-          className="hidden h-5 w-px bg-white/15 lg:inline-block"
+          className="hidden h-5 w-px bg-white/12 lg:inline-block"
         />
 
         <div className="flex items-center gap-3">
-          {/*
-            Reserved slot: a future archive search entry point drops in here,
-            first in the utility cluster, without reflowing the masthead.
-          */}
           <CrisisLink />
           <LocaleSwitcher variant="dark" />
         </div>

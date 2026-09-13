@@ -1,6 +1,7 @@
 import { FileText, ShieldCheck } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import styles from "./podcast.module.css";
 
 type Labels = {
   heading: string;
@@ -21,10 +22,12 @@ export function PodcastTranscript({
   transcript,
   status,
   labels,
+  variant = "default",
 }: {
   transcript: string | null;
   status: "none" | "auto" | "human_reviewed";
   labels: Labels;
+  variant?: "default" | "public";
 }) {
   const statusLabel =
     status === "human_reviewed"
@@ -32,6 +35,15 @@ export function PodcastTranscript({
       : status === "auto"
         ? labels.statusAuto
         : labels.statusNone;
+
+  if (variant === "public") {
+    return (
+      <section id="transcript" aria-labelledby="transcript-heading" className={`${styles.transcript} ${styles.reading}`}>
+        <div className={styles.transcriptHead}><h2 id="transcript-heading">{labels.heading}</h2>{status !== "none" ? <span className={styles.status}><span className="sr-only">{labels.statusLabel}: </span>{statusLabel}</span> : null}</div>
+        {transcript && transcript.trim().length > 0 ? <article data-search-target="transcript" className={styles.transcriptBody}>{transcript}</article> : <div className={styles.transcriptEmpty}><h3>{labels.emptyTitle}</h3><p>{labels.emptyBody}</p></div>}
+      </section>
+    );
+  }
 
   return (
     <section

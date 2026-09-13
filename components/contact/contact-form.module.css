@@ -1,0 +1,12 @@
+.form{width:min(100%,var(--mt-reading-width));display:grid;gap:1.5rem}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem}
+.field{min-width:0}.label{display:block;margin-bottom:.55rem;color:var(--mt-ink);font-size:.82rem;font-weight:750}.optional{color:var(--mt-text-faint);font-weight:500}
+.input,.textarea{width:100%;border:1px solid var(--mt-divider);border-radius:.2rem;background:#fffdfa;color:var(--mt-ink);box-shadow:none;font:inherit;transition:border-color var(--mt-motion),box-shadow var(--mt-motion)}
+.input{min-height:3rem;padding:.7rem .85rem}.textarea{min-height:10rem;resize:vertical;padding:.85rem;line-height:1.65}
+.input:focus-visible,.textarea:focus-visible,.consent input:focus-visible,.submit:focus-visible,.reset:focus-visible{outline:var(--mt-focus-ring);outline-offset:3px}
+.input[aria-invalid="true"],.textarea[aria-invalid="true"]{border-color:var(--mt-rust)}
+.help{margin:.45rem 0 0;color:var(--mt-text-faint);font-size:.75rem}.error{margin:.45rem 0 0;color:var(--mt-rust-hover);font-size:.8rem;font-weight:650}
+.consent{display:flex;align-items:flex-start;gap:.75rem;border-left:2px solid var(--mt-reassurance);background:color-mix(in srgb,var(--mt-reassurance) 7%,transparent);padding:1rem}.consent input{width:1.1rem;height:1.1rem;flex:0 0 auto;margin-top:.2rem;accent-color:var(--mt-slate)}.consent span{color:var(--mt-text-muted);font-size:.86rem;line-height:1.55}
+.actions{border-top:1px solid var(--mt-divider);padding-top:1.5rem}.submit{min-height:3.1rem;border:1px solid var(--mt-slate);background:var(--mt-slate);padding:.75rem 1.5rem;color:var(--mt-text-on-dark);font:inherit;font-size:.88rem;font-weight:750;cursor:pointer;transition:background var(--mt-motion),border-color var(--mt-motion)}.submit:hover{border-color:var(--mt-slate-deep);background:var(--mt-slate-deep)}
+.success{max-width:var(--mt-reading-width);border-block:1px solid var(--mt-divider);padding:2.25rem 0}.success h3{margin:0;font-family:var(--font-display),Georgia,serif;font-size:clamp(2rem,4vw,2.8rem);font-weight:650;line-height:1.05}.success p{max-width:36rem;margin:.7rem 0 0;color:var(--mt-text-muted);font-size:.9rem;line-height:1.6}.reset{margin-top:1.25rem;border:0;background:transparent;padding:0 0 .2rem;color:var(--mt-ink);font:inherit;font-size:.82rem;font-weight:750;text-decoration:underline;text-decoration-color:var(--mt-rust-bright);text-underline-offset:.28em;cursor:pointer}.reset:hover{color:var(--mt-rust-hover)}
+@media(max-width:40rem){.grid{grid-template-columns:1fr}.submit{width:100%}}

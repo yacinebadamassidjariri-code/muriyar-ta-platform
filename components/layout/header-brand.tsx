@@ -7,7 +7,7 @@ export function HeaderBrand() {
     <Link
       href="/"
       aria-label="Muriyar Ta"
-      className="inline-flex shrink-0 items-center transition-[color,transform] duration-200 hover:-translate-y-px hover:text-white active:translate-y-0 motion-reduce:transform-none focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-300/70"
+      className="inline-flex shrink-0 items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--mt-focus-color)]"
     >
       <Image
         src="/brand/muriyar-ta-header-lockup.png"
@@ -15,7 +15,7 @@ export function HeaderBrand() {
         width={365}
         height={88}
         loading="eager"
-        className="hidden h-11 w-auto sm:block lg:h-12"
+        className="hidden h-10 w-auto sm:block lg:h-11"
       />
       <Image
         src="/brand/muriyar-ta-header-symbol.png"
@@ -23,7 +23,7 @@ export function HeaderBrand() {
         width={88}
         height={88}
         loading="eager"
-        className="h-11 w-11 sm:hidden"
+        className="h-10 w-10 sm:hidden"
       />
     </Link>
   );

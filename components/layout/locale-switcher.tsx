@@ -29,7 +29,7 @@ export function LocaleSwitcher({
 
   const selectClassName =
     variant === "dark"
-      ? "rounded-md border border-white/20 bg-white/5 px-2 py-1.5 text-sm text-cream-100 [color-scheme:dark] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-300"
+      ? "border border-white/20 bg-transparent px-2 py-1.5 text-xs text-[var(--mt-paper)] [color-scheme:dark] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mt-focus-color)] sm:text-sm"
       : "rounded-md border border-line bg-surface px-2 py-1.5 text-sm text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600";
 
   return (

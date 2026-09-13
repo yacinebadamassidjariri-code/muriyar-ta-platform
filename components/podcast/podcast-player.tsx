@@ -1,6 +1,7 @@
 import { Download } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import styles from "./podcast.module.css";
 
 type Labels = {
   unavailableTitle: string;
@@ -21,13 +22,18 @@ export function PodcastPlayer({
   title,
   labels,
   showDownload = true,
+  variant = "default",
 }: {
   audioUrl: string | null;
   title: string;
   labels: Labels;
   showDownload?: boolean;
+  variant?: "default" | "public";
 }) {
   if (!audioUrl) {
+    if (variant === "public") {
+      return <div className={styles.unavailable}><h2>{labels.unavailableTitle}</h2><p>{labels.unavailableBody}</p></div>;
+    }
     return (
       <Card className="p-6">
         <h2 className="text-base font-semibold text-ink">
@@ -36,6 +42,10 @@ export function PodcastPlayer({
         <p className="mt-1 text-sm text-ink-soft">{labels.unavailableBody}</p>
       </Card>
     );
+  }
+
+  if (variant === "public") {
+    return <div className={styles.publicPlayer}><audio controls preload="metadata" aria-label={title}><source src={audioUrl} /></audio></div>;
   }
 
   return (

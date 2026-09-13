@@ -1,12 +1,10 @@
 "use client";
 
 import { useId, useState } from "react";
-import { CheckCircle2, Send } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import styles from "./contact-form.module.css";
 
 type Labels = {
   nameLabel: string;
@@ -107,39 +105,22 @@ export function ContactForm({ labels }: { labels: Labels }) {
 
   if (submitted) {
     return (
-      <Card className="p-6">
-        <div className="flex items-start gap-3">
-          <span
-            aria-hidden="true"
-            className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700"
-          >
-            <CheckCircle2 className="h-6 w-6" />
-          </span>
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold text-ink">
-              {labels.successTitle}
-            </h3>
-            <p className="mt-1 text-sm leading-relaxed text-ink-soft">
-              {labels.successBody}
-            </p>
-            <div className="mt-4">
-              <Button type="button" variant="secondary" onClick={handleReset}>
-                {labels.successAction}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </Card>
+      <div className={styles.success} role="status" aria-live="polite">
+        <h3>{labels.successTitle}</h3>
+        <p>{labels.successBody}</p>
+        <button type="button" onClick={handleReset} className={styles.reset}>
+          {labels.successAction}
+        </button>
+      </div>
     );
   }
 
   return (
-    <Card className="p-6">
-      <form onSubmit={handleSubmit} noValidate className="space-y-6">
+      <form onSubmit={handleSubmit} noValidate className={styles.form}>
         {/* Name + Email */}
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <Label htmlFor={nameId}>{labels.nameLabel}</Label>
+        <div className={styles.grid}>
+          <div className={styles.field}>
+            <Label htmlFor={nameId} className={styles.label}>{labels.nameLabel}</Label>
             <Input
               id={nameId}
               name="name"
@@ -151,21 +132,21 @@ export function ContactForm({ labels }: { labels: Labels }) {
               aria-invalid={!!errors.name}
               aria-describedby={errors.name ? `${nameId}-err` : undefined}
               autoComplete="name"
-              className="mt-1.5"
+              className={styles.input}
             />
             {errors.name ? (
               <p
                 id={`${nameId}-err`}
                 role="status"
                 aria-live="polite"
-                className="mt-1 text-sm text-danger"
+                className={styles.error}
               >
                 {errors.name}
               </p>
             ) : null}
           </div>
-          <div>
-            <Label htmlFor={emailId}>{labels.emailLabel}</Label>
+          <div className={styles.field}>
+            <Label htmlFor={emailId} className={styles.label}>{labels.emailLabel}</Label>
             <Input
               id={emailId}
               name="email"
@@ -177,14 +158,14 @@ export function ContactForm({ labels }: { labels: Labels }) {
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? `${emailId}-err` : undefined}
               autoComplete="email"
-              className="mt-1.5"
+              className={styles.input}
             />
             {errors.email ? (
               <p
                 id={`${emailId}-err`}
                 role="status"
                 aria-live="polite"
-                className="mt-1 text-sm text-danger"
+                className={styles.error}
               >
                 {errors.email}
               </p>
@@ -193,11 +174,11 @@ export function ContactForm({ labels }: { labels: Labels }) {
         </div>
 
         {/* Organization (optional) + Subject */}
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <Label htmlFor={orgId}>
+        <div className={styles.grid}>
+          <div className={styles.field}>
+            <Label htmlFor={orgId} className={styles.label}>
               {labels.organizationLabel}{" "}
-              <span className="font-normal text-ink-soft">
+              <span className={styles.optional}>
                 {labels.organizationOptional}
               </span>
             </Label>
@@ -209,11 +190,11 @@ export function ContactForm({ labels }: { labels: Labels }) {
               onChange={(e) => setOrganization(e.target.value)}
               maxLength={200}
               autoComplete="organization"
-              className="mt-1.5"
+              className={styles.input}
             />
           </div>
-          <div>
-            <Label htmlFor={subjectId}>{labels.subjectLabel}</Label>
+          <div className={styles.field}>
+            <Label htmlFor={subjectId} className={styles.label}>{labels.subjectLabel}</Label>
             <Input
               id={subjectId}
               name="subject"
@@ -226,14 +207,14 @@ export function ContactForm({ labels }: { labels: Labels }) {
               aria-describedby={
                 errors.subject ? `${subjectId}-err` : undefined
               }
-              className="mt-1.5"
+              className={styles.input}
             />
             {errors.subject ? (
               <p
                 id={`${subjectId}-err`}
                 role="status"
                 aria-live="polite"
-                className="mt-1 text-sm text-danger"
+                className={styles.error}
               >
                 {errors.subject}
               </p>
@@ -242,8 +223,8 @@ export function ContactForm({ labels }: { labels: Labels }) {
         </div>
 
         {/* Message */}
-        <div>
-          <Label htmlFor={messageId}>{labels.messageLabel}</Label>
+        <div className={styles.field}>
+          <Label htmlFor={messageId} className={styles.label}>{labels.messageLabel}</Label>
           <Textarea
             id={messageId}
             name="message"
@@ -258,9 +239,9 @@ export function ContactForm({ labels }: { labels: Labels }) {
                 .filter(Boolean)
                 .join(" ") || undefined
             }
-            className="mt-1.5"
+            className={styles.textarea}
           />
-          <p id={messageHelpId} className="mt-1 text-xs text-ink-soft">
+          <p id={messageHelpId} className={styles.help}>
             {labels.messageHelp}
           </p>
           {errors.message ? (
@@ -268,7 +249,7 @@ export function ContactForm({ labels }: { labels: Labels }) {
               id={`${messageId}-err`}
               role="status"
               aria-live="polite"
-              className="mt-1 text-sm text-danger"
+              className={styles.error}
             >
               {errors.message}
             </p>
@@ -279,7 +260,7 @@ export function ContactForm({ labels }: { labels: Labels }) {
         <div>
           <label
             htmlFor={consentId}
-            className="flex items-start gap-3 text-sm leading-relaxed text-ink"
+            className={styles.consent}
           >
             <input
               id={consentId}
@@ -292,7 +273,6 @@ export function ContactForm({ labels }: { labels: Labels }) {
               aria-describedby={
                 errors.consent ? `${consentId}-err` : undefined
               }
-              className="mt-0.5 h-4 w-4 rounded border-line text-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
             />
             <span>{labels.consentLabel}</span>
           </label>
@@ -301,20 +281,16 @@ export function ContactForm({ labels }: { labels: Labels }) {
               id={`${consentId}-err`}
               role="status"
               aria-live="polite"
-              className="mt-1 text-sm text-danger"
+              className={styles.error}
             >
               {errors.consent}
             </p>
           ) : null}
         </div>
 
-        <div className="border-t border-line pt-4">
-          <Button type="submit">
-            <Send className="h-4 w-4" aria-hidden="true" />
-            {labels.submitButton}
-          </Button>
+        <div className={styles.actions}>
+          <button type="submit" className={styles.submit}>{labels.submitButton}</button>
         </div>
       </form>
-    </Card>
   );
 }

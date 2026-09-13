@@ -11,7 +11,6 @@ export const mainNav = [
   { key: "podcast", href: "/podcast" },
   { key: "submit", href: "/submit" },
   { key: "resources", href: "/resources" },
-  { key: "reports", href: "/report" },
   { key: "about", href: "/about" },
 ] as const;
 

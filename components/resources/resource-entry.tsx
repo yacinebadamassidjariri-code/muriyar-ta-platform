@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils/cn";
 import type { Resource } from "@/lib/data/resources";
+import styles from "./resources.module.css";
 
 export type ResourceEntryLabels = {
   visit: string;
@@ -45,41 +45,26 @@ export function ResourceEntry({
     .join(" · ");
 
   return (
-    <article className="grid gap-5 py-7 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-10 sm:py-8">
-      <div className="min-w-0">
-        {isLocal ? (
-          <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-plum-600">
-            {labels.localTag}
-          </p>
-        ) : null}
-        <h3
-          className={cn(
-            "font-display text-2xl font-medium leading-tight text-plum-900 sm:text-[1.7rem]",
-            isLocal && "mt-1",
-          )}
-        >
-          {resource.name}
-        </h3>
+    <article className={styles.entry}>
+      <div>
+        {isLocal ? <p className={styles.localTag}>{labels.localTag}</p> : null}
+        <h3 className={styles.entryTitle}>{resource.name}</h3>
 
         {resource.description ? (
-          <p className="mt-3 max-w-3xl leading-[1.7] text-charcoal-500">
+          <p className={styles.entryDescription}>
             {editorialDescription(resource.description)}
           </p>
         ) : null}
 
-        {meta ? (
-          <p className="mt-3 text-xs leading-relaxed tracking-[0.08em] text-stone-500">
-            {meta}
-          </p>
-        ) : null}
+        {meta ? <p className={styles.metadata}>{meta}</p> : null}
       </div>
 
       {resource.contact_phone || resource.contact_email ? (
-        <div className="flex min-w-0 flex-col items-start gap-2 text-sm text-charcoal-500 sm:items-end sm:text-right">
+        <div className={styles.entryActions}>
           {resource.contact_phone ? (
             <a
               href={`tel:${resource.contact_phone}`}
-              className="break-all transition-colors hover:text-plum-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
+              className={styles.contactLink}
             >
               {resource.contact_phone}
             </a>
@@ -87,7 +72,7 @@ export function ResourceEntry({
           {resource.contact_email ? (
             <a
               href={`mailto:${resource.contact_email}`}
-              className="break-all transition-colors hover:text-plum-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
+              className={styles.contactLink}
             >
               {resource.contact_email}
             </a>
@@ -98,10 +83,9 @@ export function ResourceEntry({
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`${labels.visit}: ${resource.name}`}
-              className="mt-1 inline-flex items-center gap-1.5 border-b border-rose-300 pb-1 text-sm font-semibold text-plum-800 transition-colors hover:border-plum-700 hover:text-plum-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
+              className={styles.visitLink}
             >
               {labels.visit}
-              <span aria-hidden="true">↗</span>
             </a>
           ) : null}
         </div>
@@ -111,10 +95,9 @@ export function ResourceEntry({
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`${labels.visit}: ${resource.name}`}
-          className="inline-flex h-fit w-fit items-center gap-1.5 border-b border-rose-300 pb-1 text-sm font-semibold text-plum-800 transition-colors hover:border-plum-700 hover:text-plum-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600 sm:justify-self-end"
+          className={styles.visitLink}
         >
           {labels.visit}
-          <span aria-hidden="true">↗</span>
         </a>
       ) : null}
     </article>

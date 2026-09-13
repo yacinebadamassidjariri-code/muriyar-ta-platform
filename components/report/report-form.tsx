@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import styles from "./report-form.module.css";
 
 type Category =
   | ""
@@ -131,11 +132,11 @@ return;
 
   if (state.phase === "success") {
     return (
-      <Card className="p-6">
+      <Card className={`${styles.surface} ${styles.success}`} role="status" aria-live="polite">
         <div className="flex items-start gap-3">
           <span
             aria-hidden="true"
-            className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700"
+            className={`mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center ${styles.successIcon}`}
           >
             <CheckCircle2 className="h-6 w-6" />
           </span>
@@ -147,7 +148,7 @@ return;
               {labels.successBody}
             </p>
             <div className="mt-4">
-              <Button type="button" variant="secondary" onClick={handleReset}>
+              <Button type="button" variant="secondary" onClick={handleReset} className={styles.submit}>
                 {labels.successAction}
               </Button>
             </div>
@@ -161,8 +162,8 @@ return;
   const banner = state.phase === "error" ? state.message : null;
 
   return (
-    <Card className="p-6">
-      <form onSubmit={handleSubmit} noValidate className="space-y-6">
+    <Card className={styles.surface}>
+      <form onSubmit={handleSubmit} noValidate>
         {banner ? (
           <p
             role="alert"
@@ -375,7 +376,7 @@ return;
         </div>
 
         <div className="border-t border-line pt-4">
-          <Button type="submit" disabled={busy}>
+          <Button type="submit" disabled={busy} className={styles.submit}>
             {busy ? (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
             ) : (

@@ -1,0 +1,441 @@
+.page {
+  width: 100%;
+  background: var(--mt-paper-soft);
+  color: var(--mt-ink);
+}
+
+.shell {
+  width: min(100%, var(--mt-content-wide));
+  margin-inline: auto;
+  padding: clamp(3.5rem, 7vw, 6rem) var(--mt-gutter) clamp(4.5rem, 8vw, 7rem);
+}
+
+.hero {
+  max-width: 47rem;
+}
+
+.eyebrow,
+.localTag,
+.recommendedLabel {
+  margin: 0;
+  color: var(--mt-rust);
+  font-size: var(--mt-eyebrow-size);
+  font-weight: 800;
+  letter-spacing: var(--mt-eyebrow-tracking);
+  text-transform: uppercase;
+}
+
+.hero h1,
+.sectionTitle,
+.clusterTitle,
+.emptyTitle,
+.crisisTitle,
+.entryTitle {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.hero h1 {
+  max-width: 14ch;
+  margin: 0.8rem 0 0;
+  font-size: clamp(3.25rem, 6.5vw, 5.6rem);
+  line-height: 0.98;
+}
+
+.heroIntro {
+  max-width: 39rem;
+  margin: 1.15rem 0 0;
+  color: var(--mt-text-muted);
+  font-size: clamp(1rem, 1.7vw, 1.12rem);
+  line-height: var(--mt-body-leading);
+}
+
+.crisisCallout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem 2rem;
+  align-items: center;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  border-block: 1px solid var(--mt-divider);
+  border-left: 3px solid var(--mt-rust);
+  padding: 1.25rem 0 1.25rem 1.25rem;
+}
+
+.crisisCallout h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.crisisCallout p {
+  margin: 0.3rem 0 0;
+  color: var(--mt-text-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.textLink,
+.contactLink,
+.visitLink,
+.showButton,
+.paginationLink,
+.backLink {
+  color: var(--mt-ink);
+  font-size: 0.82rem;
+  font-weight: 750;
+  text-decoration: underline;
+  text-decoration-color: var(--mt-rust-bright);
+  text-underline-offset: 0.28em;
+  transition: color var(--mt-motion), text-decoration-color var(--mt-motion);
+}
+
+.textLink:hover,
+.contactLink:hover,
+.visitLink:hover,
+.showButton:hover,
+.paginationLink:hover,
+.backLink:hover {
+  color: var(--mt-rust-hover);
+  text-decoration-color: currentColor;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.65fr);
+  gap: 2rem clamp(3rem, 7vw, 7rem);
+  align-items: end;
+  margin-top: clamp(3rem, 6vw, 5rem);
+  border-top: 1px solid var(--mt-divider);
+  padding-top: 1.75rem;
+}
+
+.controlLabel {
+  margin: 0 0 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.categoryList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.categoryLink {
+  display: inline-flex;
+  border: 1px solid var(--mt-divider);
+  padding: 0.55rem 0.8rem;
+  color: var(--mt-text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: border-color var(--mt-motion), color var(--mt-motion), background var(--mt-motion);
+}
+
+.categoryLink:hover {
+  border-color: var(--mt-rust);
+  color: var(--mt-ink);
+}
+
+.categoryActive {
+  border-color: var(--mt-slate);
+  background: var(--mt-slate);
+  color: var(--mt-paper);
+}
+
+.categoryActive:hover {
+  border-color: var(--mt-slate);
+  color: var(--mt-paper);
+}
+
+.searchForm {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  border-bottom: 1px solid var(--mt-ink);
+}
+
+.searchField {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.searchIcon {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 1rem;
+  height: 1rem;
+  color: var(--mt-text-faint);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  height: 2.8rem;
+  border: 0;
+  background: transparent;
+  padding: 0 0.7rem 0 1.7rem;
+  color: var(--mt-ink);
+  font: inherit;
+}
+
+.searchInput::placeholder {
+  color: var(--mt-text-faint);
+}
+
+.searchButton {
+  border: 0;
+  background: transparent;
+  padding: 0 0 0 1rem;
+  color: var(--mt-ink);
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.directory,
+.results {
+  margin-top: clamp(3.5rem, 7vw, 6rem);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: clamp(2.3rem, 4.5vw, 3.7rem);
+  line-height: 1;
+}
+
+.cluster {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  border-top: 1px solid var(--mt-divider);
+  padding-top: 1.5rem;
+}
+
+.clusterHeader {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.7fr) minmax(0, 1.3fr);
+  gap: 1rem clamp(2rem, 6vw, 6rem);
+}
+
+.clusterTitle {
+  margin: 0;
+  font-size: clamp(1.75rem, 3vw, 2.45rem);
+  line-height: 1.08;
+}
+
+.clusterIntro {
+  max-width: 42rem;
+  margin: 0;
+  color: var(--mt-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.entryGroup {
+  margin-top: 1.4rem;
+  border-top: 1px solid var(--mt-divider-soft);
+}
+
+.recommendedGroup {
+  margin-top: 1.75rem;
+}
+
+.recommendedLabel {
+  margin-bottom: 0.65rem;
+  color: var(--mt-text-faint);
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(10rem, auto);
+  gap: 1.25rem clamp(2rem, 5vw, 5rem);
+  padding: 1.65rem 0;
+  border-bottom: 1px solid var(--mt-divider-soft);
+}
+
+.entryTitle {
+  margin: 0;
+  font-size: clamp(1.45rem, 2.5vw, 2rem);
+  line-height: 1.12;
+}
+
+.localTag {
+  margin-bottom: 0.4rem;
+}
+
+.entryDescription {
+  max-width: 47rem;
+  margin: 0.65rem 0 0;
+  color: var(--mt-text-muted);
+  font-size: 0.93rem;
+  line-height: 1.6;
+}
+
+.metadata {
+  margin: 0.65rem 0 0;
+  color: var(--mt-text-faint);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.entryActions {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.55rem;
+  text-align: right;
+}
+
+.contactLink {
+  max-width: 18rem;
+  overflow-wrap: anywhere;
+  color: var(--mt-text-muted);
+  font-weight: 650;
+  text-decoration-color: var(--mt-divider);
+}
+
+.visitLink::after,
+.textLink::after {
+  content: " \2197";
+  color: var(--mt-rust);
+}
+
+.showButton {
+  margin-top: 1.2rem;
+  border: 0;
+  background: transparent;
+  padding: 0 0 0.2rem;
+  cursor: pointer;
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  color: var(--mt-text-faint);
+  font-size: 0.78rem;
+}
+
+.paginationControls {
+  display: flex;
+  gap: 1rem;
+}
+
+.paginationDisabled {
+  color: var(--mt-text-faint);
+  font-size: 0.82rem;
+}
+
+.empty {
+  max-width: 34rem;
+  margin-top: 2rem;
+  border-block: 1px solid var(--mt-divider);
+  padding: 2rem 0;
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: 1.85rem;
+}
+
+.emptyBody {
+  margin: 0.55rem 0 0;
+  color: var(--mt-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.crisisShell {
+  width: min(100%, calc(var(--mt-reading-width) + (2 * var(--mt-gutter))));
+  margin-inline: auto;
+  padding: 3rem var(--mt-gutter) var(--mt-section-space);
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--mt-text-muted);
+  text-decoration: none;
+}
+
+.crisisHeader {
+  max-width: 43rem;
+  margin-top: 3rem;
+  border-left: 3px solid var(--mt-rust);
+  padding-left: clamp(1rem, 3vw, 1.5rem);
+}
+
+.crisisTitle {
+  margin: 0;
+  font-size: clamp(2.9rem, 6vw, 4.8rem);
+  line-height: 1;
+}
+
+.crisisIntro {
+  margin: 1rem 0 0;
+  color: var(--mt-text-muted);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.crisisList {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  border-top: 1px solid var(--mt-divider);
+}
+
+.categoryLink:focus-visible,
+.searchInput:focus-visible,
+.searchButton:focus-visible,
+.textLink:focus-visible,
+.contactLink:focus-visible,
+.visitLink:focus-visible,
+.showButton:focus-visible,
+.paginationLink:focus-visible,
+.backLink:focus-visible {
+  outline: var(--mt-focus-ring);
+  outline-offset: 3px;
+}
+
+@media (max-width: 48rem) {
+  .shell {
+    padding-top: 3rem;
+  }
+
+  .controls,
+  .clusterHeader,
+  .entry,
+  .crisisCallout {
+    grid-template-columns: 1fr;
+  }
+
+  .controls {
+    gap: 1.75rem;
+  }
+
+  .entryActions {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .crisisCallout {
+    align-items: start;
+  }
+}
+
+@media (max-width: 28rem) {
+  .searchButton {
+    padding-left: 0.65rem;
+  }
+}

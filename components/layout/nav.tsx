@@ -61,15 +61,17 @@ export function Nav({
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "group/n relative text-sm transition-colors focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-300/70",
-                active ? "text-cream-50" : "text-stone-300 hover:text-cream-50",
+                "group/n relative py-1 text-[0.82rem] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--mt-focus-color)]",
+                item.href === "/submit"
+                  ? "text-[var(--mt-rust-soft)] hover:text-[var(--mt-rust-pale)]"
+                  : active ? "text-[var(--mt-text-on-dark)]" : "text-[var(--mt-text-on-dark-muted)] hover:text-[var(--mt-text-on-dark)]",
               )}
             >
               {item.label}
               {active ? (
                 <span
                   aria-hidden="true"
-                  className="absolute -bottom-1.5 left-0 h-px w-full bg-rose-200/80"
+                  className="absolute -bottom-1 left-0 h-px w-full bg-[var(--mt-rust-bright)]"
                 />
               ) : (
                 <span
@@ -85,7 +87,7 @@ export function Nav({
       <button
         ref={triggerRef}
         type="button"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-md text-stone-300 transition-[color,transform] duration-200 hover:-translate-y-px hover:text-cream-50 active:translate-y-0 motion-reduce:transform-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-300/70 lg:hidden"
+        className="inline-flex h-9 w-9 items-center justify-center text-[var(--mt-text-on-dark-muted)] transition-colors hover:text-[var(--mt-text-on-dark)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mt-focus-color)] lg:hidden"
         aria-label="Menu"
         aria-expanded={open}
         aria-controls="mobile-nav"
@@ -104,7 +106,7 @@ export function Nav({
         aria-hidden={!open}
         inert={!open}
         className={cn(
-          "absolute inset-x-0 top-full z-40 bg-[#2D2038] shadow-lg shadow-black/20 lg:hidden",
+          "absolute inset-x-0 top-full z-40 border-t border-[var(--mt-divider-dark)] bg-[var(--mt-slate)] shadow-lg shadow-[var(--mt-slate-deep)]/20 lg:hidden",
           styles.mobilePanel,
           open && styles.mobilePanelOpen,
         )}
@@ -122,8 +124,10 @@ export function Nav({
                 onClick={() => setOpen(false)}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "border-b border-white/10 py-3.5 text-base transition-[color,transform] duration-200 last:border-0 hover:translate-x-0.5 motion-reduce:transform-none focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-300/70",
-                  active ? "text-cream-50" : "text-stone-200 hover:text-cream-50",
+                  "border-b border-[var(--mt-divider-dark)] py-3.5 text-base transition-colors last:border-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mt-focus-color)]",
+                  item.href === "/submit"
+                    ? "font-semibold text-[var(--mt-rust-soft)] hover:text-[var(--mt-rust-pale)]"
+                    : active ? "text-[var(--mt-text-on-dark)]" : "text-[var(--mt-text-on-dark-muted)] hover:text-[var(--mt-text-on-dark)]",
                 )}
               >
                 {item.label}

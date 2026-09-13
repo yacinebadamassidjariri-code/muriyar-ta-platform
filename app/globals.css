@@ -1,20 +1,69 @@
 @import "tailwindcss";
 
 :root {
-  /* Warm ivory canvas for the whole site (was #ffffff). */
-  --background: #FCFAF7;
-  --foreground: #171717;
+  /* Muriyar Ta identity — approved homepage and shared-shell foundations. */
+  --mt-slate: #17384b;
+  --mt-slate-deep: #102a38;
+  --mt-slate-soft: #1b4257;
+  --mt-paper: #f4eadc;
+  --mt-paper-soft: #fcfaf7;
+  --mt-paper-deep: #e9dece;
+  --mt-rust: #b85430;
+  --mt-rust-hover: #a74828;
+  --mt-rust-bright: #d87450;
+  --mt-rust-soft: #f09a78;
+  --mt-rust-pale: #ffd2c0;
+  --mt-ink: #17384b;
+  --mt-text-muted: #716b63;
+  --mt-text-faint: #797267;
+  --mt-text-on-dark: #fff9f0;
+  --mt-text-on-dark-muted: #d5d9d7;
+  --mt-text-on-dark-faint: #aeb9b8;
+  --mt-reassurance: #4f8b79;
+  --mt-divider: rgb(23 56 75 / 18%);
+  --mt-divider-soft: rgb(23 56 75 / 9%);
+  --mt-divider-dark: rgb(255 255 255 / 10%);
+
+  --mt-content-wide: 80rem;
+  --mt-content-shell: 90rem;
+  --mt-reading-width: 44rem;
+  --mt-gutter: clamp(1.25rem, 3vw, 2.5rem);
+  --mt-section-space: clamp(4.5rem, 6vw, 6rem);
+  --mt-section-space-compact: clamp(3.75rem, 5vw, 5rem);
+
+  --mt-eyebrow-size: 0.72rem;
+  --mt-eyebrow-tracking: 0.19em;
+  --mt-display-leading: 0.98;
+  --mt-body-leading: 1.65;
+  --mt-motion: 200ms;
+  --mt-focus-color: var(--mt-rust-bright);
+  --mt-focus-ring: 2px solid var(--mt-focus-color);
+
+  --background: var(--mt-paper-soft);
+  --foreground: var(--mt-ink);
 }
 
 @theme inline {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-sans-stack), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-cormorant), ui-serif, Georgia, "Times New Roman", serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Tailwind-facing aliases for new and migrated surfaces. */
+  --color-mt-slate: var(--mt-slate);
+  --color-mt-slate-deep: var(--mt-slate-deep);
+  --color-mt-slate-soft: var(--mt-slate-soft);
+  --color-mt-paper: var(--mt-paper);
+  --color-mt-paper-soft: var(--mt-paper-soft);
+  --color-mt-paper-deep: var(--mt-paper-deep);
+  --color-mt-rust: var(--mt-rust);
+  --color-mt-rust-hover: var(--mt-rust-hover);
+  --color-mt-rust-bright: var(--mt-rust-bright);
+  --color-mt-ink: var(--mt-ink);
   /* =================================================================
-   * Design Tokens v3A.2 — additive only.
+   * Legacy editorial tokens — retained temporarily for internal pages that
+   * have not yet migrated to the approved Muriyar Ta identity.
    *
    * These tokens do not replace or shadow any existing token. They
    * expose an editorial palette (plum, cream, stone, rose) plus
@@ -132,7 +181,7 @@
    * system can share one focus-ring value. Not applied globally in
    * this milestone; existing focus styles remain.
    */
-  --ring-editorial: 2px solid var(--color-plum-600);
+  --ring-editorial: var(--mt-focus-ring);
   --ring-editorial-offset: 2px;
 }
 
@@ -146,5 +195,5 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans-stack), Arial, Helvetica, sans-serif;
 }

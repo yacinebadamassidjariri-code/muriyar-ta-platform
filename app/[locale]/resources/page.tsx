@@ -26,6 +26,7 @@ import { CrisisCallout } from "@/components/resources/crisis-callout";
 import { SearchBar } from "@/components/resources/search-bar";
 import { ResourcesEmptyState } from "@/components/resources/empty-state";
 import { CategoryNav } from "@/components/resources/category-nav";
+import styles from "@/components/resources/resources.module.css";
 
 export const revalidate = 300;
 const RESULTS_PER_PAGE = 10;
@@ -193,31 +194,14 @@ export default async function ResourcesIndexPage({
     return qs ? `/resources?${qs}` : "/resources";
   };
 
-  const categoryDescriptions = Object.fromEntries(
-    themeCategories.map((category) => [
-      category.slug,
-      ed.clusters[clusterKeyForSlug(category.slug)].intro,
-    ]),
-  );
-
   return (
-    <article className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-6 md:py-24">
-      <header className="grid gap-9 border-b border-stone-200 pb-14 md:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)] md:items-end md:gap-16 md:pb-20">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-plum-600">
-            {ed.heroEyebrow}
-          </p>
-          <h1 className="mt-5 max-w-4xl font-display text-[clamp(3.25rem,7vw,6rem)] font-medium leading-[0.95] tracking-[-0.025em] text-plum-900">
-            {ed.heroTitle}
-          </h1>
-        </div>
-        <div className="max-w-xl md:pb-1">
-          <p className="text-lg leading-[1.7] text-charcoal-500">{ed.intro}</p>
-          <p className="mt-5 border-l border-rose-300 pl-4 text-sm leading-relaxed text-charcoal-500">
-            {ed.trust}
-          </p>
-        </div>
-      </header>
+    <main className={styles.page}>
+      <div className={styles.shell}>
+        <header className={styles.hero}>
+          <p className={styles.eyebrow}>{ed.heroEyebrow}</p>
+          <h1>{ed.heroTitle}</h1>
+          <p className={styles.heroIntro}>{ed.intro}</p>
+        </header>
 
       <CrisisCallout
         heading={ed.crisisHeading}
@@ -225,36 +209,19 @@ export default async function ResourcesIndexPage({
         cta={ed.crisisCta}
       />
 
-      <section aria-labelledby="resource-needs" className="mt-20 md:mt-24">
-        <h2
-          id="resource-needs"
-          className="font-display text-[clamp(2.5rem,5vw,4rem)] font-medium leading-none tracking-[-0.02em] text-plum-900"
-        >
-          {ed.browseHeading}
-        </h2>
-        <div className="mt-8">
+      <section aria-label={ed.browseHeading} className={styles.controls}>
+        <div>
+          <p className={styles.controlLabel}>{ed.browseHeading}</p>
           <CategoryNav
             categories={themeCategories}
             activeCategoryId={catId}
             q={q}
             allLabel={t("allCategories")}
             ariaLabel={ed.categoryNavLabel}
-            descriptions={categoryDescriptions}
           />
         </div>
-      </section>
-
-      <section
-        aria-labelledby="resource-search"
-        className="mt-20 border-t border-stone-200 pt-12 md:mt-24 md:pt-16"
-      >
-        <h2
-          id="resource-search"
-          className="font-display text-3xl font-medium text-plum-900 md:text-4xl"
-        >
-          {ed.searchHeading}
-        </h2>
-        <div className="mt-7 max-w-3xl">
+        <div>
+          <p className={styles.controlLabel}>{ed.searchHeading}</p>
           <SearchBar
             label={ed.searchLabel}
             placeholder={ed.searchPlaceholder}
@@ -267,22 +234,16 @@ export default async function ResourcesIndexPage({
       </section>
 
       {searching ? (
-        <section
-          aria-labelledby="res-results"
-          className="mt-16 border-t border-stone-200 pt-12"
-        >
-          <h2
-            id="res-results"
-            className="font-display text-3xl font-medium text-plum-900 md:text-4xl"
-          >
+        <section aria-labelledby="res-results" className={styles.results}>
+          <h2 id="res-results" className={styles.sectionTitle}>
             {ed.resultsHeading}
           </h2>
           {results.length === 0 ? (
-            <div className="mt-6">
+            <div>
               <ResourcesEmptyState title={ed.emptyTitle} body={ed.emptyBody} />
             </div>
           ) : (
-            <div className="mt-7 divide-y divide-stone-200 border-t border-stone-200">
+            <div className={styles.entryGroup}>
               {visibleResults.map((e) => (
                 <ResourceEntry
                   key={e.resourceId}
@@ -298,21 +259,21 @@ export default async function ResourcesIndexPage({
           {results.length > 0 && pageCount > 1 ? (
             <nav
               aria-label={ed.paginationLabel}
-              className="mt-8 flex flex-wrap items-center justify-between gap-4 text-sm text-charcoal-500"
+              className={styles.pagination}
             >
               <p>{ed.pageSummary(currentPage, pageCount)}</p>
-              <div className="flex items-center gap-2">
+              <div className={styles.paginationControls}>
                 {currentPage > 1 ? (
                   <Link
                     href={pageHref(currentPage - 1)}
-                    className="border-b border-rose-300 pb-1 font-semibold text-plum-800 transition-colors hover:border-plum-700 hover:text-plum-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
+                    className={styles.paginationLink}
                   >
                     {ed.previousPage}
                   </Link>
                 ) : (
                   <span
                     aria-disabled="true"
-                    className="cursor-not-allowed border-b border-stone-200 pb-1 font-medium text-stone-400"
+                    className={styles.paginationDisabled}
                   >
                     {ed.previousPage}
                   </span>
@@ -320,14 +281,14 @@ export default async function ResourcesIndexPage({
                 {currentPage < pageCount ? (
                   <Link
                     href={pageHref(currentPage + 1)}
-                    className="border-b border-rose-300 pb-1 font-semibold text-plum-800 transition-colors hover:border-plum-700 hover:text-plum-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-plum-600"
+                    className={styles.paginationLink}
                   >
                     {ed.nextPage}
                   </Link>
                 ) : (
                   <span
                     aria-disabled="true"
-                    className="cursor-not-allowed border-b border-stone-200 pb-1 font-medium text-stone-400"
+                    className={styles.paginationDisabled}
                   >
                     {ed.nextPage}
                   </span>
@@ -337,15 +298,15 @@ export default async function ResourcesIndexPage({
           ) : null}
         </section>
       ) : resources.length === 0 ? (
-        <div className="mt-16">
+        <div>
           <ResourcesEmptyState title={t("emptyTitle")} body={t("emptyBody")} />
         </div>
       ) : (
-        <section aria-labelledby="resource-directory" className="mt-20 md:mt-24">
-          <h2
-            id="resource-directory"
-            className="font-display text-[clamp(2.5rem,5vw,4rem)] font-medium leading-none tracking-[-0.02em] text-plum-900"
-          >
+        <section
+          aria-labelledby="resource-directory"
+          className={styles.directory}
+        >
+          <h2 id="resource-directory" className={styles.sectionTitle}>
             {ed.directoryHeading}
           </h2>
           {sections.map(({ cluster, recommended, rest }) => (
@@ -364,6 +325,7 @@ export default async function ResourcesIndexPage({
           ))}
         </section>
       )}
-    </article>
+        </div>
+    </main>
   );
 }

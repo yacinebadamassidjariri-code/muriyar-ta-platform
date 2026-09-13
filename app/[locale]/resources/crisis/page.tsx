@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowLeft, LifeBuoy } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import {
@@ -14,7 +14,7 @@ import {
 } from "@/components/resources/content";
 import { ResourceEntry } from "@/components/resources/resource-entry";
 import { ResourcesEmptyState } from "@/components/resources/empty-state";
-import { FloralSeparator } from "@/components/home/botanical";
+import styles from "@/components/resources/resources.module.css";
 
 export const revalidate = 300;
 
@@ -58,29 +58,24 @@ export default async function CrisisResourcesPage({
   const entryLabels = { visit: ed.visit, localTag: ed.localTag };
 
   return (
-    <article className="mx-auto w-full max-w-3xl px-5 py-16 md:py-20">
+    <main className={styles.page}>
+      <article className={styles.crisisShell}>
       <Link
         href="/resources"
-        className="inline-flex items-center gap-1 text-sm text-charcoal-500 transition-colors hover:text-plum-700"
+        className={styles.backLink}
       >
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         {t("backToAll")}
       </Link>
 
-      <header className="mt-8 max-w-2xl">
-        <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.18em] text-rose-700">
-          <LifeBuoy className="h-4 w-4 text-rose-500" aria-hidden="true" />
-          {t("crisisHeading")}
-        </p>
-        <h1 className="mt-4 font-display text-4xl font-medium leading-tight text-plum-800 md:text-5xl">
+      <header className={styles.crisisHeader}>
+        <h1 className={styles.crisisTitle}>
           {t("crisisTitle")}
         </h1>
-        <p className="mt-4 text-lg leading-relaxed text-charcoal-500">
+        <p className={styles.crisisIntro}>
           {t("crisisSubtitle")}
         </p>
       </header>
-
-      <FloralSeparator className="my-10 w-40 max-w-full text-rose-200" />
 
       {ordered.length === 0 ? (
         <ResourcesEmptyState
@@ -88,7 +83,7 @@ export default async function CrisisResourcesPage({
           body={t("crisisEmptyBody")}
         />
       ) : (
-        <div className="divide-y divide-stone-200/60 border-t border-stone-200/60">
+        <div className={styles.crisisList}>
           {ordered.map((r) => (
             <ResourceEntry
               key={r.resource_id}
@@ -100,6 +95,7 @@ export default async function CrisisResourcesPage({
           ))}
         </div>
       )}
-    </article>
+      </article>
+    </main>
   );
 }

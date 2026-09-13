@@ -1,6 +1,5 @@
 import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import styles from "./resources.module.css";
 
 /**
  * Non-JS, SSR-friendly search. Submits a GET to the same route, preserving the
@@ -26,34 +25,34 @@ export function SearchBar({
       action={action}
       method="get"
       role="search"
-      className="flex w-full max-w-3xl items-stretch border-b border-plum-300 pb-2"
+      className={styles.searchForm}
     >
       <label htmlFor="resources-q" className="sr-only">
         {label}
       </label>
-      <div className="relative flex-1">
+      <div className={styles.searchField}>
         <Search
-          className="pointer-events-none absolute left-1 top-1/2 h-4 w-4 -translate-y-1/2 text-plum-500"
+          className={styles.searchIcon}
           aria-hidden="true"
         />
-        <Input
+        <input
           id="resources-q"
           name="q"
           type="search"
           defaultValue={defaultValue ?? ""}
           placeholder={placeholder}
-          className="h-12 rounded-none border-0 bg-transparent pl-8 text-base shadow-none placeholder:text-charcoal-500 focus-visible:outline-offset-0"
+          className={styles.searchInput}
         />
       </div>
       {activeCategoryId !== null ? (
         <input type="hidden" name="category" value={String(activeCategoryId)} />
       ) : null}
-      <Button
+      <button
         type="submit"
-        className="h-12 shrink-0 rounded-sm bg-plum-800 px-5 text-cream-50 hover:bg-plum-900"
+        className={styles.searchButton}
       >
         {submitLabel}
-      </Button>
+      </button>
     </form>
   );
 }

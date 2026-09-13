@@ -1,161 +1,89 @@
 import type { Locale } from "@/lib/i18n/routing";
 
-/**
- * Page-scoped, localized copy for /submit. Kept out of the shared next-intl
- * catalogs so the feature can ship without modifying i18n configuration.
- * English & French authored; Hausa & Zarma fall back to English (placeholder
- * convention used elsewhere). Contains only plain data (no functions) so it can
- * be passed from the server page to the client form.
- *
- * NOTE: the consent statement shown here is recorded server-side against the
- * active consent_versions row. For production, display the DB consent text so it
- * matches the recorded version exactly.
- */
 export type SubmitCopy = {
-  intro: { title: string; subtitle: string; points: string[] };
-  guidance: {
-    heading: string;
-    intro: string;
-    questions: string[];
-  };
+  intro: { eyebrow: string; title: string; subtitle: string; assurancesLabel: string; points: string[] };
+  guidance: { heading: string; intro: string; questions: string[] };
   form: {
-    languageLabel: string;
-    storyLabel: string;
-    storyPlaceholder: string;
-    storyHelp: string;
-    charsSuffix: string; // e.g. "characters"
-    countryLabel: string;
-    countryHelp: string;
-    regionLabel: string;
-    regionHelp: string;
-    consentLabel: string;
-    submit: string;
-    submitting: string;
+    detailsLabel: string; languageLabel: string; storyLabel: string; storyPlaceholder: string;
+    storyHelp: string; charsSuffix: string; locationLabel: string; locationHelp: string;
+    countryLabel: string; regionLabel: string; regionHelp: string; consentHeading: string;
+    consentNote: string; consentLabel: string; submit: string; submitting: string;
   };
   errors: Record<string, string>;
-  success: { title: string; body: string; another: string; home: string };
+  success: { eyebrow: string; title: string; body: string; another: string; home: string };
   safety: { text: string; link: string };
 };
 
 const en: SubmitCopy = {
   intro: {
+    eyebrow: "Share anonymously",
     title: "Share your story",
-    subtitle:
-      "Your story is anonymous and reviewed to protect your identity before anything is published. You decide what to share.",
-    points: [
-      "We never ask for your name.",
-      "We remove anything that could identify you.",
-      "Nothing is published without your consent.",
-    ],
+    subtitle: "Write what you choose. A trained team member will review it before anything is published.",
+    assurancesLabel: "Privacy assurances",
+    points: ["No name required", "Identity protected", "Published only with consent"],
   },
   guidance: {
-    heading: "Not sure where to begin?",
-    intro:
-      "You do not have to answer every question. These prompts are only here to help you reflect.",
-    questions: [
-      "Have you ever been treated differently from boys at home, in your community, at school, or in any other place?",
-      "When did you first realize that something was unfair, harmful, or different because you were a girl?",
-      "What do you wish families, schools, communities, or leaders would change?",
-      "What message would you leave for the people reading your story?",
-    ],
+    heading: "Need a place to begin?",
+    intro: "Use any prompt that helps. You do not need to answer them all.",
+    questions: ["What happened, and how did it affect you?", "What do you wish someone had understood?", "What would you like to change?"],
   },
   form: {
-    languageLabel: "Language",
-    storyLabel: "Your story",
-    storyPlaceholder: "Begin wherever feels right…",
-    storyHelp: "Write as much or as little as feels right. At least 50 characters.",
-    charsSuffix: "characters",
-    countryLabel: "Country",
-    countryHelp: "Optional. Share only the country you are comfortable identifying.",
-    regionLabel: "Region, state, or province",
-    regionHelp:
-      "Optional. Do not include your city, village, neighborhood, or address.",
-    consentLabel:
-      "I understand my story will be reviewed and may be published in anonymized form, and I consent to this.",
-    submit: "Submit story",
-    submitting: "Submitting…",
+    detailsLabel: "Story details", languageLabel: "Story language", storyLabel: "Your story",
+    storyPlaceholder: "Begin wherever feels right…", storyHelp: "Write at least 50 characters. Share only what feels safe.",
+    charsSuffix: "characters", locationLabel: "Location (optional)",
+    locationHelp: "Leave this blank unless broad location helps give your story context.", countryLabel: "Country",
+    regionLabel: "Region, state, or province", regionHelp: "Do not include your city, village, neighborhood, or address.",
+    consentHeading: "Your consent", consentNote: "Your story stays private unless you consent to anonymized publication.",
+    consentLabel: "I understand my story will be reviewed and may be published in anonymized form, and I consent to this.",
+    submit: "Submit story", submitting: "Submitting…",
   },
   errors: {
-    language_invalid: "Please choose a language.",
-    story_required: "Please write your story.",
-    story_short: "Your story should be at least 50 characters.",
-    story_long: "Your story is too long.",
-    country_long: "Country must be 100 characters or fewer.",
-    region_long: "Region, state, or province must be 100 characters or fewer.",
-    consent_required: "Please confirm consent to continue.",
-    submit_failed: "Something went wrong. Please try again.",
+    language_invalid: "Please choose a language.", story_required: "Please write your story.",
+    story_short: "Your story should be at least 50 characters.", story_long: "Your story is too long.",
+    country_long: "Country must be 100 characters or fewer.", region_long: "Region, state, or province must be 100 characters or fewer.",
+    consent_required: "Please confirm consent to continue.", submit_failed: "Something went wrong. Please try again.",
   },
   success: {
-    title: "Thank you for sharing your story.",
-    body: "Your story has been received and will be carefully reviewed by our team to protect your identity before anything is published. You can safely close this page.",
-    another: "Share another story",
-    home: "Back to home",
+    eyebrow: "Story received", title: "Thank you for sharing.",
+    body: "Our team will review your story and protect your identity before any publication.",
+    another: "Share another story", home: "Back to home",
   },
-  safety: {
-    text: "In immediate danger? This site can't respond to emergencies.",
-    link: "View crisis resources",
-  },
+  safety: { text: "In immediate danger? This site can't respond to emergencies.", link: "View crisis resources" },
 };
 
 const fr: SubmitCopy = {
   intro: {
-    title: "Partagez votre récit",
-    subtitle:
-      "Votre récit est anonyme et examiné pour protéger votre identité avant toute publication. Vous décidez de ce que vous partagez.",
-    points: [
-      "Nous ne demandons jamais votre nom.",
-      "Nous retirons tout ce qui pourrait vous identifier.",
-      "Rien n'est publié sans votre consentement.",
-    ],
+    eyebrow: "Partager anonymement", title: "Partagez votre récit",
+    subtitle: "Écrivez ce que vous choisissez. Une personne formée de notre équipe le lira avant toute publication.",
+    assurancesLabel: "Garanties de confidentialité",
+    points: ["Aucun nom requis", "Identité protégée", "Publié uniquement avec consentement"],
   },
   guidance: {
-    heading: "Vous ne savez pas par où commencer ?",
-    intro:
-      "Vous n’avez pas besoin de répondre à toutes les questions. Ces pistes sont simplement là pour vous aider à réfléchir.",
-    questions: [
-      "Avez-vous déjà été traitée différemment des garçons à la maison, dans votre communauté, à l’école ou ailleurs ?",
-      "À quel moment avez-vous compris pour la première fois qu’une situation était injuste, nuisible ou différente parce que vous étiez une fille ?",
-      "Qu’aimeriez-vous que les familles, les écoles, les communautés ou les responsables changent ?",
-      "Quel message aimeriez-vous laisser aux personnes qui liront votre récit ?",
-    ],
+    heading: "Besoin d’un point de départ ?", intro: "Utilisez la piste qui vous aide. Vous n’avez pas à répondre à toutes.",
+    questions: ["Que s’est-il passé et quel effet cela a-t-il eu sur vous ?", "Qu’auriez-vous aimé que quelqu’un comprenne ?", "Qu’aimeriez-vous voir changer ?"],
   },
   form: {
-    languageLabel: "Langue",
-    storyLabel: "Votre récit",
-    storyPlaceholder: "Commencez là où vous le sentez…",
-    storyHelp: "Écrivez autant que vous le souhaitez. Au moins 50 caractères.",
-    charsSuffix: "caractères",
-    countryLabel: "Pays",
-    countryHelp:
-      "Facultatif. Indiquez uniquement le pays que vous acceptez d’identifier.",
-    regionLabel: "Région, État ou province",
-    regionHelp:
-      "Facultatif. N’indiquez pas votre ville, village, quartier ou adresse.",
-    consentLabel:
-      "Je comprends que mon récit sera examiné et pourra être publié sous forme anonymisée, et j'y consens.",
-    submit: "Envoyer le récit",
-    submitting: "Envoi…",
+    detailsLabel: "Détails du récit", languageLabel: "Langue du récit", storyLabel: "Votre récit",
+    storyPlaceholder: "Commencez là où vous le sentez…", storyHelp: "Écrivez au moins 50 caractères. Ne partagez que ce qui vous semble sûr.",
+    charsSuffix: "caractères", locationLabel: "Lieu (facultatif)",
+    locationHelp: "Laissez ce champ vide sauf si un lieu général aide à comprendre votre récit.", countryLabel: "Pays",
+    regionLabel: "Région, État ou province", regionHelp: "N’indiquez pas votre ville, village, quartier ou adresse.",
+    consentHeading: "Votre consentement", consentNote: "Votre récit reste privé sauf si vous consentez à sa publication anonymisée.",
+    consentLabel: "Je comprends que mon récit sera examiné et pourra être publié sous forme anonymisée, et j’y consens.",
+    submit: "Envoyer le récit", submitting: "Envoi…",
   },
   errors: {
-    language_invalid: "Veuillez choisir une langue.",
-    story_required: "Veuillez écrire votre récit.",
-    story_short: "Votre récit doit comporter au moins 50 caractères.",
-    story_long: "Votre récit est trop long.",
-    country_long: "Le pays doit comporter 100 caractères maximum.",
-    region_long: "La région, l’État ou la province doit comporter 100 caractères maximum.",
-    consent_required: "Veuillez confirmer votre consentement pour continuer.",
-    submit_failed: "Une erreur s'est produite. Veuillez réessayer.",
+    language_invalid: "Veuillez choisir une langue.", story_required: "Veuillez écrire votre récit.",
+    story_short: "Votre récit doit comporter au moins 50 caractères.", story_long: "Votre récit est trop long.",
+    country_long: "Le pays doit comporter 100 caractères maximum.", region_long: "La région, l’État ou la province doit comporter 100 caractères maximum.",
+    consent_required: "Veuillez confirmer votre consentement pour continuer.", submit_failed: "Une erreur s'est produite. Veuillez réessayer.",
   },
   success: {
-    title: "Merci d'avoir partagé votre récit.",
-    body: "Votre récit a bien été reçu et sera soigneusement examiné par notre équipe afin de protéger votre identité avant toute publication. Vous pouvez fermer cette page en toute sécurité.",
-    another: "Partager un autre récit",
-    home: "Retour à l'accueil",
+    eyebrow: "Récit reçu", title: "Merci pour votre partage.",
+    body: "Notre équipe examinera votre récit et protégera votre identité avant toute publication.",
+    another: "Partager un autre récit", home: "Retour à l'accueil",
   },
-  safety: {
-    text: "En danger immédiat ? Ce site ne peut pas répondre aux urgences.",
-    link: "Voir les ressources d'urgence",
-  },
+  safety: { text: "En danger immédiat ? Ce site ne peut pas répondre aux urgences.", link: "Voir les ressources d'urgence" },
 };
 
 export const submitCopy: Record<Locale, SubmitCopy> = { en, fr, ha: en, zar: en };

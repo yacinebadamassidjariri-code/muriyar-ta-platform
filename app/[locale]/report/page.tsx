@@ -6,6 +6,7 @@ import { Section } from "@/components/ui/section";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ReportForm } from "@/components/report/report-form";
+import styles from "./report.module.css";
 
 export const revalidate = 300;
 
@@ -32,16 +33,17 @@ export default async function ReportPage({
   const t = await getTranslations({ locale, namespace: "report" });
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 pb-16">
+    <main className={styles.page}>
+      <div className={styles.shell}>
       {/* Hero */}
-      <header className="pt-10">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
+      <header className={styles.hero}>
+        <p className={styles.eyebrow}>
           {t("heroEyebrow")}
         </p>
-        <h1 className="mt-3 text-3xl font-display font-semibold leading-tight text-ink md:text-4xl">
+        <h1>
           {t("heroTitle")}
         </h1>
-        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-ink-soft">
+        <p>
           {t("heroSubtitle")}
         </p>
       </header>
@@ -49,23 +51,22 @@ export default async function ReportPage({
       {/* Important Notice */}
       <aside
         aria-labelledby="report-notice-heading"
-        className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-5"
+        className={styles.notice}
       >
-        <div className="flex items-start gap-3">
+        <div className={styles.noticeInner}>
           <span
             aria-hidden="true"
-            className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-800"
+            className={styles.noticeIcon}
           >
             <AlertCircle className="h-5 w-5" />
           </span>
           <div>
             <h2
               id="report-notice-heading"
-              className="text-base font-semibold text-amber-900"
             >
               {t("noticeTitle")}
             </h2>
-            <ul className="mt-2 space-y-1.5 text-sm leading-relaxed text-amber-900">
+            <ul>
               <li>{t("noticeNotEmergency")}</li>
               <li>{t("noticeCallEmergency")}</li>
               <li>{t("noticeModerationReview")}</li>
@@ -80,6 +81,7 @@ export default async function ReportPage({
         eyebrow={t("formEyebrow")}
         title={t("formTitle")}
         description={t("formDescription")}
+        className={styles.section}
       >
         <ReportForm
           labels={{
@@ -126,9 +128,10 @@ export default async function ReportPage({
         eyebrow={t("supportEyebrow")}
         title={t("supportTitle")}
         description={t("supportDescription")}
+        className={styles.section}
       >
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Card className="flex h-full flex-col gap-3 p-6">
+        <div className={styles.supportList}>
+          <Card className={styles.supportItem}>
             <span
               aria-hidden="true"
               className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-700"
@@ -141,13 +144,13 @@ export default async function ReportPage({
             <p className="text-sm leading-relaxed text-ink-soft">
               {t("supportResourcesBody")}
             </p>
-            <div className="mt-auto pt-2">
-              <Button asChild variant="secondary">
+            <div className={styles.supportAction}>
+              <Button asChild variant="secondary" className={styles.linkButton}>
                 <Link href="/resources">{t("supportResourcesCta")}</Link>
               </Button>
             </div>
           </Card>
-          <Card className="flex h-full flex-col gap-3 p-6">
+          <Card className={styles.supportItem}>
             <span
               aria-hidden="true"
               className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-danger/10 text-danger"
@@ -160,14 +163,15 @@ export default async function ReportPage({
             <p className="text-sm leading-relaxed text-ink-soft">
               {t("supportCrisisBody")}
             </p>
-            <div className="mt-auto pt-2">
-              <Button asChild>
+            <div className={styles.supportAction}>
+              <Button asChild className={styles.linkButton}>
                 <Link href="/resources/crisis">{t("supportCrisisCta")}</Link>
               </Button>
             </div>
           </Card>
         </div>
       </Section>
-    </div>
+      </div>
+    </main>
   );
 }
