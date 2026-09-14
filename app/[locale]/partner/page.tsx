@@ -198,7 +198,7 @@ export default async function PartnerPage({
               size="lg"
               className="min-h-12 w-fit bg-[#B96880] px-7 text-cream-50 hover:bg-[#A85670] focus-visible:outline-cream-50"
             >
-              <Link href="/partner">{t("ctaPartnerWithUs")}</Link>
+              <Link href="/contact">{t("ctaPartnerWithUs")}</Link>
             </Button>
           </div>
         </section>
