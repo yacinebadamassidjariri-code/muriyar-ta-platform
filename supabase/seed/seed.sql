@@ -15,6 +15,22 @@ insert into public.supported_languages (language_code, name, is_active, is_rtl) 
   ('en','English',true,false)
 on conflict (language_code) do nothing;
 
+-- ---------- Optional research-consent copy ----------
+insert into public.research_consent_version_translations (
+  research_consent_version_id, language_code, statement_text
+)
+select v.research_consent_version_id, copy.language_code, copy.statement_text
+from public.research_consent_versions v
+cross join (values
+  ('en', 'I allow Muriyar Ta to use my story for de-identified thematic analysis, research insights, research briefs, and educational or facilitated workshop materials.'),
+  ('fr', 'J’autorise Muriyar Ta à utiliser mon récit pour une analyse thématique dépersonnalisée, des enseignements et synthèses de recherche, et des supports éducatifs ou d’ateliers animés.'),
+  ('ha', 'I allow Muriyar Ta to use my story for de-identified thematic analysis, research insights, research briefs, and educational or facilitated workshop materials.'),
+  ('zar', 'I allow Muriyar Ta to use my story for de-identified thematic analysis, research insights, research briefs, and educational or facilitated workshop materials.')
+) as copy(language_code, statement_text)
+where v.version_number = 'research-v1'
+on conflict (research_consent_version_id, language_code)
+do update set statement_text = excluded.statement_text;
+
 -- ---------- Canonical staff roles ----------
 insert into public.roles (name, description) values
   ('super_admin','Founder-level platform administration with audited break-glass access.'),

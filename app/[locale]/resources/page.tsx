@@ -10,17 +10,13 @@ import {
 import {
   resourcesEditorial,
   RESOURCE_CLUSTERS,
-  clusterKeyForSlug,
   isPublicResourceThemeCategory,
   publicResourceThemeCategoryName,
   regionRank,
   isLocalRegion,
   isRecommended,
 } from "@/components/resources/content";
-import {
-  ResourceSection,
-  type SectionEntry,
-} from "@/components/resources/resource-section";
+import type { SectionEntry } from "@/components/resources/resource-section";
 import { ResourceEntry } from "@/components/resources/resource-entry";
 import { CrisisCallout } from "@/components/resources/crisis-callout";
 import { SearchBar } from "@/components/resources/search-bar";
@@ -75,7 +71,9 @@ export default async function ResourcesIndexPage({
   const page =
     Number.isFinite(requestedPage) && requestedPage > 0 ? requestedPage : 1;
 
-  const queriedResources = await listResources({ categoryId: catId, q });
+  const queriedResources = searching
+    ? await listResources({ categoryId: catId, q })
+    : [];
 
   const categoryIdsFor = (resource: Resource): number[] =>
     resource.category_ids.length > 0
@@ -98,7 +96,6 @@ export default async function ResourcesIndexPage({
       .map((r) => r.geographic_region_id)
       .filter((id): id is number => id !== null),
   );
-  const catSlug = new Map(categories.map((c) => [c.category_id, c.slug]));
   const catName = new Map(
     categories.map((category) => [
       category.category_id,
@@ -133,51 +130,26 @@ export default async function ResourcesIndexPage({
 
   const entryLabels = { visit: ed.visit, localTag: ed.localTag };
 
-  // Group resources into the editorial "need" clusters (presentation only).
-  const byCluster = new Map<string, Resource[]>();
-  if (!searching) {
-    const seenByCluster = new Map<string, Set<string>>();
-    for (const r of resources) {
-      const categoryIds = categoryIdsFor(r);
-      const clusterKeys = new Set(
-        categoryIds.map((id) => clusterKeyForSlug(catSlug.get(id))),
-      );
-      if (clusterKeys.size === 0) clusterKeys.add(clusterKeyForSlug(undefined));
-
-      for (const key of clusterKeys) {
-        const seen = seenByCluster.get(key) ?? new Set<string>();
-        if (seen.has(r.resource_id)) continue;
-        seen.add(r.resource_id);
-        seenByCluster.set(key, seen);
-
-        const arr = byCluster.get(key) ?? [];
-        arr.push(r);
-        byCluster.set(key, arr);
-      }
-    }
-  }
-
-  const sections = RESOURCE_CLUSTERS.map((cluster) => {
-    const items = (byCluster.get(cluster.key) ?? [])
-      .slice()
-      .sort(byLocalFirst);
-    if (items.length === 0) return null;
-    const recommended: SectionEntry[] = [];
-    const rest: SectionEntry[] = [];
-    for (const r of items) {
-      (isRecommended(r.name, cluster.recommend) ? recommended : rest).push(
-        toEntry(r),
-      );
-    }
-    return { cluster, recommended, rest };
-  }).filter(
-    (s): s is { cluster: (typeof RESOURCE_CLUSTERS)[number]; recommended: SectionEntry[]; rest: SectionEntry[] } =>
-      s !== null,
+  const selectedCategory = themeCategories.find(
+    (category) => category.category_id === catId,
   );
-
-  const results = searching
-    ? resources.slice().sort(byLocalFirst).map(toEntry)
-    : [];
+  const selectedCluster = selectedCategory
+    ? RESOURCE_CLUSTERS.find((cluster) =>
+        cluster.categorySlugs.includes(selectedCategory.slug),
+      )
+    : undefined;
+  const byResultOrder = (a: Resource, b: Resource): number =>
+    Number(isRecommended(b.name, selectedCluster?.recommend)) -
+      Number(isRecommended(a.name, selectedCluster?.recommend)) ||
+    byLocalFirst(a, b);
+  const results = resources.slice().sort(byResultOrder).map(toEntry);
+  const resultsHeading = selectedCategory && q
+    ? ed.resultsForCategorySearch(selectedCategory.name, q)
+    : selectedCategory
+      ? ed.resultsForCategory(selectedCategory.name)
+      : q
+        ? ed.resultsForSearch(q)
+        : ed.resultsHeading;
   const pageCount = Math.max(1, Math.ceil(results.length / RESULTS_PER_PAGE));
   const currentPage = Math.min(page, pageCount);
   const visibleResults = results.slice(
@@ -218,6 +190,7 @@ export default async function ResourcesIndexPage({
             q={q}
             allLabel={t("allCategories")}
             ariaLabel={ed.categoryNavLabel}
+            showAll={searching}
           />
         </div>
         <div>
@@ -235,9 +208,12 @@ export default async function ResourcesIndexPage({
 
       {searching ? (
         <section aria-labelledby="res-results" className={styles.results}>
-          <h2 id="res-results" className={styles.sectionTitle}>
-            {ed.resultsHeading}
-          </h2>
+          <div className={styles.resultsHeader}>
+            <h2 id="res-results" className={styles.sectionTitle}>
+              {resultsHeading}
+            </h2>
+            <Link href="/resources" className={styles.backLink}>{ed.clearResults}</Link>
+          </div>
           {results.length === 0 ? (
             <div>
               <ResourcesEmptyState title={ed.emptyTitle} body={ed.emptyBody} />
@@ -297,33 +273,8 @@ export default async function ResourcesIndexPage({
             </nav>
           ) : null}
         </section>
-      ) : resources.length === 0 ? (
-        <div>
-          <ResourcesEmptyState title={t("emptyTitle")} body={t("emptyBody")} />
-        </div>
       ) : (
-        <section
-          aria-labelledby="resource-directory"
-          className={styles.directory}
-        >
-          <h2 id="resource-directory" className={styles.sectionTitle}>
-            {ed.directoryHeading}
-          </h2>
-          {sections.map(({ cluster, recommended, rest }) => (
-            <ResourceSection
-              key={cluster.key}
-              id={`res-${cluster.key}`}
-              label={ed.clusters[cluster.key].label}
-              intro={ed.clusters[cluster.key].intro}
-              recommended={recommended}
-              rest={rest}
-              recommendedHint={ed.recommendedHint}
-              entryLabels={entryLabels}
-              showMoreLabel={ed.showMore}
-              showLessLabel={ed.showLess}
-            />
-          ))}
-        </section>
+        <p className={styles.choosePrompt}>{ed.choosePrompt}</p>
       )}
         </div>
     </main>

@@ -46,6 +46,7 @@ The post-foundation CMS chain continues with:
 | Story moderation and publishing | `20260722043000_story_moderation_publishing.sql` |
 | Podcast scheduled/archived status values | `20260722050000_podcast_status_values.sql` |
 | Podcast editorial CMS | `20260722050100_podcast_editorial_cms.sql` |
+| Separate optional research consent | `20260914143308_separate_research_consent.sql` |
 
 The chain also fills previously missing repository history:
 

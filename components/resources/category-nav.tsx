@@ -16,6 +16,7 @@ export function CategoryNav({
   allLabel,
   ariaLabel,
   basePath = "/resources",
+  showAll = true,
 }: {
   categories: Category[];
   activeCategoryId: number | null;
@@ -23,6 +24,7 @@ export function CategoryNav({
   allLabel: string;
   ariaLabel: string;
   basePath?: string;
+  showAll?: boolean;
 }) {
   function hrefFor(catId: number | null): string {
     const params = new URLSearchParams();
@@ -35,7 +37,7 @@ export function CategoryNav({
   return (
     <nav aria-label={ariaLabel}>
       <ul className={styles.categoryList}>
-        <li>
+        {showAll ? <li>
           <Link
             href={hrefFor(null)}
             aria-current={activeCategoryId === null ? "page" : undefined}
@@ -46,7 +48,7 @@ export function CategoryNav({
           >
             {allLabel}
           </Link>
-        </li>
+        </li> : null}
         {categories.map((category) => (
           <li key={category.category_id}>
             <Link

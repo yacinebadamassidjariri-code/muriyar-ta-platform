@@ -9,4 +9,5 @@
 .section h2{margin:0;font-size:clamp(1.8rem,3.5vw,2.6rem);line-height:1.08}
 .prose{max-width:var(--mt-reading-width);color:var(--mt-text-muted);font-size:.98rem;line-height:1.72}
 .prose p{margin:0}.prose p+p{margin-top:1.15rem}
+.pathway{color:var(--mt-ink);font-weight:700}
 @media(max-width:42rem){.shell{padding-top:3rem}.section{grid-template-columns:1fr;gap:1rem}}

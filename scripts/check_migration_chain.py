@@ -38,6 +38,7 @@ EXPECTED = [
     "20260722043000_story_moderation_publishing.sql",
     "20260722050000_podcast_status_values.sql",
     "20260722050100_podcast_editorial_cms.sql",
+    "20260914143308_separate_research_consent.sql",
 ]
 
 errors: list[str] = []

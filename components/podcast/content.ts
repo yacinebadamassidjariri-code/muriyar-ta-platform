@@ -7,14 +7,14 @@ export type PodcastEditorial = {
 };
 
 const en: PodcastEditorial = {
-  purpose: "Stories become narrated episodes and conversations only with consent, with each storyteller’s identity protected.",
+  purpose: "With consent and identities protected, episodes explore themes emerging from girls’ experiences to build awareness and youth dialogue.",
   listenSuffix: "min", listenAction: "Listen", startHere: "Start here", archiveHeading: "Episodes",
   discoverHeading: "Browse the archive", continueListening: "More episodes", relatedVoices: "Related voices",
   findSupport: "Related resources", emptyTitle: "Episodes are coming soon",
   emptyBody: "New episodes will appear here when they are ready to hear.",
 };
 const fr: PodcastEditorial = {
-  purpose: "Les récits deviennent des épisodes racontés et des conversations uniquement avec consentement, dans le respect de l’identité de chaque narratrice.",
+  purpose: "Avec consentement et protection des identités, les épisodes explorent les thèmes issus des expériences des filles pour sensibiliser et nourrir le dialogue entre jeunes.",
   listenSuffix: "min", listenAction: "Écouter", startHere: "Commencer ici", archiveHeading: "Épisodes",
   discoverHeading: "Parcourir les archives", continueListening: "Autres épisodes", relatedVoices: "Voix liées",
   findSupport: "Ressources liées", emptyTitle: "Les épisodes arrivent bientôt",

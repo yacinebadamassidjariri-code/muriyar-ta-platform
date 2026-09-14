@@ -24,6 +24,9 @@ export async function submitStory(
     region: String(formData.get("region") ?? ""),
     consent:
       formData.get("consent") === "on" || formData.get("consent") === "true",
+    researchConsent:
+      formData.get("researchConsent") === "on" ||
+      formData.get("researchConsent") === "true",
     locale: String(formData.get("locale") ?? "en"),
   };
 
@@ -37,6 +40,7 @@ export async function submitStory(
       p_language_code: data.language,
       p_consent: true,
       p_consent_language: input.locale,
+      p_research_consent: data.researchConsent,
       p_country: data.country,
       p_region: data.region,
     });

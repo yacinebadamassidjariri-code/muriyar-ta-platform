@@ -96,6 +96,16 @@ export function StoryForm({ copy, locale }: { copy: SubmitCopy; locale: string }
           <label htmlFor="consent">{copy.form.consentLabel}</label>
         </div>
         {state.errors?.consent ? <p id="consent-error" className={styles.fieldError}>{err(state.errors.consent)}</p> : null}
+
+        <div className={styles.researchDecision}>
+          <h3 id="research-consent-heading">{copy.form.researchConsentHeading}</h3>
+          <div className={styles.consentControl}>
+            <input id="research-consent" name="researchConsent" type="checkbox"
+              aria-describedby="research-consent-note" />
+            <label htmlFor="research-consent">{copy.form.researchConsentLabel}</label>
+          </div>
+          <p id="research-consent-note" className={styles.researchConsentNote}>{copy.form.researchConsentNote}</p>
+        </div>
       </section>
 
       {state.errors?.form ? <p role="alert" className={styles.formError}>{err(state.errors.form)}</p> : null}

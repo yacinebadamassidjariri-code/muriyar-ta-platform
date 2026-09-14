@@ -7,7 +7,8 @@ export type SubmitCopy = {
     detailsLabel: string; languageLabel: string; storyLabel: string; storyPlaceholder: string;
     storyHelp: string; charsSuffix: string; locationLabel: string; locationHelp: string;
     countryLabel: string; regionLabel: string; regionHelp: string; consentHeading: string;
-    consentNote: string; consentLabel: string; submit: string; submitting: string;
+    consentNote: string; consentLabel: string; researchConsentHeading: string;
+    researchConsentLabel: string; researchConsentNote: string; submit: string; submitting: string;
   };
   errors: Record<string, string>;
   success: { eyebrow: string; title: string; body: string; another: string; home: string };
@@ -20,7 +21,7 @@ const en: SubmitCopy = {
     title: "Share your story",
     subtitle: "Write what you choose. A trained team member will review it before anything is published.",
     assurancesLabel: "Privacy assurances",
-    points: ["No name required", "Identity protected", "Published only with consent"],
+    points: ["No name required", "Identifying details removed", "Published only with consent"],
   },
   guidance: {
     heading: "Need a place to begin?",
@@ -35,6 +36,9 @@ const en: SubmitCopy = {
     regionLabel: "Region, state, or province", regionHelp: "Do not include your city, village, neighborhood, or address.",
     consentHeading: "Your consent", consentNote: "Your story stays private unless you consent to anonymized publication.",
     consentLabel: "I understand my story will be reviewed and may be published in anonymized form, and I consent to this.",
+    researchConsentHeading: "Research consent (optional)",
+    researchConsentLabel: "I allow Muriyar Ta to use my story for de-identified thematic analysis, research insights, research briefs, and educational or facilitated workshop materials.",
+    researchConsentNote: "Declining does not affect submission or publication eligibility. Raw stories are not shared with organizations; only de-identified patterns across opted-in stories may be used.",
     submit: "Submit story", submitting: "Submitting…",
   },
   errors: {
@@ -56,7 +60,7 @@ const fr: SubmitCopy = {
     eyebrow: "Partager anonymement", title: "Partagez votre récit",
     subtitle: "Écrivez ce que vous choisissez. Une personne formée de notre équipe le lira avant toute publication.",
     assurancesLabel: "Garanties de confidentialité",
-    points: ["Aucun nom requis", "Identité protégée", "Publié uniquement avec consentement"],
+    points: ["Aucun nom requis", "Détails identifiants retirés", "Publié uniquement avec consentement"],
   },
   guidance: {
     heading: "Besoin d’un point de départ ?", intro: "Utilisez la piste qui vous aide. Vous n’avez pas à répondre à toutes.",
@@ -70,6 +74,9 @@ const fr: SubmitCopy = {
     regionLabel: "Région, État ou province", regionHelp: "N’indiquez pas votre ville, village, quartier ou adresse.",
     consentHeading: "Votre consentement", consentNote: "Votre récit reste privé sauf si vous consentez à sa publication anonymisée.",
     consentLabel: "Je comprends que mon récit sera examiné et pourra être publié sous forme anonymisée, et j’y consens.",
+    researchConsentHeading: "Consentement à la recherche (facultatif)",
+    researchConsentLabel: "J’autorise Muriyar Ta à utiliser mon récit pour une analyse thématique dépersonnalisée, des enseignements et synthèses de recherche, et des supports éducatifs ou d’ateliers animés.",
+    researchConsentNote: "Refuser n’affecte ni l’envoi ni l’admissibilité à la publication. Les récits bruts ne sont pas transmis aux organisations ; seuls des thèmes dépersonnalisés issus des récits ayant reçu ce consentement peuvent être utilisés.",
     submit: "Envoyer le récit", submitting: "Envoi…",
   },
   errors: {

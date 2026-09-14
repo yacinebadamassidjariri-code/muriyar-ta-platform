@@ -146,12 +146,12 @@ begin
 
   if position(
     'encryption_unavailable' in
-    pg_get_functiondef('public.submit_story(text,text,boolean,text,text,text)'::regprocedure)
+    pg_get_functiondef('public.submit_story(text,text,boolean,text,text,text,boolean)'::regprocedure)
   ) = 0 then raise exception 'story intake does not fail closed'; end if;
 
   if position(
     '20000' in
-    pg_get_functiondef('public.submit_story(text,text,boolean,text,text,text)'::regprocedure)
+    pg_get_functiondef('public.submit_story(text,text,boolean,text,text,text,boolean)'::regprocedure)
   ) = 0 then raise exception 'server-side story maximum missing'; end if;
 
   if to_regprocedure('public.read_audit_events(integer,timestamptz)') is null then

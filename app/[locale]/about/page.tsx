@@ -45,6 +45,14 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
           <div className={styles.prose}><p>{t("visionBody")}</p></div>
         </section>
 
+        <section className={styles.section} aria-labelledby="about-pathway">
+          <h2 id="about-pathway">{t("pathwayTitle")}</h2>
+          <div className={styles.prose}>
+            <p className={styles.pathway}>{t("pathwaySteps")}</p>
+            <p>{t("pathwayBody")}</p>
+          </div>
+        </section>
+
         <section className={styles.section} aria-labelledby="about-name">
           <h2 id="about-name">{t("nameTitle")}</h2>
           <div className={styles.prose}><p>{t("namePara1")}</p></div>

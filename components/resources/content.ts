@@ -146,6 +146,11 @@ export type ResourcesEditorial = {
   searchHeading: string;
   directoryHeading: string;
   resultsHeading: string;
+  choosePrompt: string;
+  clearResults: string;
+  resultsForCategory: (category: string) => string;
+  resultsForSearch: (query: string) => string;
+  resultsForCategorySearch: (category: string, query: string) => string;
   localTag: string;
   visit: string;
   recommendedHint: string;
@@ -179,6 +184,11 @@ const en: ResourcesEditorial = {
   searchHeading: "Search all resources",
   directoryHeading: "Resource directory",
   resultsHeading: "What we found",
+  choosePrompt: "Choose a category or search to find support.",
+  clearResults: "Clear and choose again",
+  resultsForCategory: (category) => category,
+  resultsForSearch: (query) => `Results for “${query}”`,
+  resultsForCategorySearch: (category, query) => `${category}: “${query}”`,
   localTag: "In Niger",
   visit: "Visit",
   recommendedHint: "If you're not sure where to begin",
@@ -241,6 +251,11 @@ const fr: ResourcesEditorial = {
   searchHeading: "Rechercher toutes les ressources",
   directoryHeading: "Répertoire des ressources",
   resultsHeading: "Ce que nous avons trouvé",
+  choosePrompt: "Choisissez une catégorie ou lancez une recherche pour trouver du soutien.",
+  clearResults: "Effacer et choisir à nouveau",
+  resultsForCategory: (category) => category,
+  resultsForSearch: (query) => `Résultats pour « ${query} »`,
+  resultsForCategorySearch: (category, query) => `${category} : « ${query} »`,
   localTag: "Au Niger",
   visit: "Visiter",
   recommendedHint: "Si vous ne savez pas par où commencer",

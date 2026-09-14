@@ -10,6 +10,7 @@ export type SubmissionInput = {
   country?: string;
   region?: string;
   consent: boolean;
+  researchConsent: boolean;
   locale?: string;
 };
 
@@ -34,6 +35,7 @@ export function validateSubmission(input: SubmissionInput): {
     country: string | null;
     region: string | null;
     consent: boolean;
+    researchConsent: boolean;
   };
 } {
   const errors: SubmissionErrors = {};
@@ -66,6 +68,7 @@ export function validateSubmission(input: SubmissionInput): {
       country,
       region,
       consent: input.consent,
+      researchConsent: input.researchConsent,
     },
   };
 }
