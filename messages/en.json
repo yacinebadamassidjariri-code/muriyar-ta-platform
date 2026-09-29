@@ -233,129 +233,134 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "HER VOICE. HER STORY. OUR FUTURE.",
-      "title": "Every girl has a story worth hearing.",
-      "subtitle": "Muriyar Ta is a safe, anonymous space where girls and young women share their stories. Together, we turn stories into awareness, podcasts, research, and advocacy.",
-      "ctaShareStory": "Share Your Story",
-      "ctaExploreStories": "Explore Stories",
-      "reassurance": "Your story belongs to you. Sharing it is always your choice.",
+      "eyebrow": "MURIYAR TA · HER VOICE",
+      "titleLine1": "Your story",
+      "titleLine2": "belongs to you.",
+      "subtitle": "Your voice deserves to be heard. Muriyar Ta means \"Her Voice.\" A space for girls and young women to share what they have lived, felt, questioned, survived, or simply want others to understand.",
+      "ctaShareStory": "Share your story",
+      "ctaExploreStories": "Read our stories",
+      "reassurance": "You can share your story anonymously",
       "testiLabel": "Anonymous voice",
-      "testiQuote": "I never thought anyone would listen. Here, I felt heard for the first time.",
+      "testiQuote": "I wanted to tell someone what was happening. Not for help — just for someone to know.",
       "testiCredit": "Anonymous contributor"
     },
     "name": {
-      "eyebrow": "The name",
-      "titleStart": "In Hausa, ",
-      "titleAccent": "Muriyar Ta",
-      "titleEnd": " means "Her Voice."",
-      "body": "More than a name, it is a promise — that every girl who visits this platform will find a space where her voice matters, her story is heard, and her experience can help shape change."
+      "eyebrow": "WHAT IS MURIYAR TA?",
+      "titleLine1Start": "In Hausa, ",
+      "titleLine1Accent": "Muriyar Ta",
+      "titleLine1End": " means",
+      "titleLine2": "\"Her Voice.\"",
+      "body": "This is a space created for girls and young women — primarily in Niger, and across West Africa — to speak in their own words. About education, marriage, family, identity, dreams, discrimination, and the quiet realities of growing up female.",
+      "body2": "The stories shared here are moderated with care and published with consent. They can become podcasts, awareness content, and evidence that advocates, researchers, and policymakers can use — always de-identified, always respectfully handled."
     },
     "stats": {
       "label": "Platform at a glance",
-      "languages": "Languages supported",
-      "stories": "Stories shared",
-      "categories": "Support categories",
+      "languages": "Languages",
+      "stories": "Stories published",
+      "categories": "Themes covered",
       "storiesEmpty": "—",
       "categoriesEmpty": "—"
     },
     "stories": {
-      "eyebrow": "Stories",
-      "title": "Stories from her life.",
+      "eyebrow": "THEIR WORDS",
+      "titleStart": "Stories from ",
+      "titleItalic": "her life",
       "cta": "Read all stories",
+      "readCta": "Read her story",
       "empty": "The first stories will appear here soon."
     },
     "submitInvite": {
-      "eyebrow": "Share your story",
-      "title": "Your voice deserves to be heard.",
+      "eyebrow": "YOUR STORY TOO",
+      "titleStart": "You can tell us ",
+      "titleItalic": "what you've lived.",
+      "body": "This space was built for stories like yours. You do not need to use your name. You choose what you share, and how much. There is no story too small or too ordinary.",
       "bullets": [
-        "No account or real name required",
-        "Share only what you choose, at your pace",
-        "A trained person reads every story with care",
-        "Nothing is published without your consent"
+        "You do not need to use your name — share anonymously.",
+        "You choose what you tell us. You are in control.",
+        "Every story is read by a human and reviewed with care.",
+        "Do not include personal identifying details — for your safety.",
+        "This is not a crisis or emergency service."
       ],
-      "cardEyebrow": "Begin sharing",
-      "cardTitle": "Your story, in your words.",
-      "cardBody": "Whatever you have lived through, there is a space for it here. Anonymous, safe, and always yours.",
+      "cardEyebrow": "START HERE",
+      "cardTitle": "\"Whatever I share belongs to me.\"",
+      "cardBody": "Your story stays yours. You decide what we can do with it — only with your consent will any part of it be published or shared.",
       "cta": "Share your story",
+      "cardLanguages": "Available in Hausa · Français · English · Zarma",
       "safety": "No account required. Anonymous by default."
     },
     "journey": {
-      "eyebrow": "How it works",
-      "title": "Your story stays in your hands.",
-      "cta": "Learn how we protect your story",
+      "eyebrow": "THE JOURNEY OF A STORY",
+      "title": "One voice can travel far.",
+      "subtitle": "A story shared here does not end with publication. It can help another girl feel less alone — and help society understand what girls are truly experiencing.",
       "steps": [
         {
-          "title": "Write anonymously",
-          "body": "Share only what you choose. No account or name is ever required."
+          "num": "1",
+          "title": "Your voice",
+          "body": "You share your experience in your own words"
         },
         {
-          "title": "Your story is protected",
-          "body": "We remove identifying details and keep your submission private and secure."
+          "num": "2",
+          "title": "Her story",
+          "body": "Reviewed, edited with care, published with your consent"
         },
         {
-          "title": "A person reviews it",
-          "body": "A trained team member reads every story with care and without judgment."
+          "num": "3",
+          "title": "Conversation",
+          "body": "Podcasts and community discussions with real voices"
         },
         {
-          "title": "You decide what happens",
-          "body": "Your story stays private unless you choose to let it reach the world."
+          "num": "4",
+          "title": "Shared themes",
+          "body": "Patterns from many voices, de-identified and aggregated"
         },
         {
-          "title": "Stories create change",
-          "body": "Shared voices become awareness, podcasts, research, and advocacy."
+          "num": "5",
+          "title": "Advocacy & Research",
+          "body": "Evidence that can shape policy, programs, and understanding"
         }
       ]
     },
     "podcast": {
-      "eyebrow": "Listen",
-      "title": "Stories you can hear.",
-      "body": "Anonymous stories, expert voices, and conversations on the topics communities rarely discuss aloud — across Niger and West Africa.",
-      "cta": "Explore the podcast",
-      "episodesLabel": "Recent episodes",
+      "eyebrow": "LISTEN TO HER VOICE",
+      "titleLine1": "Her Voice",
+      "titleLine2": "Podcast",
+      "body": "Conversations with girls and young women — in their own voices, in their own languages. Not interviews about them. Conversations with them.",
+      "comingSoon": "First episodes arriving soon — subscribe to be notified",
+      "cta": "Subscribe to the podcast",
+      "episodesLabel": "Upcoming episodes",
       "episodeLabel": "Episode",
       "minutesLabel": "min",
-      "soonBadge": "Soon",
-      "soon1": "Anonymous Voices — Episode 01",
-      "soon2": "Breaking the Silence — Episode 01",
-      "soon3": "Beyond the Story — Episode 01"
+      "soonBadge": "SOON",
+      "soon1": "When home is not safe",
+      "soon2": "The girls who kept studying",
+      "soon3": "What I wish my mother knew"
     },
     "resources": {
-      "eyebrow": "Support",
-      "title": "Find help near you.",
+      "eyebrow": "PRACTICAL SUPPORT",
+      "titleStart": "Resources for ",
+      "titleItalic": "the things you're facing",
+      "body": "Information and support organized around the themes girls actually encounter — not organized around institutional categories.",
       "cta": "Browse all resources",
       "pillsLabel": "Browse by category",
-      "note": "All resources are verified by the Muriyar Ta team. Last updated regularly."
+      "note": "All resources are verified by the Muriyar Ta team."
     },
     "insights": {
-      "eyebrow": "Research & Impact",
-      "title": "When many voices speak, patterns become visible.",
-      "body": "As this platform grows, shared stories — with contributor consent — will inform research and advocacy. We are building toward that future carefully and transparently.",
-      "ctaPartner": "Partner with us",
-      "ctaAbout": "Our approach"
+      "eyebrow": "FOR PARTNERS & RESEARCHERS",
+      "titleStart": "When many voices speak, ",
+      "titleItalic": "patterns become visible.",
+      "body": "Muriyar Ta identifies recurring themes across de-identified stories and transforms them into thematic insights briefs — evidence that can inform research, NGO programming, and policy conversations.",
+      "dataNote": "Individual identities are never exposed. Every brief is built on aggregated patterns, not attributable accounts.",
+      "cardComingSoon": "Insights briefs coming soon",
+      "cardComingSoonBody": "As stories accumulate with contributor consent, we will publish anonymised thematic briefs here. No identities. No attributable accounts. Only patterns.",
+      "ctaInsights": "View insights briefs",
+      "ctaPartner": "Partner with us"
     },
     "finalCta": {
-      "eyebrow": "Your turn",
-      "title": "Every story that is shared makes the next one easier.",
+      "titleStart": "Whatever your story is, ",
+      "titleItalic": "it matters here.",
+      "body": "You don't need to know how to start. You don't need a perfect story. You just need to feel ready.",
       "ctaShare": "Share your story",
-      "ctaExplore": "Explore stories",
-      "safety": "Anonymous. Private. Always your choice."
-    },
-    "pathways": {
-      "discover": "Explore Muriyar Ta",
-      "items": [
-        {
-          "label": "Podcast",
-          "href": "/podcast"
-        },
-        {
-          "label": "Resources",
-          "href": "/resources"
-        },
-        {
-          "label": "Partner with us",
-          "href": "/partner"
-        }
-      ]
+      "ctaPartner": "Partner with Muriyar Ta"
     }
   },
   "about": {

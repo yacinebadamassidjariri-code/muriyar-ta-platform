@@ -1,5 +1,5 @@
 /* ============================================================
-   Muriyar Ta — Full Homepage  (visual-correction pass)
+   Muriyar Ta — Full Homepage  (visual-correction pass v2)
    Design system: Lora (display) · Source Sans 3 (body)
    Palette: Warm ivory · Terracotta · Deep indigo · Sand/gold
    ============================================================ */
@@ -95,6 +95,28 @@
 .primaryAction:focus-visible { outline: 2px solid var(--terra-l); outline-offset: 3px; }
 .primaryAction svg { width: 1rem; height: 1rem; transition: transform var(--motion); }
 .primaryAction:hover svg { transform: translateX(0.2rem); }
+
+/* Outline button for use on dark backgrounds */
+.outlineActionLight {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 3.25rem;
+  padding: 0 1.75rem;
+  border: 1.5px solid rgba(255,249,240,0.45);
+  color: var(--on-dark);
+  font-family: var(--sans);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: border-color var(--motion), background var(--motion);
+}
+.outlineActionLight:hover { border-color: var(--on-dark); background: rgba(255,249,240,0.08); }
+.outlineActionLight:focus-visible { outline: 2px solid var(--terra-l); outline-offset: 3px; }
+.outlineActionLight svg { width: 1rem; height: 1rem; transition: transform var(--motion); }
+.outlineActionLight:hover svg { transform: translateX(0.2rem); }
 
 .primaryActionLarge {
   display: inline-flex;
@@ -200,7 +222,7 @@
   position: absolute;
   inset: 0;
 }
-/* Gradient shades the left half for legibility, fades on right */
+/* Gradient shades left half for legibility */
 .heroShade {
   background: linear-gradient(
     90deg,
@@ -210,7 +232,7 @@
     rgba(20,28,58,0.05)
   );
 }
-/* Agadez cross — decorative, top-right corner */
+/* Agadez cross — decorative top-right */
 .heroCrossDecor {
   position: absolute;
   top: 8%;
@@ -232,19 +254,17 @@
   color: var(--on-dark);
 }
 
-/* Eyebrow with horizontal rule on each side */
+/* Eyebrow with horizontal rule on left side */
 .heroEyebrowRow {
   display: flex;
   align-items: center;
   gap: 0.85rem;
 }
 .heroEyebrowRule {
-  flex: 1;
-  max-width: 2.5rem;
+  width: 1.5rem;
+  flex: none;
   height: 1px;
   background: var(--terra-l);
-  flex: none;
-  width: 1.5rem;
 }
 .heroEyebrow {
   margin: 0;
@@ -265,6 +285,12 @@
   line-height: 0.94;
   letter-spacing: -0.025em;
   color: var(--on-dark);
+  display: flex;
+  flex-direction: column;
+}
+.heroTitle em {
+  font-style: italic;
+  color: var(--terra-p);
 }
 .heroSubtitle {
   max-width: 30rem;
@@ -298,7 +324,7 @@
   color: var(--green);
 }
 
-/* Floating testimonial card (hero bottom-right) */
+/* Floating testimonial card — bottom-right */
 .heroTestiCard {
   position: absolute;
   bottom: clamp(2rem, 5vw, 4.5rem);
@@ -312,6 +338,15 @@
   padding: 1.5rem 1.75rem;
   color: var(--on-dark);
 }
+.heroTestiQuoteMark {
+  display: block;
+  font-family: var(--display);
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--terra-l);
+  margin-bottom: -0.5rem;
+  user-select: none;
+}
 .heroTestiQuote {
   margin: 0;
   font-family: var(--display);
@@ -321,9 +356,7 @@
   line-height: 1.5;
   color: rgba(255,249,240,0.92);
 }
-.heroTestiQuote::before { content: '\201C'; }
-.heroTestiQuote::after  { content: '\201D'; }
-.heroTestiBracket {
+.heroTestiCredit {
   display: block;
   margin: 0.9rem 0 0;
   color: var(--terra-l);
@@ -334,28 +367,28 @@
   text-transform: uppercase;
 }
 
-/* Scroll indicator */
+/* Scroll indicator — bottom, left-aligned with content */
 .heroScroll {
   position: absolute;
   bottom: 2.25rem;
-  left: 50%;
-  transform: translateX(-50%);
+  left: var(--gutter);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.45rem;
-  color: rgba(255,249,240,0.45);
+  gap: 0.75rem;
+  color: rgba(255,249,240,0.4);
   font-family: var(--sans);
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
   pointer-events: none;
 }
+.heroScrollLabel {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
 .heroScrollLine {
-  width: 1px;
-  height: 2.5rem;
-  background: linear-gradient(to bottom, rgba(255,249,240,0.45), transparent);
+  width: 2.5rem;
+  height: 1px;
+  background: linear-gradient(to right, rgba(255,249,240,0.4), transparent);
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -378,8 +411,9 @@
   gap: 1rem;
   margin-bottom: 2rem;
 }
-.nameCrossSmall {
+.nameCross {
   width: 28px;
+  flex: none;
 }
 .nameDividerLine {
   flex: 1;
@@ -387,7 +421,14 @@
   height: 1px;
   background: var(--divider);
 }
-.nameKicker {
+.nameCrossRowBottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.nameEyebrow {
   margin: 0 0 1.1rem;
   color: var(--terra);
   font-family: var(--sans);
@@ -404,12 +445,22 @@
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--charcoal);
+  display: flex;
+  flex-direction: column;
 }
-.nameHeadingAccent {
+.nameHeadingLine1 {
+  display: block;
+}
+.nameHeadingItalic {
+  font-style: italic;
+  color: var(--terra);
+}
+.nameHeadingLine2 {
+  display: block;
   color: var(--terra);
   font-style: italic;
 }
-.nameSubtext {
+.nameBody {
   margin: 1.5rem auto 0;
   max-width: 38rem;
   color: var(--muted);
@@ -417,19 +468,30 @@
   font-size: clamp(0.95rem, 1.3vw, 1.1rem);
   line-height: 1.7;
 }
-.nameCrossRowBottom {
-  composes: nameCrossRow;
-  margin-top: 2rem;
-  margin-bottom: 0;
+.nameBody2 {
+  margin: 1rem auto 0;
+  max-width: 38rem;
+  color: var(--faint);
+  font-family: var(--sans);
+  font-size: clamp(0.88rem, 1.2vw, 1rem);
+  line-height: 1.7;
 }
 
 /* ─────────────────────────────────────────────────────────────
-   3. STATS ROW  — 3 columns on ivory band
+   3. STATS ROW  — 3 columns on ivory band, cross above
    ───────────────────────────────────────────────────────────── */
 .statsStrip {
   border-top: 1px solid var(--divider);
   border-bottom: 1px solid var(--divider);
   background: color-mix(in srgb, var(--sand-l) 10%, var(--ivory));
+}
+.statsTopCross {
+  display: flex;
+  justify-content: center;
+  padding-top: 1.5rem;
+}
+.statsCrossIcon {
+  width: 20px;
 }
 .statsInner {
   display: grid;
@@ -494,6 +556,7 @@
   letter-spacing: -0.02em;
   color: var(--charcoal);
 }
+.storiesTitle em { font-style: italic; color: var(--terra); }
 .storiesCta {
   composes: textAction;
   margin-top: 0;
@@ -522,8 +585,8 @@
 }
 .storyCard:hover { transform: translateY(-3px); }
 
-/* Dark editorial tint layer — no photography in DB so we use color */
-.storyCardTint {
+/* Dark editorial gradient background */
+.storyCardBg {
   position: absolute;
   inset: 0;
   background: linear-gradient(
@@ -534,21 +597,23 @@
   opacity: 0.96;
 }
 
+/* Full-card click overlay (invisible) */
+.storyCardOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.storyCardOverlay:focus-visible {
+  outline: 2px solid var(--terra-l);
+  outline-offset: -2px;
+}
+
 .storyCardContent {
   position: relative;
   display: flex;
   flex-direction: column;
   flex: 1;
   padding: 2rem 1.75rem;
-}
-.storyCardLink {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-}
-.storyCardLink:focus-visible {
-  outline: 2px solid var(--terra-l);
-  outline-offset: -2px;
 }
 .storyCardTag {
   display: inline-block;
@@ -575,7 +640,9 @@
   quotes: none;
 }
 .storyCardMeta {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   margin-top: 1.5rem;
   padding-top: 1rem;
   border-top: 1px solid rgba(255,249,240,0.1);
@@ -586,6 +653,14 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
+.storyCardMetaDot {
+  color: rgba(255,249,240,0.2);
+}
+.storyCardReadLink {
+  color: inherit;
+  text-decoration: none;
+  margin-left: auto;
+}
 .storyEmpty {
   padding: 3rem 0;
   color: var(--muted);
@@ -595,14 +670,14 @@
 }
 
 /* ─────────────────────────────────────────────────────────────
-   5. SUBMIT INVITATION  — 2-col: bullet list left + dark CTA card right
+   5. SUBMIT INVITATION  — 2-col: bullet list left + dark card right
    ───────────────────────────────────────────────────────────── */
 .submitInvite {
   background: color-mix(in srgb, var(--sand-l) 12%, var(--ivory));
   border-top: 1px solid var(--divider);
   border-bottom: 1px solid var(--divider);
 }
-.submitInviteInner {
+.submitInner {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(3rem, 6vw, 7rem);
@@ -611,9 +686,21 @@
   padding: var(--section) var(--gutter);
   align-items: start;
 }
-.submitInviteLeft { align-self: center; }
-.submitInviteHeading {
-  margin: 0.85rem 0 0;
+.submitLeft { align-self: center; }
+
+/* Eyebrow row with inline Agadez cross */
+.submitEyebrowRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.submitEyebrowIcon {
+  width: 20px;
+  flex: none;
+}
+.submitHeading {
+  margin: 0.5rem 0 0;
   font-family: var(--display);
   font-size: clamp(2.2rem, 3.5vw, 3.5rem);
   font-weight: 600;
@@ -621,39 +708,79 @@
   letter-spacing: -0.02em;
   color: var(--charcoal);
 }
-.submitInviteList {
-  margin: 2rem 0 0;
+.submitHeading em {
+  font-style: italic;
+  color: var(--terra);
+}
+.submitBody {
+  margin: 1.25rem 0 0;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
+  line-height: 1.65;
+  max-width: 30rem;
+}
+.submitList {
+  margin: 1.75rem 0 0;
   padding: 0;
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
 }
-.submitInviteList li {
+.submitListItem {
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 0.9rem;
   color: var(--muted);
   font-family: var(--sans);
-  font-size: clamp(0.9rem, 1.2vw, 1rem);
+  font-size: clamp(0.88rem, 1.15vw, 0.95rem);
   line-height: 1.6;
 }
-.submitInviteList li::before {
-  content: '◆';
-  color: var(--terra);
-  font-size: 0.5rem;
+.submitListDiamond {
   flex: none;
-  margin-top: 0.45rem;
+  color: var(--terra);
+  font-size: 0.65rem;
+  margin-top: 0.4rem;
+  line-height: 1;
 }
 
-/* Dark CTA card */
-.submitInviteCard {
+/* Dark CTA card with corner brackets */
+.submitCard {
+  position: relative;
   background: var(--charcoal);
   border-radius: 3px;
   padding: clamp(2rem, 3.5vw, 3.5rem);
   color: var(--on-dark);
 }
-.submitInviteCardEyebrow {
+/* Corner bracket decorations */
+.submitCardBracketTL,
+.submitCardBracketTR,
+.submitCardBracketBL,
+.submitCardBracketBR {
+  position: absolute;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-color: rgba(200,168,122,0.35);
+  border-style: solid;
+}
+.submitCardBracketTL {
+  top: 0.85rem; left: 0.85rem;
+  border-width: 1.5px 0 0 1.5px;
+}
+.submitCardBracketTR {
+  top: 0.85rem; right: 0.85rem;
+  border-width: 1.5px 1.5px 0 0;
+}
+.submitCardBracketBL {
+  bottom: 0.85rem; left: 0.85rem;
+  border-width: 0 0 1.5px 1.5px;
+}
+.submitCardBracketBR {
+  bottom: 0.85rem; right: 0.85rem;
+  border-width: 0 1.5px 1.5px 0;
+}
+.submitCardEyebrow {
   margin: 0;
   color: var(--terra-l);
   font-family: var(--sans);
@@ -662,42 +789,39 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
-.submitInviteCardTitle {
+.submitCardTitle {
   margin: 1rem 0 0;
   font-family: var(--display);
-  font-size: clamp(1.8rem, 2.8vw, 2.75rem);
+  font-size: clamp(1.6rem, 2.5vw, 2.4rem);
   font-weight: 600;
-  line-height: 1.0;
+  line-height: 1.1;
   letter-spacing: -0.02em;
   color: var(--on-dark);
+  font-style: italic;
 }
-.submitInviteCardBody {
-  margin: 1.1rem 0 0;
+.submitCardBody {
+  margin: 1rem 0 0;
   color: var(--on-dark-muted);
   font-family: var(--sans);
   font-size: 0.95rem;
   line-height: 1.65;
 }
-.submitInviteCardActions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1rem;
+.submitCardCta {
+  composes: primaryAction;
   margin-top: 1.75rem;
+  display: inline-flex;
 }
-.submitInviteSafety {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin-top: 1.25rem;
-  color: rgba(255,249,240,0.5);
+.submitCardLanguages {
+  margin: 1.25rem 0 0;
+  color: rgba(255,249,240,0.38);
   font-family: var(--sans);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
 }
-.submitInviteSafety svg { width: 0.9rem; height: 0.9rem; flex: none; color: var(--green); }
 
 /* ─────────────────────────────────────────────────────────────
-   6. JOURNEY  — deep-indigo 5-stage horizontal flow
+   6. JOURNEY  — deep-indigo, centered header, 5-step flow
    ───────────────────────────────────────────────────────────── */
 .journey {
   background: var(--indigo);
@@ -710,14 +834,18 @@
   margin: auto;
   padding: clamp(5rem, 8vw, 8rem) var(--gutter);
 }
+/* Centered stacked header */
 .journeyHeader {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 3rem;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
   margin-bottom: 3.5rem;
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
 }
-.journeyHeaderText { max-width: 32rem; }
 .journeyTitle {
   margin: 0.85rem 0 0;
   font-family: var(--display);
@@ -726,6 +854,13 @@
   line-height: 1.0;
   letter-spacing: -0.02em;
   color: var(--on-dark);
+}
+.journeySubtitle {
+  margin: 1rem 0 0;
+  color: rgba(255,249,240,0.62);
+  font-family: var(--sans);
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
+  line-height: 1.7;
 }
 .journeySteps {
   display: grid;
@@ -742,6 +877,8 @@
   border-right: 1px solid var(--divider-dark);
 }
 .journeyStep:last-child { border-right: 0; padding-right: 0; }
+
+/* Standard step icon — sand/gold circle */
 .journeyStepIcon {
   display: flex;
   align-items: center;
@@ -752,12 +889,39 @@
   border: 1px solid rgba(200,168,122,0.25);
   border-radius: 50%;
   margin-bottom: 1.1rem;
-}
-.journeyStepIcon svg {
-  width: 1.25rem;
-  height: 1.25rem;
   color: var(--sand);
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 700;
 }
+
+/* First step icon — terracotta accent */
+.journeyStepIconFirst {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  background: rgba(184,81,46,0.18);
+  border: 1px solid rgba(184,81,46,0.4);
+  border-radius: 50%;
+  margin-bottom: 1.1rem;
+  color: var(--terra-l);
+  font-family: var(--sans);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Arrow between steps — positioned at top-right corner */
+.journeyStepArrow {
+  position: absolute;
+  top: 2.5rem;
+  right: -0.65rem;
+  color: rgba(200,168,122,0.35);
+  font-size: 0.9rem;
+  z-index: 1;
+}
+
 .journeyStepNum {
   display: block;
   color: var(--terra-l);
@@ -792,7 +956,7 @@
 }
 
 /* ─────────────────────────────────────────────────────────────
-   7. PODCAST TEASER  — episode list, coming-soon state
+   7. PODCAST TEASER  — 2-col, episode list, coming-soon state
    ───────────────────────────────────────────────────────────── */
 .podcast {
   background: var(--indigo-d);
@@ -808,8 +972,51 @@
   align-items: start;
 }
 .podcastLeft { align-self: center; }
+
+/* Eyebrow row with play icon circle */
+.podcastEyebrowRow {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+.podcastPlayIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: rgba(184,81,46,0.2);
+  border: 1px solid rgba(184,81,46,0.4);
+  border-radius: 50%;
+  color: var(--terra-l);
+  flex: none;
+}
+.podcastPlayIcon svg {
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-left: 0.1rem; /* optical center for play triangle */
+}
+
+/* Podcast title — two-line display heading */
+.podcastTitle {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 0;
+  font-family: var(--display);
+  font-size: clamp(2.2rem, 3.5vw, 3.5rem);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--on-dark);
+}
+.podcastTitle span:last-child {
+  font-style: italic;
+  color: var(--terra-l);
+}
+
 .podcastBody {
-  margin: 1.2rem 0 1.75rem;
+  margin: 1.2rem 0 1.25rem;
   color: var(--on-dark-muted);
   font-family: var(--sans);
   font-size: clamp(0.9rem, 1.3vw, 1.05rem);
@@ -817,7 +1024,30 @@
   max-width: 26rem;
 }
 
-/* Episode list / coming-soon rows */
+/* Coming-soon notification banner */
+.podcastComingSoon {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0 0 1.5rem;
+  color: rgba(255,249,240,0.5);
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.podcastComingSoonDot {
+  color: var(--terra-l);
+  font-size: 0.5rem;
+  flex: none;
+}
+
+/* Subscribe link */
+.podcastCta {
+  composes: outlineActionLight;
+  display: inline-flex;
+}
+
+/* Episode list */
 .episodeList {
   margin: 0;
   padding: 0;
@@ -827,59 +1057,77 @@
 }
 .episodeRow {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 1.5rem;
+  grid-template-columns: auto 1fr auto;
+  gap: 1.25rem;
   align-items: center;
-  padding: 1.75rem 0;
+  padding: 1.5rem 0;
   border-bottom: 1px solid var(--divider-dark);
 }
-.episodeRowLink {
-  display: contents;
-  color: inherit;
-  text-decoration: none;
-}
-.episodeRowLink:focus-visible { outline: 2px solid var(--terra-l); outline-offset: 4px; }
 .episodeNum {
-  display: block;
   color: var(--terra-l);
   font-family: var(--sans);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  margin-bottom: 0.4rem;
+  flex: none;
+  align-self: flex-start;
+  margin-top: 0.3rem;
+}
+.episodeInfo {
+  min-width: 0;
 }
 .episodeTitle {
   margin: 0;
   font-family: var(--display);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--on-dark);
   line-height: 1.3;
 }
 .episodeMeta {
-  margin: 0.4rem 0 0;
-  color: rgba(255,249,240,0.5);
+  margin: 0.3rem 0 0;
+  color: rgba(255,249,240,0.45);
   font-family: var(--sans);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
 }
-.episodeBadge {
+
+/* Arrow link (real episodes) */
+.episodeArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  color: rgba(255,249,240,0.35);
+  text-decoration: none;
+  border-radius: 50%;
+  transition: color var(--motion), background var(--motion);
+  flex: none;
+}
+.episodeArrow:hover { color: var(--on-dark); background: rgba(255,249,240,0.08); }
+.episodeArrow:focus-visible { outline: 2px solid var(--terra-l); outline-offset: 2px; }
+.episodeArrow svg { width: 0.85rem; height: 0.85rem; }
+
+/* "SOON" badge (placeholder episodes) */
+.episodeSoonBadge {
   display: inline-block;
-  padding: 0.2rem 0.75rem;
-  background: rgba(200,168,122,0.12);
-  border: 1px solid rgba(200,168,122,0.25);
+  padding: 0.2rem 0.65rem;
+  background: rgba(200,168,122,0.1);
+  border: 1px solid rgba(200,168,122,0.22);
   color: var(--sand);
   border-radius: 1px;
   font-family: var(--sans);
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   white-space: nowrap;
+  flex: none;
 }
 
 /* ─────────────────────────────────────────────────────────────
-   8. RESOURCES  — theme pill tags, real categories
+   8. RESOURCES  — single-col stack, pills, verified note
    ───────────────────────────────────────────────────────────── */
 .resources {
   background: var(--paper);
@@ -890,13 +1138,7 @@
   margin: auto;
   padding: var(--section) var(--gutter);
 }
-.resourcesHeader {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 2rem;
-  margin-bottom: 2.5rem;
-}
+/* eyebrow sits directly above heading (no header row) */
 .resourcesTitle {
   margin: 0.85rem 0 0;
   font-family: var(--display);
@@ -906,17 +1148,23 @@
   letter-spacing: -0.02em;
   color: var(--charcoal);
 }
-.resourcesCta {
-  composes: textAction;
-  margin-top: 0;
-  white-space: nowrap;
-  flex: none;
+.resourcesTitle em {
+  font-style: italic;
+  color: var(--terra);
+}
+.resourcesBody {
+  margin: 1.1rem 0 0;
+  max-width: 38rem;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+  line-height: 1.7;
 }
 .categoryPills {
   display: flex;
   flex-wrap: wrap;
   gap: 0.65rem;
-  margin: 0;
+  margin: 2rem 0 0;
   padding: 0;
   list-style: none;
 }
@@ -939,16 +1187,21 @@
   background: color-mix(in srgb, var(--terra) 4%, white);
 }
 .categoryPill:focus-visible { outline: 2px solid var(--terra); outline-offset: 3px; }
-
 .resourcesNote {
   margin: 1.75rem 0 0;
   color: var(--faint);
   font-family: var(--sans);
   font-size: 0.82rem;
 }
+/* CTA at bottom of resources section */
+.resourcesCta {
+  composes: textAction;
+  margin-top: 1.75rem;
+  display: inline-flex;
+}
 
 /* ─────────────────────────────────────────────────────────────
-   9. INSIGHTS / IMPACT  — no fabricated data, CTA-only state
+   9. INSIGHTS  — 2-col: document card left + copy right
    ───────────────────────────────────────────────────────────── */
 .insights {
   background: var(--charcoal);
@@ -956,48 +1209,127 @@
   position: relative;
   overflow: hidden;
 }
+/* 2-column layout */
 .insightsInner {
-  max-width: 52rem;
+  display: grid;
+  grid-template-columns: minmax(16rem, 0.85fr) minmax(0, 1fr);
+  gap: clamp(3rem, 7vw, 7rem);
+  align-items: center;
+  max-width: var(--wide);
   margin: auto;
   padding: var(--section) var(--gutter);
-  text-align: center;
 }
-.insightsHeading {
-  margin: 1rem 0 0;
+
+/* Left — document card (coming-soon state) */
+.insightsCard {
+  background: rgba(255,249,240,0.04);
+  border: 1px solid rgba(255,249,240,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.insightsCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  background: rgba(255,249,240,0.04);
+  border-bottom: 1px solid rgba(255,249,240,0.08);
+}
+.insightsCardCross {
+  width: 18px;
+  flex: none;
+}
+.insightsCardBrand {
+  flex: 1;
+  color: rgba(255,249,240,0.5);
+  font-family: var(--sans);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.insightsCardIssue {
+  color: var(--terra-l);
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.insightsCardBody {
+  padding: 2rem 1.5rem 1.5rem;
+}
+.insightsCardBodyText {
+  margin: 0;
+  color: rgba(255,249,240,0.55);
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+.insightsCardNote {
+  margin: 0;
+  padding: 1.1rem 1.5rem;
+  border-top: 1px solid rgba(255,249,240,0.08);
+  color: rgba(255,249,240,0.3);
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* Right — copy column */
+.insightsRight { }
+
+/* Eyebrow row with inline cross */
+.insightsEyebrowRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+.insightsEyebrowIcon {
+  width: 18px;
+  flex: none;
+}
+.insightsTitle {
+  margin: 0.85rem 0 0;
   font-family: var(--display);
-  font-size: clamp(2.2rem, 4vw, 3.75rem);
+  font-size: clamp(2rem, 3.2vw, 3.25rem);
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.02em;
   color: var(--on-dark);
 }
+.insightsTitle em {
+  font-style: italic;
+  color: var(--terra-l);
+}
 .insightsBody {
-  margin: 1.5rem 0 0;
+  margin: 1.25rem 0 0;
   color: var(--on-dark-muted);
   font-family: var(--sans);
-  font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+  font-size: clamp(0.9rem, 1.2vw, 1.05rem);
   line-height: 1.7;
-  max-width: 38rem;
-  margin-left: auto;
-  margin-right: auto;
 }
-.insightsActions {
+.insightsLinks {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.25rem;
-  margin-top: 2.25rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 2rem;
 }
-.insightsCrossDecor {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: clamp(200px, 30vw, 400px);
-  pointer-events: none;
-  opacity: 0.04;
+.insightsTextLink {
+  color: var(--terra-l);
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(212,116,78,0.35);
+  padding-bottom: 0.15rem;
+  transition: color var(--motion), border-color var(--motion);
 }
+.insightsTextLink:hover { color: var(--terra-p); border-color: var(--terra-p); }
+.insightsTextLink:focus-visible { outline: 2px solid var(--terra-l); outline-offset: 3px; }
 
 /* ─────────────────────────────────────────────────────────────
    10. FINAL CTA  — full-bleed dark, two CTAs
@@ -1029,13 +1361,25 @@
 }
 .finalCtaHeading {
   max-width: 36rem;
-  margin: 1rem 0 0;
+  margin: 0;
   font-family: var(--display);
   font-size: clamp(2.8rem, 5vw, 5rem);
   font-weight: 600;
   line-height: 0.95;
   letter-spacing: -0.025em;
   color: var(--on-dark);
+}
+.finalCtaHeading em {
+  font-style: italic;
+  color: var(--terra-p);
+}
+.finalCtaBody {
+  margin: 1.25rem 0 0;
+  max-width: 28rem;
+  color: rgba(255,249,240,0.65);
+  font-family: var(--sans);
+  font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+  line-height: 1.7;
 }
 .finalCtaActions {
   display: flex;
@@ -1044,71 +1388,6 @@
   margin-top: 2.5rem;
   flex-wrap: wrap;
 }
-.finalCtaNote {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-top: 1.5rem;
-  color: rgba(255,249,240,0.5);
-  font-family: var(--sans);
-  font-size: 0.8rem;
-}
-.finalCtaNote svg { width: 0.9rem; height: 0.9rem; flex: none; color: var(--green); }
-
-/* ─────────────────────────────────────────────────────────────
-   11. PATHWAYS NAV
-   ───────────────────────────────────────────────────────────── */
-.pathways {
-  display: grid;
-  grid-template-columns: minmax(12rem, 0.6fr) minmax(0, 1.6fr);
-  gap: 3rem;
-  max-width: var(--wide);
-  margin: auto;
-  padding: 0 var(--gutter) clamp(3.5rem, 5vw, 5rem);
-  align-items: center;
-}
-.pathwaysLabel {
-  margin: 0;
-  color: var(--muted);
-  font-family: var(--sans);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-.pathwaysList {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  border-top: 1.5px solid var(--divider);
-}
-.pathwaysList li { border-right: 1px solid var(--divider); }
-.pathwaysList li:last-child { border-right: 0; }
-.pathwaysList a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1.5rem;
-  color: var(--charcoal);
-  font-family: var(--display);
-  font-size: 1.1rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: color var(--motion);
-}
-.pathwaysList a:hover { color: var(--terra); }
-.pathwaysList a:focus-visible { outline: 2px solid var(--terra); outline-offset: 3px; }
-.pathwaysList svg {
-  width: 0.9rem;
-  height: 0.9rem;
-  color: var(--terra);
-  flex: none;
-  transition: transform var(--motion);
-}
-.pathwaysList a:hover svg { transform: translateX(0.2rem); }
 
 /* ─────────────────────────────────────────────────────────────
    RESPONSIVE — tablet  (≤ 56rem)
@@ -1122,17 +1401,17 @@
   }
   .statsInner { grid-template-columns: 1fr 1fr 1fr; }
   .storyGrid { grid-template-columns: 1fr 1fr; }
-  .submitInviteInner { grid-template-columns: 1fr; }
+  .submitInner { grid-template-columns: 1fr; }
   .journeySteps { grid-template-columns: 1fr 1fr; }
-  .journeyStep { border-right: 0; border-bottom: 1px solid var(--divider-dark); padding: 1.5rem 0; }
+  .journeyStep {
+    border-right: 0;
+    border-bottom: 1px solid var(--divider-dark);
+    padding: 1.5rem 0;
+  }
   .journeyStep:last-child { border-bottom: 0; }
-  .journeyHeader { flex-direction: column; }
+  .journeyStepArrow { display: none; }
   .podcastInner { grid-template-columns: 1fr; }
-  .pathways { grid-template-columns: 1fr; gap: 1.5rem; }
-  .pathwaysList { grid-template-columns: 1fr; }
-  .pathwaysList li { border-right: 0; border-bottom: 1px solid var(--divider); }
-  .pathwaysList li:last-child { border-bottom: 0; }
-  .resourcesHeader { flex-direction: column; align-items: flex-start; }
+  .insightsInner { grid-template-columns: 1fr; }
   .storiesHeader { flex-direction: column; align-items: flex-start; }
 }
 
@@ -1156,21 +1435,19 @@
   .heroTitle { font-size: clamp(3rem, 14vw, 4rem); }
   .heroActions { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
   .nameInner,
-  .statsStrip,
-  .stories,
-  .submitInviteInner,
-  .journeyInner,
-  .podcastInner,
   .resourcesInner,
   .insightsInner,
-  .finalCtaInner,
-  .pathways { padding-left: 1.25rem; padding-right: 1.25rem; }
+  .finalCtaInner { padding-left: 1.25rem; padding-right: 1.25rem; }
   .statsInner { grid-template-columns: 1fr; }
   .statItem { border-right: 0; border-bottom: 1px solid var(--divider); }
   .statItem:last-child { border-bottom: 0; }
   .storyGrid { grid-template-columns: 1fr; }
   .journeySteps { grid-template-columns: 1fr; }
   .finalCtaActions { flex-direction: column; align-items: flex-start; }
+  .submitInner { padding-left: 1.25rem; padding-right: 1.25rem; }
+  .journeyInner { padding-left: 1.25rem; padding-right: 1.25rem; }
+  .podcastInner { padding-left: 1.25rem; padding-right: 1.25rem; }
+  .stories { padding-left: 1.25rem; padding-right: 1.25rem; }
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -1181,8 +1458,8 @@
   .primaryAction svg,
   .primaryActionLarge svg,
   .secondaryAction svg,
+  .outlineActionLight svg,
   .ghostAction svg,
   .textAction svg,
-  .textActionLight svg,
-  .pathwaysList svg { transition: none; }
+  .textActionLight svg { transition: none; }
 }

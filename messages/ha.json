@@ -671,129 +671,114 @@
   "advisoryMild": "Mature themes",
   "home": {
     "hero": {
-      "eyebrow": "MURIYARTA. LABARINTA. GOBE NAMU.",
-      "title": "Kowace yarinya tana da labari da ya cancanci a ji.",
-      "subtitle": "Muriyar Ta wuri ne mai aminci da asiri inda 'yan mata da matasa ke raba labarin rayuwarsu. Tare, muna juyar da labaroni zuwa wayar da kai, faye, bincike, da kira da gyara.",
-      "ctaShareStory": "Raba Labarinki",
-      "ctaExploreStories": "Bincika Labaroni",
-      "reassurance": "Labarinkta naki ne. Raba shi ko a'a zaɓinki ne.",
+      "eyebrow": "MURIYAR TA · MURYARTA",
+      "titleLine1": "Labarinki",
+      "titleLine2": "naki ne.",
+      "subtitle": "Muryarki ta cancanci a ji. Muriyar Ta na nufin \"Muryarta\". Wuri ne don 'yan mata da matasan mata don raba abin da suka rayu, ji, tambaya, tsira, ko kawai suna so wasu su fahimta.",
+      "ctaShareStory": "Raba labarinki",
+      "ctaExploreStories": "Karanta labaroninmu",
+      "reassurance": "Zaki iya raba labarinki cikin asiri",
       "testiLabel": "Murya mai asiri",
-      "testiQuote": "Ban taɓa tunanin wani zai saurare ni ba. Nan, an ji ni karo na farko.",
+      "testiQuote": "Na so in gaya wa wani abin da ke faruwa. Ba don taimako ba — kawai don wani ya san.",
       "testiCredit": "Mai ba da gudummawa mai asiri"
     },
     "name": {
-      "eyebrow": "Sunan",
-      "titleStart": "A Hausa, ",
-      "titleAccent": "Muriyar Ta",
-      "titleEnd": " na nufin \"Muryarta\".",
-      "body": "Fiye da suna, alƙawari ne — cewa kowace yarinya da ta ziyarci wannan dandali za ta sami wuri inda muryarta ke da muhimmanci, labarin ta ya ji, kuma kwarewarta na iya taimakawa wajen canjin al'umma."
+      "eyebrow": "MENENE MURIYAR TA?",
+      "titleLine1Start": "A Hausa, ",
+      "titleLine1Accent": "Muriyar Ta",
+      "titleLine1End": " na nufin",
+      "titleLine2": "\"Muryarta\".",
+      "body": "Wannan wuri ne da aka ƙirƙira don 'yan mata da matasan mata — musamman a Nijar, da a duk faɗin Afirka ta Yamma — don magana da kalmominsu. Game da ilimi, aure, iyali, asali, mafarkai, wariya, da gaskiyar rayuwa ta girma a matsayin mata.",
+      "body2": "Labaroni da aka raba nan ana kula da su da kulawa kuma ana bugawa da yarda. Za su iya zama fayafai, abun ciki na wayar da kai, da shaidun da masu fafutuka, masu bincike, da masu tsara manufofi za su iya amfani da su — koyaushe an cire sunayen, koyaushe ana kula da su da girmamawa."
     },
     "stats": {
       "label": "Dandali a gajarce",
-      "languages": "Harsunan da ake tallafa musu",
-      "stories": "Labaroni da aka raba",
-      "categories": "Nau'in tallafi",
+      "languages": "Harsuna",
+      "stories": "Labaroni da aka buga",
+      "categories": "Batutuwan da aka rufe",
       "storiesEmpty": "—",
       "categoriesEmpty": "—"
     },
     "stories": {
-      "eyebrow": "Labaroni",
-      "title": "Labaroni daga rayuwarta.",
+      "eyebrow": "KALMOMIN SU",
+      "titleStart": "Labaroni daga ",
+      "titleItalic": "rayuwarta",
       "cta": "Karanta dukkan labaroni",
+      "readCta": "Karanta labarinta",
       "empty": "Labaroni na farko za su bayyana nan ba da daɗewa ba."
     },
     "submitInvite": {
-      "eyebrow": "Raba labarinki",
-      "title": "Muryarki ta cancanci a ji.",
+      "eyebrow": "LABARINKI MA",
+      "titleStart": "Zaki iya gaya mana ",
+      "titleItalic": "abin da kuka rayu.",
+      "body": "An gina wannan wuri don labaroni kamar naki. Ba kwa buƙatar amfani da sunanka. Ki zaɓi abin da kuke raba, da nawa. Babu labari da yake ƙanƙanta ko na yau da kullum.",
       "bullets": [
-        "Ba a buƙatar asusun ko sunan ainihi",
-        "Raba kawai abin da kuke so, a ƙimarki",
-        "Mutum da aka horar ya karanta kowace labari da kulawa",
-        "Ba a buga kome ba tare da yardanki ba"
+        "Ba kwa buƙatar amfani da sunanka — rabawa cikin asiri.",
+        "Ki zaɓi abin da kuke gaya mana. Kina da iko.",
+        "Ɗan adam yana karanta kowace labari kuma ana bincikar su da kulawa.",
+        "Kada ki haɗa bayanan gane kai — don amincin ki.",
+        "Wannan ba sabis na rikici ko gaggawa ba ne."
       ],
-      "cardEyebrow": "Fara",
-      "cardTitle": "Labarinki, da kalmominki.",
-      "cardBody": "Ko dai me kuka zauna ta ciki, akwai wuri gare shi nan. Asiri, aminci, kuma na ki kullum.",
+      "cardEyebrow": "FARA NAN",
+      "cardTitle": "\"Duk abin da na raba na mine ne.\"",
+      "cardBody": "Labarinki naki ne. Ki zaɓi abin da muke iya yi da shi — kawai da yardarki za a buga ko raba kowane ɓangare.",
       "cta": "Raba labarinki",
+      "cardLanguages": "Akwai a Hausa · Français · English · Zarma",
       "safety": "Ba a buƙatar asusun. Asiri ta asali."
     },
     "journey": {
-      "eyebrow": "Yadda ake aiki",
-      "title": "Labarinki yana hannunki.",
-      "cta": "Yadda muke kare labarinki",
+      "eyebrow": "TAFIYAR LABARI",
+      "title": "Murya ɗaya na iya tafiya mai nisa.",
+      "subtitle": "Labari da aka raba nan bai tsaya da bugawa ba. Zai iya taimaka wa wata yarinya ta ji kaɗaici — kuma taimakawa al'umma su fahimci abin da 'yan mata suke rayuwa da gaske.",
       "steps": [
-        {
-          "title": "Rubuta cikin asiri",
-          "body": "Raba kawai abin da kuke so. Ba a buƙatar asusun ko suna."
-        },
-        {
-          "title": "Labarinki yana kariya",
-          "body": "Muna cire bayanan gane kai kuma muna adana maidowarki cikin sirri da aminci."
-        },
-        {
-          "title": "Mutum ya karanta",
-          "body": "Ɗan ƙungiyar da aka horar ya karanta kowace labari da kulawa."
-        },
-        {
-          "title": "Ki zaɓa abin da ke faruwa",
-          "body": "Labarinki yana sirrin sai ki zaɓi raba shi da duniya."
-        },
-        {
-          "title": "Labaroni na canza al'umma",
-          "body": "Muryoyin da aka raba suna zama wayar da kai, faye, bincike, da kira da gyara."
-        }
+        {"num": "1", "title": "Muryarki", "body": "Ki raba kwarewanki da kalmominki"},
+        {"num": "2", "title": "Labarinta", "body": "An bincika, an gyara da kulawa, an buga da yardarki"},
+        {"num": "3", "title": "Tattaunawa", "body": "Fayafai da tattaunawar al'umma da muryoyi na gaske"},
+        {"num": "4", "title": "Batutuwa da aka raba", "body": "Salon muryoyi da yawa, an cire sunayen kuma an tattara"},
+        {"num": "5", "title": "Kira da Bincike", "body": "Shaidar da za ta iya tsara manufofi da fahimta"}
       ]
     },
     "podcast": {
-      "eyebrow": "Saurara",
-      "title": "Labaroni da za ku ji.",
-      "body": "Shaidu masu asiri, muryoyin gwanaye, da tattaunawa kan batutuwan da al'ummomi ke ƙin tattauna a sarari — a duk faɗin Nijar da Afirka ta Yamma.",
-      "cta": "Bincika faye",
-      "episodesLabel": "Kwanan nan episodes",
-      "episodeLabel": "Episode",
+      "eyebrow": "SAURARI MURYARTA",
+      "titleLine1": "Muryarta",
+      "titleLine2": "Faye",
+      "body": "Tattaunawa da 'yan mata da matasan mata — da muryoyinsu, da harsunansu. Ba tambayoyi game da su ba. Tattaunawa tare da su.",
+      "comingSoon": "Farkon fasaloli suna zuwa — yi rajista don a sanar da ki",
+      "cta": "Yi rajistan faye",
+      "episodesLabel": "Fasaloli masu zuwa",
+      "episodeLabel": "Fasali",
       "minutesLabel": "min",
-      "soonBadge": "Ba da daɗewa",
-      "soon1": "Muryoyi Masu Asiri — Fasali na 01",
-      "soon2": "Karya Shiru — Fasali na 01",
-      "soon3": "Bayan Labarin — Fasali na 01"
+      "soonBadge": "BA DA DAƊEWA",
+      "soon1": "Lokacin da gida ba shi da aminci",
+      "soon2": "'Yan matan da suka ci gaba da karatun",
+      "soon3": "Abin da na so mahamina ta sani"
     },
     "resources": {
-      "eyebrow": "Taimako",
-      "title": "Nemi taimako kusa da ki.",
+      "eyebrow": "TALLAFI NA AIKI",
+      "titleStart": "Albarkatu don ",
+      "titleItalic": "abin da kuke fuskanta",
+      "body": "Bayani da tallafi da aka tsara a kusa da batutuwan da 'yan mata ke fuskanta da gaske — ba a tsara su bisa nau'ikan cibiyoyi ba.",
       "cta": "Duba dukkan albarkatu",
       "pillsLabel": "Bincika ta rukuni",
-      "note": "Ƙungiyar Muriyar Ta ta tabbatar da dukkan albarkatu. Ana sabunta su akai-akai."
+      "note": "Ƙungiyar Muriyar Ta ta tabbatar da dukkan albarkatu."
     },
     "insights": {
-      "eyebrow": "Bincike da Tasiri",
-      "title": "Da yawa muryoyi suka yi magana, ana iya ganin salon al'amura.",
-      "body": "Da dandali ke girma, labaroni da aka raba — da izinin masu ba da gudummawa — za su iya sanar da bincike da kira da gyara. Muna gina wannan nan gaba da kulawa da gaskiya.",
-      "ctaPartner": "Zama abokin tarayya",
-      "ctaAbout": "Tsarinmu"
+      "eyebrow": "DON ABOKAN TARAYYA DA MASU BINCIKE",
+      "titleStart": "Da yawa muryoyi suka yi magana, ",
+      "titleItalic": "salon al'amura suna bayyana.",
+      "body": "Muriyar Ta na gano batutuwan da ke maimaitawa a cikin labaroni mara sunayen kuma tana canza su zuwa taƙaitattun bayanai na batutuwa — shaidun da za su iya sanar da bincike, shirye-shiryen NGO, da tattaunawar manufofi.",
+      "dataNote": "Ba a taba bayyana asalin mutane ba. Kowace taƙaitaccen bayanai an gina shi bisa salon da aka tattara, ba lissafin da za a iya dangantawa ba.",
+      "cardComingSoon": "Taƙaitattun bayanai masu zuwa",
+      "cardComingSoonBody": "Da labaroni ke tara da yardar masu ba da gudummawa, za mu buga taƙaitattun bayanai na batutuwa mara sunayen nan. Babu asali. Babu lissafin da za a iya dangantawa. Salonai kawai.",
+      "ctaInsights": "Duba taƙaitattun bayanai",
+      "ctaPartner": "Zama abokin tarayya"
     },
     "finalCta": {
-      "eyebrow": "Juyanki",
-      "title": "Kowane labari da aka raba yana sauƙaƙa na gaba.",
+      "titleStart": "Ko menene labarinki, ",
+      "titleItalic": "yana da mahimmanci nan.",
+      "body": "Ba kwa buƙatar sanin yadda ake farawa. Ba kwa buƙatar labari mai kamala. Kawai kuna buƙatar jin a shirye.",
       "ctaShare": "Raba labarinki",
-      "ctaExplore": "Bincika labaroni",
-      "safety": "Asiri. Sirri. Zaɓinki kullum."
-    },
-    "pathways": {
-      "discover": "Bincika Muriyar Ta",
-      "items": [
-        {
-          "label": "Faye",
-          "href": "/podcast"
-        },
-        {
-          "label": "Albarkatu",
-          "href": "/resources"
-        },
-        {
-          "label": "Zama abokin tarayya",
-          "href": "/partner"
-        }
-      ]
+      "ctaPartner": "Zama abokin tarayya"
     }
   }
 }

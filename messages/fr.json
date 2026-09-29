@@ -233,136 +233,114 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "SA VOIX. SON HISTOIRE. NOTRE AVENIR.",
-      "title": "Chaque fille a une histoire qui mérite d'être entendue.",
-      "subtitle": "Muriyar Ta est un espace sûr et anonyme où les filles et les jeunes femmes partagent leurs histoires. Ensemble, nous transformons ces récits en sensibilisation, podcasts, recherche et plaidoyer.",
+      "eyebrow": "MURIYAR TA · SA VOIX",
+      "titleLine1": "Votre histoire",
+      "titleLine2": "vous appartient.",
+      "subtitle": "Votre voix mérite d'être entendue. Muriyar Ta signifie « Sa Voix ». Un espace pour les filles et les jeunes femmes pour partager ce qu'elles ont vécu, ressenti, questionné, survécu, ou simplement ce qu'elles veulent que les autres comprennent.",
       "ctaShareStory": "Partager mon histoire",
-      "ctaExploreStories": "Découvrir les histoires",
-      "reassurance": "Votre histoire vous appartient. La partager est toujours votre choix.",
+      "ctaExploreStories": "Lire nos histoires",
+      "reassurance": "Vous pouvez partager votre histoire anonymement",
       "testiLabel": "Voix anonyme",
-      "testiQuote": "Je n'aurais jamais cru que quelqu'un m'écouterait. Ici, je me suis sentie entendue pour la première fois.",
+      "testiQuote": "Je voulais dire à quelqu'un ce qui se passait. Pas pour de l'aide — juste pour que quelqu'un sache.",
       "testiCredit": "Contributrice anonyme"
     },
     "name": {
-      "eyebrow": "Le nom",
-      "titleStart": "En haoussa, ",
-      "titleAccent": "Muriyar Ta",
-      "titleEnd": " signifie « Sa Voix ».",
-      "body": "Plus qu'un nom, c'est une promesse — que chaque fille qui visite cette plateforme trouvera un espace où sa voix compte, son histoire est entendue, et son expérience peut contribuer au changement."
+      "eyebrow": "QU'EST-CE QUE MURIYAR TA ?",
+      "titleLine1Start": "En haoussa, ",
+      "titleLine1Accent": "Muriyar Ta",
+      "titleLine1End": " signifie",
+      "titleLine2": "« Sa Voix ».",
+      "body": "C'est un espace créé pour les filles et les jeunes femmes — principalement au Niger et en Afrique de l'Ouest — pour s'exprimer avec leurs propres mots. Sur l'éducation, le mariage, la famille, l'identité, les rêves, la discrimination et les réalités silencieuses de grandir en tant que femme.",
+      "body2": "Les histoires partagées ici sont modérées avec soin et publiées avec consentement. Elles peuvent devenir des podcasts, du contenu de sensibilisation et des preuves que des défenseurs, chercheurs et décideurs peuvent utiliser — toujours anonymisées, toujours traitées avec respect."
     },
     "stats": {
       "label": "La plateforme en chiffres",
-      "languages": "Langues prises en charge",
-      "stories": "Récits partagés",
-      "categories": "Catégories de soutien",
+      "languages": "Langues",
+      "stories": "Récits publiés",
+      "categories": "Thèmes couverts",
       "storiesEmpty": "—",
       "categoriesEmpty": "—"
     },
     "stories": {
-      "eyebrow": "Récits",
-      "title": "Histoires de sa vie.",
+      "eyebrow": "LEURS MOTS",
+      "titleStart": "Histoires de ",
+      "titleItalic": "sa vie",
       "cta": "Lire tous les récits",
+      "readCta": "Lire son histoire",
       "empty": "Les premiers récits apparaîtront bientôt ici."
     },
     "submitInvite": {
-      "eyebrow": "Partager votre histoire",
-      "title": "Votre voix mérite d'être entendue.",
+      "eyebrow": "VOTRE HISTOIRE AUSSI",
+      "titleStart": "Vous pouvez nous dire ",
+      "titleItalic": "ce que vous avez vécu.",
+      "body": "Cet espace a été créé pour des histoires comme la vôtre. Vous n'avez pas besoin d'utiliser votre nom. Vous choisissez ce que vous partagez, et combien. Il n'y a pas d'histoire trop petite ou trop ordinaire.",
       "bullets": [
-        "Aucun compte ni nom réel requis",
-        "Partagez seulement ce que vous souhaitez, à votre rythme",
-        "Une personne formée lit chaque récit avec soin",
-        "Rien n'est publié sans votre consentement"
+        "Vous n'avez pas besoin d'utiliser votre nom — partagez anonymement.",
+        "Vous choisissez ce que vous nous racontez. Vous êtes en contrôle.",
+        "Chaque histoire est lue par un humain et examinée avec soin.",
+        "N'incluez pas de détails d'identification personnelle — pour votre sécurité.",
+        "Ce n'est pas un service de crise ou d'urgence."
       ],
-      "cardEyebrow": "Commencer",
-      "cardTitle": "Votre histoire, vos mots.",
-      "cardBody": "Quoi que vous ayez vécu, il y a une place pour cela ici. Anonyme, sûr, et toujours le vôtre.",
+      "cardEyebrow": "COMMENCER ICI",
+      "cardTitle": "« Tout ce que je partage m'appartient. »",
+      "cardBody": "Votre histoire reste la vôtre. Vous décidez ce que nous pouvons en faire — ce n'est qu'avec votre consentement qu'une partie sera publiée ou partagée.",
       "cta": "Partager mon histoire",
+      "cardLanguages": "Disponible en Haoussa · Français · English · Zarma",
       "safety": "Aucun compte requis. Anonyme par défaut."
     },
     "journey": {
-      "eyebrow": "Comment ça marche",
-      "title": "Votre histoire reste entre vos mains.",
-      "cta": "Comment nous protégeons votre récit",
+      "eyebrow": "LE VOYAGE D'UNE HISTOIRE",
+      "title": "Une voix peut aller loin.",
+      "subtitle": "Une histoire partagée ici ne s'arrête pas à la publication. Elle peut aider une autre fille à se sentir moins seule — et aider la société à comprendre ce que les filles vivent vraiment.",
       "steps": [
-        {
-          "title": "Écrivez anonymement",
-          "body": "Partagez seulement ce que vous souhaitez. Aucun compte ni nom requis."
-        },
-        {
-          "title": "Votre histoire est protégée",
-          "body": "Nous supprimons les détails identifiants et gardons votre soumission privée et sécurisée."
-        },
-        {
-          "title": "Une personne vous lit",
-          "body": "Un membre formé relit chaque récit avec soin et sans jugement."
-        },
-        {
-          "title": "Vous décidez",
-          "body": "Votre récit reste privé sauf si vous choisissez de le partager."
-        },
-        {
-          "title": "Les récits créent le changement",
-          "body": "Les voix partagées deviennent sensibilisation, podcasts, recherche et plaidoyer."
-        }
+        {"num": "1", "title": "Votre voix", "body": "Vous partagez votre expérience avec vos propres mots"},
+        {"num": "2", "title": "Son histoire", "body": "Examinée, éditée avec soin, publiée avec votre consentement"},
+        {"num": "3", "title": "Conversation", "body": "Podcasts et discussions communautaires avec de vraies voix"},
+        {"num": "4", "title": "Thèmes partagés", "body": "Tendances de nombreuses voix, anonymisées et agrégées"},
+        {"num": "5", "title": "Plaidoyer & Recherche", "body": "Des preuves qui peuvent façonner les politiques et la compréhension"}
       ]
     },
     "podcast": {
-      "eyebrow": "Écouter",
-      "title": "Des histoires à écouter.",
-      "body": "Des témoignages anonymes, des voix expertes et des conversations sur les sujets que les communautés abordent rarement — à travers le Niger et l'Afrique de l'Ouest.",
-      "cta": "Découvrir le podcast",
-      "episodesLabel": "Épisodes récents",
+      "eyebrow": "ÉCOUTER SA VOIX",
+      "titleLine1": "Sa Voix",
+      "titleLine2": "Podcast",
+      "body": "Des conversations avec des filles et de jeunes femmes — dans leurs propres voix, dans leurs propres langues. Pas des interviews sur elles. Des conversations avec elles.",
+      "comingSoon": "Premiers épisodes bientôt — abonnez-vous pour être notifiée",
+      "cta": "S'abonner au podcast",
+      "episodesLabel": "Épisodes à venir",
       "episodeLabel": "Épisode",
       "minutesLabel": "min",
-      "soonBadge": "Bientôt",
-      "soon1": "Voix anonymes — Épisode 01",
-      "soon2": "Briser le silence — Épisode 01",
-      "soon3": "Au-delà du récit — Épisode 01"
+      "soonBadge": "BIENTÔT",
+      "soon1": "Quand la maison n'est pas sûre",
+      "soon2": "Les filles qui ont continué à étudier",
+      "soon3": "Ce que j'aurais voulu que ma mère sache"
     },
     "resources": {
-      "eyebrow": "Soutien",
-      "title": "Trouver de l'aide près de chez vous.",
+      "eyebrow": "SOUTIEN PRATIQUE",
+      "titleStart": "Ressources pour ",
+      "titleItalic": "ce que vous traversez",
+      "body": "Informations et soutien organisés autour des thèmes que les filles rencontrent réellement — pas organisés autour des catégories institutionnelles.",
       "cta": "Voir toutes les ressources",
       "pillsLabel": "Parcourir par catégorie",
-      "note": "Toutes les ressources sont vérifiées par l'équipe Muriyar Ta. Mise à jour régulière."
+      "note": "Toutes les ressources sont vérifiées par l'équipe Muriyar Ta."
     },
     "insights": {
-      "eyebrow": "Recherche & Impact",
-      "title": "Quand beaucoup de voix parlent, des tendances se dessinent.",
-      "body": "Au fil de la croissance de la plateforme, les récits partagés — avec le consentement des contributrices — pourront alimenter la recherche et le plaidoyer. Nous construisons cet avenir avec soin et transparence.",
-      "ctaPartner": "Devenir partenaire",
-      "ctaAbout": "Notre approche"
+      "eyebrow": "POUR LES PARTENAIRES & CHERCHEURS",
+      "titleStart": "Quand beaucoup de voix parlent, ",
+      "titleItalic": "des tendances deviennent visibles.",
+      "body": "Muriyar Ta identifie des thèmes récurrents à travers des récits anonymisés et les transforme en synthèses thématiques — des preuves qui peuvent informer la recherche, les programmes des ONG et les conversations politiques.",
+      "dataNote": "Les identités individuelles ne sont jamais exposées. Chaque synthèse est construite sur des tendances agrégées, pas sur des comptes attribuables.",
+      "cardComingSoon": "Synthèses d'insights à venir",
+      "cardComingSoonBody": "Au fur et à mesure que les histoires s'accumulent avec le consentement des contributrices, nous publierons ici des synthèses thématiques anonymisées. Pas d'identités. Pas de comptes attribuables. Seulement des tendances.",
+      "ctaInsights": "Voir les synthèses",
+      "ctaPartner": "Devenir partenaire"
     },
     "finalCta": {
-      "eyebrow": "À vous",
-      "title": "Chaque histoire partagée rend la prochaine plus facile.",
+      "titleStart": "Quelle que soit votre histoire, ",
+      "titleItalic": "elle a sa place ici.",
+      "body": "Vous n'avez pas besoin de savoir comment commencer. Vous n'avez pas besoin d'une histoire parfaite. Vous avez juste besoin de vous sentir prête.",
       "ctaShare": "Partager mon histoire",
-      "ctaExplore": "Découvrir les récits",
-      "safety": "Anonyme. Privé. Toujours votre choix."
-    },
-    "pathways": {
-      "discover": "Découvrir Muriyar Ta",
-      "items": [
-        {
-          "label": "Podcast",
-          "href": "/podcast"
-        },
-        {
-          "label": "Ressources",
-          "href": "/resources"
-        },
-        {
-          "label": "Devenir partenaire",
-          "href": "/partner"
-        }
-      ]
-    },
-    "submit": {
-      "eyebrow": "Partager votre histoire",
-      "title": "Votre voix a sa place ici.",
-      "body": "Quoi que vous ayez vécu, votre histoire mérite d'être entendue. Partagez-la anonymement, à votre rythme, avec vos propres mots.",
-      "cta": "Partager mon histoire",
-      "safetyNote": "Aucun compte requis. Rien n'est publié sans votre consentement."
+      "ctaPartner": "Devenir partenaire"
     }
   },
   "about": {
