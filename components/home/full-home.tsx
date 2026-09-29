@@ -1,75 +1,262 @@
-import { ArrowRight, Check, ShieldCheck } from "lucide-react";
+import { ArrowRight, ShieldCheck, Check } from "lucide-react";
 import { setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import { type Locale } from "@/lib/i18n/routing";
 import { listHomepageStories } from "@/lib/data/stories";
 import { deriveExcerpt } from "@/lib/utils/excerpt";
 import { FullHomeHeroMedia } from "@/components/home/full-home-hero-media";
+import { AgadezCross, AgadezCrossSmall } from "@/components/home/agadez-cross";
 import styles from "@/components/home/full-home.module.css";
-
-const copy = {
-  en: {
-    heroLabel: "Anonymous · safe · yours", heroTitle: "A safe place to share your story.",
-    heroBody: "Muriyar Ta is where girls and young women share their experiences—anonymously and on their own terms.",
-    share: "Share your story", read: "Read stories",
-    safety: "No name or account required. Nothing is published without your consent.",
-    trust: ["Anonymous by default", "Read by a trained person", "You choose what happens next"],
-    voicesLabel: "Voices", voicesTitle: "In their own words.", allVoices: "Read all stories", empty: "The first stories will appear here soon.",
-    howLabel: "How sharing works", howTitle: "Your story stays in your hands.",
-    steps: [["Write anonymously", "Share only what you choose. No account or name is needed."], ["A person reads it", "A trained team member reviews it with care."], ["You decide", "It stays private unless you consent to publication."]],
-    impactLabel: "Why stories matter", impactTitle: "Shared voices can build awareness and inform change.",
-    learn: "How we protect your story", discover: "Explore Muriyar Ta",
-    pathways: [["Podcast", "/podcast"], ["Resources", "/resources"], ["Partner with us", "/partner"]],
-  },
-  fr: {
-    heroLabel: "Anonyme · sûr · à vous", heroTitle: "Un espace sûr pour partager votre histoire.",
-    heroBody: "Muriyar Ta permet aux filles et aux jeunes femmes de partager leurs expériences, anonymement et à leur rythme.",
-    share: "Partager mon histoire", read: "Lire les récits",
-    safety: "Aucun nom ni compte requis. Rien n’est publié sans votre consentement.",
-    trust: ["Anonyme par défaut", "Lu par une personne formée", "Vous décidez de la suite"],
-    voicesLabel: "Récits", voicesTitle: "Avec leurs propres mots.", allVoices: "Lire tous les récits", empty: "Les premiers récits apparaîtront bientôt ici.",
-    howLabel: "Comment ça marche", howTitle: "Votre histoire reste entre vos mains.",
-    steps: [["Écrivez anonymement", "Partagez seulement ce que vous souhaitez. Aucun compte ni nom requis."], ["Une personne vous lit", "Un membre formé de l’équipe relit votre récit avec soin."], ["Vous décidez", "Il reste privé sans votre accord pour le publier."]],
-    impactLabel: "Pourquoi les récits comptent", impactTitle: "Les voix partagées peuvent sensibiliser et nourrir le changement.",
-    learn: "Comment nous protégeons votre récit", discover: "Découvrir Muriyar Ta",
-    pathways: [["Podcast", "/podcast"], ["Ressources", "/resources"], ["Devenir partenaire", "/partner"]],
-  },
-} as const;
 
 export async function FullHome({ locale }: { locale: Locale }) {
   setRequestLocale(locale);
-  const c = locale === "fr" ? copy.fr : copy.en;
+  const t = await getTranslations({ locale, namespace: "home" });
   const stories = await listHomepageStories(3);
 
-  return <div className={styles.page}>
-    <section className={styles.hero} aria-labelledby="home-title">
-      <div className={styles.heroMedia}><FullHomeHeroMedia /></div><div className={styles.heroShade} aria-hidden="true" />
-      <div className={styles.heroInner}><div className={styles.heroCopy}>
-        <p className={styles.eyebrow}>{c.heroLabel}</p><h1 id="home-title">{c.heroTitle}</h1><p className={styles.heroBody}>{c.heroBody}</p>
-        <div className={styles.actions}><Link className={styles.primaryAction} href="/submit">{c.share}<ArrowRight aria-hidden="true" /></Link><Link className={styles.textActionLight} href="/stories">{c.read}</Link></div>
-        <p className={styles.safety}><ShieldCheck aria-hidden="true" />{c.safety}</p>
-      </div></div>
-    </section>
+  // next-intl array access — @ts-expect-error suppressed per index
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const trustItems: string[] = (t.raw("trust.items") as any[]).map(String);
 
-    <ul className={styles.trustStrip} aria-label={c.learn}>{c.trust.map((item) => <li key={item}><Check aria-hidden="true" />{item}</li>)}</ul>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const steps: { title: string; body: string }[] = (t.raw("how.steps") as any[]).map((s: any) => ({
+    title: String(s.title),
+    body: String(s.body),
+  }));
 
-    <section className={styles.voices} aria-labelledby="voices-title">
-      <header className={styles.sectionIntro}><p className={styles.eyebrow}>{c.voicesLabel}</p><h2 id="voices-title">{c.voicesTitle}</h2><Link className={styles.textAction} href="/stories">{c.allVoices}<ArrowRight aria-hidden="true" /></Link></header>
-      {stories.length ? <ol className={styles.storyList}>{stories.map((story) => <li key={story.story_id}><Link href={`/stories/${story.slug}`}>{story.tags[0]?.name ? <span className={styles.storyTheme}>{story.tags[0].name}</span> : null}<blockquote>“{deriveExcerpt(story.body_text, 190)}”</blockquote><span className={styles.storyMeta}>Anonymous · {story.language_code.toUpperCase()}</span></Link></li>)}</ol> : <p className={styles.empty}>{c.empty}</p>}
-    </section>
+  return (
+    <div className={styles.page}>
+      {/* ── 1. HERO ───────────────────────────────────────────────────── */}
+      <section className={styles.hero} aria-labelledby="home-hero-title">
+        <div className={styles.heroMedia}>
+          <FullHomeHeroMedia />
+        </div>
+        <div className={styles.heroShade} aria-hidden="true" />
 
-    <section className={styles.process} aria-labelledby="process-title">
-      <header className={styles.processIntro}><p className={styles.eyebrow}>{c.howLabel}</p><h2 id="process-title">{c.howTitle}</h2><Link className={styles.textActionLight} href="/submit">{c.learn}<ArrowRight aria-hidden="true" /></Link></header>
-      <ol className={styles.steps}>{c.steps.map(([title, body], index) => <li key={title}><span>0{index + 1}</span><div><h3>{title}</h3><p>{body}</p></div></li>)}</ol>
-    </section>
+        {/* Agadez cross — decorative, top-right corner on desktop */}
+        <AgadezCross
+          className={styles.heroCrossDecor}
+          color="var(--mt-rust-soft)"
+          opacity={0.08}
+        />
 
-    <section className={styles.impact} aria-labelledby="impact-title">
-      <div><p className={styles.eyebrow}>{c.impactLabel}</p><h2 id="impact-title">{c.impactTitle}</h2></div>
-    </section>
+        <div className={styles.heroInner}>
+          <div className={styles.heroCopy}>
+            <p className={styles.heroEyebrow}>{t("hero.eyebrow")}</p>
+            <h1 id="home-hero-title" className={styles.heroTitle}>
+              {t("hero.title")}
+            </h1>
+            <p className={styles.heroSubtitle}>{t("hero.subtitle")}</p>
 
-    <nav className={styles.pathways} aria-label={c.discover}>
-      <p>{c.discover}</p>
-      <ul>{c.pathways.map(([label, href]) => <li key={href}><Link href={href}>{label}<ArrowRight aria-hidden="true" /></Link></li>)}</ul>
-    </nav>
-  </div>;
+            <div className={styles.heroActions}>
+              <Link className={styles.primaryAction} href="/submit">
+                {t("hero.ctaShareStory")}
+                <ArrowRight aria-hidden="true" />
+              </Link>
+              <Link className={styles.textActionLight} href="/stories">
+                {t("hero.ctaExploreStories")}
+              </Link>
+            </div>
+
+            <p className={styles.heroReassurance}>
+              <ShieldCheck aria-hidden="true" />
+              {t("hero.reassurance")}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 2. TRUST STRIP ────────────────────────────────────────────── */}
+      <ul className={styles.trustStrip} aria-label={t("how.cta")}>
+        {trustItems.map((item) => (
+          <li key={item}>
+            <Check aria-hidden="true" />
+            {item}
+          </li>
+        ))}
+      </ul>
+
+      {/* ── 3. VOICES / STORIES ───────────────────────────────────────── */}
+      <section className={styles.voices} aria-labelledby="voices-title">
+        <header className={styles.voicesIntro}>
+          <p className={styles.eyebrow}>{t("voices.eyebrow")}</p>
+          <h2 id="voices-title" className={styles.displayHeading}>
+            {t("voices.title")}
+          </h2>
+          <Link className={styles.textAction} href="/stories">
+            {t("voices.cta")}
+            <ArrowRight aria-hidden="true" />
+          </Link>
+        </header>
+
+        {stories.length > 0 ? (
+          <ol className={styles.storyList}>
+            {stories.map((story) => (
+              <li key={story.story_id}>
+                <Link href={`/stories/${story.slug}`}>
+                  {story.tags[0]?.name ? (
+                    <span className={styles.storyTheme}>{story.tags[0].name}</span>
+                  ) : null}
+                  <blockquote>
+                    &ldquo;{deriveExcerpt(story.body_text, 200)}&rdquo;
+                  </blockquote>
+                  <span className={styles.storyMeta}>
+                    Anonymous · {story.language_code.toUpperCase()}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className={styles.storyEmpty}>{t("voices.empty")}</p>
+        )}
+      </section>
+
+      {/* ── 4. HOW IT WORKS ───────────────────────────────────────────── */}
+      <section className={styles.process} aria-labelledby="process-title">
+        <div className={styles.processInner}>
+          <header className={styles.processIntro}>
+            <p className={styles.eyebrowLight}>{t("how.eyebrow")}</p>
+            <h2 id="process-title" className={styles.displayHeadingLight}>
+              {t("how.title")}
+            </h2>
+            <Link className={styles.textActionLight} href="/submit">
+              {t("how.cta")}
+              <ArrowRight aria-hidden="true" />
+            </Link>
+          </header>
+
+          <ol className={styles.steps} aria-label={t("how.eyebrow")}>
+            {steps.map(({ title, body }, index) => (
+              <li key={title}>
+                <span className={styles.stepNumber} aria-hidden="true">
+                  0{index + 1}
+                </span>
+                <div>
+                  <h3 className={styles.stepTitle}>{title}</h3>
+                  <p className={styles.stepBody}>{body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        {/* Agadez cross accent — lower-right */}
+        <AgadezCross
+          className={styles.processCrossDecor}
+          color="var(--mt-rust-bright)"
+          opacity={0.07}
+        />
+      </section>
+
+      {/* ── 5. MISSION / WHY STORIES MATTER ──────────────────────────── */}
+      <section className={styles.mission} aria-labelledby="mission-title">
+        <div className={styles.missionContent}>
+          <p className={styles.eyebrow}>{t("mission.eyebrow")}</p>
+          <h2 id="mission-title" className={styles.displayHeading}>
+            {t("mission.title")}
+          </h2>
+          <p className={styles.missionBody}>{t("mission.body")}</p>
+          <Link className={styles.textAction} href="/about">
+            {t("mission.cta")}
+            <ArrowRight aria-hidden="true" />
+          </Link>
+        </div>
+        <div className={styles.missionAccent} aria-hidden="true">
+          <AgadezCross
+            className={styles.missionCrossDecor}
+            color="var(--mt-sand)"
+            opacity={0.15}
+          />
+        </div>
+      </section>
+
+      {/* ── 6. IMPACT PULL QUOTE ──────────────────────────────────────── */}
+      <section className={styles.impact} aria-labelledby="impact-title">
+        <div className={styles.impactInner}>
+          <p className={styles.eyebrowLight}>{t("impact.eyebrow")}</p>
+          <h2 id="impact-title" className={styles.impactHeading}>
+            {t("impact.title")}
+          </h2>
+          <figure className={styles.impactQuote}>
+            <blockquote>
+              <p>&ldquo;{t("impact.pullQuote")}&rdquo;</p>
+            </blockquote>
+          </figure>
+        </div>
+      </section>
+
+      {/* ── 7. NAME / MEANING ─────────────────────────────────────────── */}
+      <section className={styles.nameSection} aria-labelledby="name-title">
+        <div className={styles.nameContent}>
+          <div className={styles.nameText}>
+            <p className={styles.eyebrow}>{t("name.eyebrow")}</p>
+            <h2 id="name-title" className={styles.displayHeading}>
+              {t("name.title")}
+            </h2>
+            <p className={styles.nameBody}>{t("name.body")}</p>
+          </div>
+          <div className={styles.nameAccent} aria-hidden="true">
+            <AgadezCrossSmall
+              className={styles.nameCrossDecor}
+              color="var(--mt-rust)"
+              opacity={0.18}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── 8. PODCAST TEASER ─────────────────────────────────────────── */}
+      <section className={styles.podcast} aria-labelledby="podcast-title">
+        <div className={styles.podcastContent}>
+          <p className={styles.eyebrowLight}>{t("podcast.eyebrow")}</p>
+          <h2 id="podcast-title" className={styles.displayHeadingLight}>
+            {t("podcast.title")}
+          </h2>
+          <p className={styles.podcastBody}>{t("podcast.body")}</p>
+          <Link className={styles.secondaryAction} href="/podcast">
+            {t("podcast.cta")}
+            <ArrowRight aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
+
+      {/* ── 9. SUBMIT CTA BAND ────────────────────────────────────────── */}
+      <section className={styles.submitBand} aria-labelledby="submit-title">
+        <div className={styles.submitInner}>
+          <p className={styles.eyebrowOnRed}>{t("submit.eyebrow")}</p>
+          <h2 id="submit-title" className={styles.submitTitle}>
+            {t("submit.title")}
+          </h2>
+          <p className={styles.submitBody}>{t("submit.body")}</p>
+          <div className={styles.submitActions}>
+            <Link className={styles.primaryActionLarge} href="/submit">
+              {t("submit.cta")}
+              <ArrowRight aria-hidden="true" />
+            </Link>
+          </div>
+          <p className={styles.submitSafetyNote}>
+            <ShieldCheck aria-hidden="true" />
+            {t("submit.safetyNote")}
+          </p>
+        </div>
+      </section>
+
+      {/* ── 10. PATHWAYS ──────────────────────────────────────────────── */}
+      <nav className={styles.pathways} aria-label={t("pathways.discover")}>
+        <p className={styles.pathwaysLabel}>{t("pathways.discover")}</p>
+        <ul className={styles.pathwaysList}>
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {(t.raw("pathways.items") as any[]).map((item: any) => (
+            <li key={String(item.href)}>
+              <Link href={String(item.href)}>
+                {String(item.label)}
+                <ArrowRight aria-hidden="true" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  );
 }

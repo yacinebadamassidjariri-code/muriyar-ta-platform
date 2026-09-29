@@ -4,555 +4,552 @@
     "title": "Muriyar Ta",
     "description": "Amplifying girls' voices through anonymous storytelling, digital media, and advocacy."
   },
-
   "adminPodcast": {
-  "dashTitle": "Podcast",
-  "dashSubtitle": "Create, edit, and publish podcast episodes.",
-  "newEpisode": "New episode",
-  "searchLabel": "Search",
-  "searchPlaceholder": "Title, slug, description, summary…",
-  "statusLabel": "Status",
-  "languageLabel": "Language",
-  "seriesLabel": "Series",
-  "sortLabel": "Sort",
-  "apply": "Apply",
-  "any": "Any",
-  "statusDraft": "Draft",
-  "statusPublished": "Published",
-  "statusArchived": "Archived",
-  "sortNewest": "Newest",
-  "sortOldest": "Oldest",
-  "sortUpdatedDesc": "Recently updated",
-  "sortUpdatedAsc": "Least recently updated",
-  "sortTitleAsc": "Title A–Z",
-  "sortTitleDesc": "Title Z–A",
-  "colTitle": "Title",
-  "colStatus": "Status",
-  "colLanguage": "Language",
-  "colSeries": "Series",
-  "colCreatedBy": "Created by",
-  "colUpdated": "Updated",
-  "colPublished": "Published",
-  "colFeatured": "Featured",
-  "colAction": "Action",
-  "yes": "Yes",
-  "no": "No",
-  "edit": "Edit",
-  "noSlug": "No slug",
-  "emptyFreshTitle": "No podcast episodes yet",
-  "emptyFreshBody": "No podcast episodes have been created yet. Create your first episode to begin publishing audio stories.",
-  "emptyFilteredTitle": "No episodes match your filters",
-  "emptyFilteredBody": "No episodes match your current filters. Try adjusting your search or clearing one of the filters.",
-  "loadError": "Could not load episodes. Please try again.",
-  "paginationLabel": "Pagination",
-  "paginationSummary": "Page {page} of {pageCount} · {total} episodes",
-  "prev": "Previous",
-  "next": "Next",
-  "series": {
-    "anonymous-voices":     { "name": "Anonymous Voices" },
-    "beyond-the-story":     { "name": "Beyond the Story" },
-    "breaking-the-silence": { "name": "Breaking the Silence" },
-    "youth-voices":         { "name": "Youth Voices" }
+    "dashTitle": "Podcast",
+    "dashSubtitle": "Create, edit, and publish podcast episodes.",
+    "newEpisode": "New episode",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Title, slug, description, summary…",
+    "statusLabel": "Status",
+    "languageLabel": "Language",
+    "seriesLabel": "Series",
+    "sortLabel": "Sort",
+    "apply": "Apply",
+    "any": "Any",
+    "statusDraft": "Draft",
+    "statusPublished": "Published",
+    "statusArchived": "Archived",
+    "sortNewest": "Newest",
+    "sortOldest": "Oldest",
+    "sortUpdatedDesc": "Recently updated",
+    "sortUpdatedAsc": "Least recently updated",
+    "sortTitleAsc": "Title A–Z",
+    "sortTitleDesc": "Title Z–A",
+    "colTitle": "Title",
+    "colStatus": "Status",
+    "colLanguage": "Language",
+    "colSeries": "Series",
+    "colCreatedBy": "Created by",
+    "colUpdated": "Updated",
+    "colPublished": "Published",
+    "colFeatured": "Featured",
+    "colAction": "Action",
+    "yes": "Yes",
+    "no": "No",
+    "edit": "Edit",
+    "noSlug": "No slug",
+    "emptyFreshTitle": "No podcast episodes yet",
+    "emptyFreshBody": "No podcast episodes have been created yet. Create your first episode to begin publishing audio stories.",
+    "emptyFilteredTitle": "No episodes match your filters",
+    "emptyFilteredBody": "No episodes match your current filters. Try adjusting your search or clearing one of the filters.",
+    "loadError": "Could not load episodes. Please try again.",
+    "paginationLabel": "Pagination",
+    "paginationSummary": "Page {page} of {pageCount} · {total} episodes",
+    "prev": "Previous",
+    "next": "Next",
+    "series": {
+      "anonymous-voices": {
+        "name": "Anonymous Voices"
+      },
+      "beyond-the-story": {
+        "name": "Beyond the Story"
+      },
+      "breaking-the-silence": {
+        "name": "Breaking the Silence"
+      },
+      "youth-voices": {
+        "name": "Youth Voices"
+      }
+    },
+    "editorTitle": "Edit episode",
+    "editorSubtitle": "Update metadata, then save, publish, or unpublish.",
+    "backToDashboard": "Back to podcast",
+    "notFoundTitle": "Episode not found",
+    "notFoundBody": "This episode may have been removed or never existed.",
+    "fieldTitle": "Title",
+    "fieldSlug": "Slug",
+    "fieldSlugHelp": "Lowercase letters, numbers, and dashes. Up to 80 characters.",
+    "fieldDescription": "Short description",
+    "fieldSummary": "Episode summary",
+    "fieldLanguage": "Language",
+    "fieldSeries": "Series",
+    "fieldKind": "Episode type",
+    "fieldAdvisory": "Content advisory",
+    "fieldFeatured": "Featured episode",
+    "featuredCaptionWhenDraft": "Featured can only be set on published episodes.",
+    "featuredCaptionWhenPublished": "Mark this as the featured episode on the public podcast page.",
+    "noSeries": "No series",
+    "noKind": "No type",
+    "advisoryNone": "None",
+    "advisoryMild": "Mild",
+    "advisoryStrong": "Strong",
+    "kindStory": "Story",
+    "kindDiscussion": "Discussion",
+    "kindTabooTopic": "Taboo topic",
+    "kindRoundtable": "Roundtable",
+    "actionSave": "Save draft",
+    "actionPublish": "Publish",
+    "actionUnpublish": "Unpublish",
+    "publishHint": "Publishing is available only while the episode is a draft.",
+    "unpublishHint": "Unpublishing is available only while the episode is published.",
+    "errors": {
+      "rpc_error": "Something went wrong. Please try again.",
+      "forbidden": "You don't have permission to do that.",
+      "not_found": "This episode no longer exists.",
+      "invalid_payload": "Some fields in this form aren't recognized.",
+      "title_required": "Title is required (up to 200 characters).",
+      "slug_format": "Slug must use lowercase letters, numbers, and dashes only (1–80 characters).",
+      "slug_taken": "This slug is already in use by another episode.",
+      "podcast_description_too_long": "Description is too long (up to 1000 characters).",
+      "podcast_summary_too_long": "Episode summary is too long (up to 8000 characters).",
+      "unsupported_language": "Choose a supported language.",
+      "podcast_invalid_series": "Choose a valid series.",
+      "podcast_invalid_kind": "Choose a valid episode type.",
+      "podcast_invalid_advisory": "Choose a valid content advisory.",
+      "podcast_featured_requires_published": "Only published episodes can be featured.",
+      "podcast_not_draft": "This episode is not a draft, so it can't be published from here.",
+      "podcast_not_published": "This episode is not currently published.",
+      "podcast_not_editable": "This episode can no longer be edited.",
+      "podcast_asset_not_uploading": "This media upload is no longer awaiting finalization.",
+      "podcast_storage_delete_failed": "The episode was updated, but the private media file could not be removed. Please try deleting it again."
+    },
+    "artwork": {
+      "sectionTitle": "Episode artwork",
+      "sectionSubtitle": "Square image shown on the podcast page and shared previews.",
+      "emptyTitle": "No artwork uploaded",
+      "emptyBody": "Upload a square image at least 1400×1400 pixels for the best appearance on public podcast apps.",
+      "uploadButton": "Upload image",
+      "replaceButton": "Replace",
+      "deleteButton": "Delete",
+      "uploadingLabel": "Uploading…",
+      "finalizingLabel": "Finalizing…",
+      "loadingPreviewLabel": "Loading preview",
+      "filenameLabel": "Filename",
+      "sizeLabel": "Size",
+      "uploadedAtLabel": "Uploaded",
+      "confirmDeleteTitle": "Delete artwork?",
+      "confirmDeleteBody": "The current artwork will be removed from this episode. This cannot be undone.",
+      "confirmDelete": "Delete artwork",
+      "cancel": "Cancel",
+      "acceptedFormats": "JPEG or PNG",
+      "maxSize": "up to 5 MB",
+      "squareOnly": "square (1:1) only",
+      "errors": {
+        "invalidType": "Only JPEG or PNG images are supported.",
+        "tooLarge": "Artwork must be 5 MB or smaller.",
+        "notSquare": "Artwork must be square (equal width and height).",
+        "decodeFailed": "That image couldn't be read. Try another file.",
+        "uploadFailed": "The upload didn't finish. Please try again.",
+        "podcast_invalid_mime": "That file type isn't allowed.",
+        "podcast_invalid_size": "That file is too large."
+      }
+    },
+    "audio": {
+      "sectionTitle": "Episode audio",
+      "sectionSubtitle": "The audio file listeners will hear on the podcast page.",
+      "emptyTitle": "No audio uploaded",
+      "emptyBody": "Upload the episode's audio file. It will be available immediately for internal preview.",
+      "uploadButton": "Upload audio",
+      "replaceButton": "Replace",
+      "deleteButton": "Delete",
+      "uploadingLabel": "Uploading…",
+      "finalizingLabel": "Finalizing…",
+      "probingLabel": "Reading audio…",
+      "loadingPreviewLabel": "Loading preview",
+      "filenameLabel": "Filename",
+      "durationLabel": "Duration",
+      "sizeLabel": "Size",
+      "uploadedAtLabel": "Uploaded",
+      "confirmDeleteTitle": "Delete audio?",
+      "confirmDeleteBody": "The current audio will be removed from this episode. This cannot be undone.",
+      "confirmDelete": "Delete audio",
+      "cancel": "Cancel",
+      "acceptedFormats": "MP3, M4A, or WAV",
+      "maxSize": "up to 250 MB",
+      "errors": {
+        "invalidType": "Only MP3, M4A, or WAV files are supported.",
+        "tooLarge": "Audio file must be 250 MB or smaller.",
+        "uploadFailed": "The upload didn't finish. Please try again.",
+        "podcast_invalid_mime": "That file type isn't allowed.",
+        "podcast_invalid_size": "That file is too large.",
+        "podcast_invalid_duration": "That audio's duration couldn't be recorded."
+      }
+    }
   },
-  "editorTitle": "Edit episode",
-"editorSubtitle": "Update metadata, then save, publish, or unpublish.",
-"backToDashboard": "Back to podcast",
-"notFoundTitle": "Episode not found",
-"notFoundBody": "This episode may have been removed or never existed.",
-"fieldTitle": "Title",
-"fieldSlug": "Slug",
-"fieldSlugHelp": "Lowercase letters, numbers, and dashes. Up to 80 characters.",
-"fieldDescription": "Short description",
-"fieldSummary": "Episode summary",
-"fieldLanguage": "Language",
-"fieldSeries": "Series",
-"fieldKind": "Episode type",
-"fieldAdvisory": "Content advisory",
-"fieldFeatured": "Featured episode",
-"featuredCaptionWhenDraft": "Featured can only be set on published episodes.",
-"featuredCaptionWhenPublished": "Mark this as the featured episode on the public podcast page.",
-"noSeries": "No series",
-"noKind": "No type",
-"advisoryNone": "None",
-"advisoryMild": "Mild",
-"advisoryStrong": "Strong",
-"kindStory": "Story",
-"kindDiscussion": "Discussion",
-"kindTabooTopic": "Taboo topic",
-"kindRoundtable": "Roundtable",
-"actionSave": "Save draft",
-"actionPublish": "Publish",
-"actionUnpublish": "Unpublish",
-"publishHint": "Publishing is available only while the episode is a draft.",
-"unpublishHint": "Unpublishing is available only while the episode is published.",
-"errors": {
-  "rpc_error": "Something went wrong. Please try again.",
-  "forbidden": "You don't have permission to do that.",
-  "not_found": "This episode no longer exists.",
-  "invalid_payload": "Some fields in this form aren't recognized.",
-  "title_required": "Title is required (up to 200 characters).",
-  "slug_format": "Slug must use lowercase letters, numbers, and dashes only (1–80 characters).",
-  "slug_taken": "This slug is already in use by another episode.",
-  "podcast_description_too_long": "Description is too long (up to 1000 characters).",
-  "podcast_summary_too_long": "Episode summary is too long (up to 8000 characters).",
-  "unsupported_language": "Choose a supported language.",
-  "podcast_invalid_series": "Choose a valid series.",
-  "podcast_invalid_kind": "Choose a valid episode type.",
-  "podcast_invalid_advisory": "Choose a valid content advisory.",
-  "podcast_featured_requires_published": "Only published episodes can be featured.",
-  "podcast_not_draft": "This episode is not a draft, so it can't be published from here.",
-  "podcast_not_published": "This episode is not currently published.",
-  "podcast_not_editable": "This episode can no longer be edited.",
-  "podcast_asset_not_uploading": "This media upload is no longer awaiting finalization.",
-  "podcast_storage_delete_failed": "The episode was updated, but the private media file could not be removed. Please try deleting it again."
-},
-"artwork": {
-  "sectionTitle": "Episode artwork",
-  "sectionSubtitle": "Square image shown on the podcast page and shared previews.",
-  "emptyTitle": "No artwork uploaded",
-  "emptyBody": "Upload a square image at least 1400×1400 pixels for the best appearance on public podcast apps.",
-  "uploadButton": "Upload image",
-  "replaceButton": "Replace",
-  "deleteButton": "Delete",
-  "uploadingLabel": "Uploading…",
-  "finalizingLabel": "Finalizing…",
-  "loadingPreviewLabel": "Loading preview",
-  "filenameLabel": "Filename",
-  "sizeLabel": "Size",
-  "uploadedAtLabel": "Uploaded",
-  "confirmDeleteTitle": "Delete artwork?",
-  "confirmDeleteBody": "The current artwork will be removed from this episode. This cannot be undone.",
-  "confirmDelete": "Delete artwork",
-  "cancel": "Cancel",
-  "acceptedFormats": "JPEG or PNG",
-  "maxSize": "up to 5 MB",
-  "squareOnly": "square (1:1) only",
-  "errors": {
-    "invalidType": "Only JPEG or PNG images are supported.",
-    "tooLarge": "Artwork must be 5 MB or smaller.",
-    "notSquare": "Artwork must be square (equal width and height).",
-    "decodeFailed": "That image couldn't be read. Try another file.",
-    "uploadFailed": "The upload didn't finish. Please try again.",
-    "podcast_invalid_mime": "That file type isn't allowed.",
-    "podcast_invalid_size": "That file is too large."
-  }
-},
-"audio": {
-  "sectionTitle": "Episode audio",
-  "sectionSubtitle": "The audio file listeners will hear on the podcast page.",
-  "emptyTitle": "No audio uploaded",
-  "emptyBody": "Upload the episode's audio file. It will be available immediately for internal preview.",
-  "uploadButton": "Upload audio",
-  "replaceButton": "Replace",
-  "deleteButton": "Delete",
-  "uploadingLabel": "Uploading…",
-  "finalizingLabel": "Finalizing…",
-  "probingLabel": "Reading audio…",
-  "loadingPreviewLabel": "Loading preview",
-  "filenameLabel": "Filename",
-  "durationLabel": "Duration",
-  "sizeLabel": "Size",
-  "uploadedAtLabel": "Uploaded",
-  "confirmDeleteTitle": "Delete audio?",
-  "confirmDeleteBody": "The current audio will be removed from this episode. This cannot be undone.",
-  "confirmDelete": "Delete audio",
-  "cancel": "Cancel",
-  "acceptedFormats": "MP3, M4A, or WAV",
-  "maxSize": "up to 250 MB",
-  "errors": {
-    "invalidType": "Only MP3, M4A, or WAV files are supported.",
-    "tooLarge": "Audio file must be 250 MB or smaller.",
-    "uploadFailed": "The upload didn't finish. Please try again.",
-    "podcast_invalid_mime": "That file type isn't allowed.",
-    "podcast_invalid_size": "That file is too large.",
-    "podcast_invalid_duration": "That audio's duration couldn't be recorded."
-  }
-}
-},
-
   "podcast": {
-  "metaTitle": "Podcast",
-  "metaDescription": "Anonymous stories, expert conversation, and the topics communities rarely discuss aloud.",
-  "eyebrow": "Listen · Muriyar Ta",
-  "heroTitle": "The Muriyar Ta Podcast",
-  "heroBody": "Anonymous stories from girls and young women, brought together with expert voices, taboo-breaking conversations, and roundtables with the next generation — across Niger and West Africa.",
-  "featuredEyebrow": "Featured",
-  "featuredTitle": "Start here",
-  "featuredEmptyTitle": "A featured episode will appear here soon",
-  "featuredEmptyBody": "When the first episodes are published, one will be highlighted here as a starting point.",
-  "seriesEyebrow": "Browse",
-  "seriesTitle": "Browse by series",
-  "seriesDescription": "Four editorial series, each with a distinct purpose.",
-  "themesEyebrow": "Browse",
-  "themesTitle": "Browse by theme",
-  "themesDescription": "Topics the podcast explores. New themes appear here as episodes are tagged.",
-  "themesEmpty": "Themes will appear here as episodes are published.",
-  "languagesEyebrow": "Browse",
-  "languagesTitle": "Browse by language",
-  "languagesDescription": "Listen in the language closest to home.",
-  "latestEyebrow": "New",
-  "latestTitle": "Latest episodes",
-  "latestEmptyTitle": "Episodes will appear here soon",
-  "latestEmptyBody": "When the first episodes are published, they'll show up here, newest first.",
-  "comingSoon": "Coming soon",
-  "episodeComingSoon": "Episode page coming soon",
-  "minutes": "min",
-  "advisoryStrong": "Sensitive content",
-  "advisoryMild": "Mature themes",
-  "series": {
-    "anonymous-voices": {
-      "name": "Anonymous Voices",
-      "tagline": "One anonymous story, in her own words.",
-      "description": "Our flagship series. Each episode tells one anonymous story, carefully de-identified and shared with consent."
+    "metaTitle": "Podcast",
+    "metaDescription": "Anonymous stories, expert conversation, and the topics communities rarely discuss aloud.",
+    "eyebrow": "Listen · Muriyar Ta",
+    "heroTitle": "The Muriyar Ta Podcast",
+    "heroBody": "Anonymous stories from girls and young women, brought together with expert voices, taboo-breaking conversations, and roundtables with the next generation — across Niger and West Africa.",
+    "featuredEyebrow": "Featured",
+    "featuredTitle": "Start here",
+    "featuredEmptyTitle": "A featured episode will appear here soon",
+    "featuredEmptyBody": "When the first episodes are published, one will be highlighted here as a starting point.",
+    "seriesEyebrow": "Browse",
+    "seriesTitle": "Browse by series",
+    "seriesDescription": "Four editorial series, each with a distinct purpose.",
+    "themesEyebrow": "Browse",
+    "themesTitle": "Browse by theme",
+    "themesDescription": "Topics the podcast explores. New themes appear here as episodes are tagged.",
+    "themesEmpty": "Themes will appear here as episodes are published.",
+    "languagesEyebrow": "Browse",
+    "languagesTitle": "Browse by language",
+    "languagesDescription": "Listen in the language closest to home.",
+    "latestEyebrow": "New",
+    "latestTitle": "Latest episodes",
+    "latestEmptyTitle": "Episodes will appear here soon",
+    "latestEmptyBody": "When the first episodes are published, they'll show up here, newest first.",
+    "comingSoon": "Coming soon",
+    "episodeComingSoon": "Episode page coming soon",
+    "minutes": "min",
+    "advisoryStrong": "Sensitive content",
+    "advisoryMild": "Mature themes",
+    "series": {
+      "anonymous-voices": {
+        "name": "Anonymous Voices",
+        "tagline": "One anonymous story, in her own words.",
+        "description": "Our flagship series. Each episode tells one anonymous story, carefully de-identified and shared with consent."
+      },
+      "beyond-the-story": {
+        "name": "Beyond the Story",
+        "tagline": "An anonymous story, with experts to help us understand.",
+        "description": "Each episode begins with an anonymous story, then brings together psychologists, lawyers, teachers, researchers, and activists to ask why this happens — and what we can do."
+      },
+      "breaking-the-silence": {
+        "name": "Breaking the Silence",
+        "tagline": "Conversations on topics communities rarely discuss aloud.",
+        "description": "Child marriage, menstruation, consent, mental health, body image, puberty, domestic violence, friendship — talked about openly, with care."
+      },
+      "youth-voices": {
+        "name": "Youth Voices",
+        "tagline": "Young people, in conversation.",
+        "description": "Roundtables between young people on education, leadership, university, marriage, social media, dreams, and community change."
+      }
     },
-    "beyond-the-story": {
-      "name": "Beyond the Story",
-      "tagline": "An anonymous story, with experts to help us understand.",
-      "description": "Each episode begins with an anonymous story, then brings together psychologists, lawyers, teachers, researchers, and activists to ask why this happens — and what we can do."
-    },
-    "breaking-the-silence": {
-      "name": "Breaking the Silence",
-      "tagline": "Conversations on topics communities rarely discuss aloud.",
-      "description": "Child marriage, menstruation, consent, mental health, body image, puberty, domestic violence, friendship — talked about openly, with care."
-    },
-    "youth-voices": {
-      "name": "Youth Voices",
-      "tagline": "Young people, in conversation.",
-      "description": "Roundtables between young people on education, leadership, university, marriage, social media, dreams, and community change."
-    }
+    "artworkPlaceholderAlt": "No episode artwork available",
+    "notFoundTitle": "Episode not found",
+    "notFoundBody": "This episode may have been removed, archived, or is not yet published.",
+    "notFoundCta": "Back to podcast"
   },
-  "artworkPlaceholderAlt": "No episode artwork available",
-  "notFoundTitle": "Episode not found",
-  "notFoundBody": "This episode may have been removed, archived, or is not yet published.",
-  "notFoundCta": "Back to podcast"
-},
-
-
-
-"about": {
-  "metaTitle": "About Muriyar Ta",
-  "metaDescription": "Muriyar Ta exists to create a safe and anonymous space where girls and young women can share their stories in their own words.",
-  "heroEyebrow": "About",
-  "heroTitle": "Every story deserves to be heard.",
-  "heroBody": "Behind every statistic is a person with dreams, fears, hopes, and experiences that deserve to be acknowledged. Muriyar Ta exists to create a safe and anonymous space where girls and young women can share their stories in their own words because lasting change begins by listening.",
-
-  "storyEyebrow": "Our Story",
-  "storyTitle": "Our Story",
-  "storyPara1": "Before the world knew Malala Yousafzai as a Nobel Peace Prize laureate and global advocate for girls' education, she was simply a young girl sharing her experiences of being denied the right to learn. Her story did not introduce a new problem to the world. Girls had been excluded from education for generations. What changed was that people finally connected with the human experience behind the statistics.",
-  "storyPara2": "Muriyar Ta was born from the same belief.",
-  "storyPara3": "Too often, conversations about child marriage, gender based violence, barriers to education, and harmful social norms are reduced to numbers, reports, and policy discussions. While statistics help us understand the scale of a problem, they can never fully capture the realities of the people living through it.",
-  "storyPara4": "Behind every statistic is a story waiting to be heard.",
-  "storyPara5": "Muriyar Ta exists so that those stories are no longer left unheard.",
-
-  "anonymityEyebrow": "Anonymity",
-  "anonymityTitle": "Why Anonymous Storytelling?",
-  "anonymityPara1": "Sharing deeply personal experiences should never come at the cost of someone's safety.",
-  "anonymityPara2": "For many girls and young women, speaking openly about child marriage, gender based violence, discrimination, family pressure, or other sensitive experiences can expose them to stigma, retaliation, or further harm. Too often, silence is not a choice. It is a survival strategy.",
-  "anonymityPara3": "By allowing stories to be shared anonymously, Muriyar Ta removes some of those barriers. We believe girls should be able to speak honestly without fear of judgment or consequences. Anonymity allows contributors to remain protected while ensuring their experiences can still educate, inspire, and contribute to meaningful conversations.",
-
-  "missionVisionEyebrow": "Mission & Vision",
-  "missionVisionTitle": "What we're building",
-  "missionTitle": "Our Mission",
-  "missionBody": "To create a safe and anonymous platform where girls and young women can share their stories freely, without fear, stigma, or judgment. Through storytelling, digital media, and advocacy, Muriyar Ta amplifies voices that too often go unheard, helping transform lived experiences into awareness, dialogue, and action. Rather than speaking on behalf of girls and young women, Muriyar Ta exists to create a space where they can speak for themselves.",
-  "visionTitle": "Our Vision",
-  "visionBody": "A world where every girl has the opportunity to safely share her story, have her voice heard, and contribute to shaping the policies, programs, and social norms that affect her life.",
-
-  "valuesEyebrow": "Values",
-  "valuesTitle": "Our Values",
-  "values": {
-    "voice":         { "title": "Voice" },
-    "safety":        { "title": "Safety" },
-    "authenticity":  { "title": "Authenticity" },
-    "empowerment":   { "title": "Empowerment" },
-    "inclusion":     { "title": "Inclusion" },
-    "advocacy":      { "title": "Advocacy Through Storytelling" }
+  "about": {
+    "metaTitle": "About Muriyar Ta",
+    "metaDescription": "Muriyar Ta exists to create a safe and anonymous space where girls and young women can share their stories in their own words.",
+    "heroEyebrow": "About",
+    "heroTitle": "Every story deserves to be heard.",
+    "heroBody": "Behind every statistic is a person with dreams, fears, hopes, and experiences that deserve to be acknowledged. Muriyar Ta exists to create a safe and anonymous space where girls and young women can share their stories in their own words because lasting change begins by listening.",
+    "storyEyebrow": "Our Story",
+    "storyTitle": "Our Story",
+    "storyPara1": "Before the world knew Malala Yousafzai as a Nobel Peace Prize laureate and global advocate for girls' education, she was simply a young girl sharing her experiences of being denied the right to learn. Her story did not introduce a new problem to the world. Girls had been excluded from education for generations. What changed was that people finally connected with the human experience behind the statistics.",
+    "storyPara2": "Muriyar Ta was born from the same belief.",
+    "storyPara3": "Too often, conversations about child marriage, gender based violence, barriers to education, and harmful social norms are reduced to numbers, reports, and policy discussions. While statistics help us understand the scale of a problem, they can never fully capture the realities of the people living through it.",
+    "storyPara4": "Behind every statistic is a story waiting to be heard.",
+    "storyPara5": "Muriyar Ta exists so that those stories are no longer left unheard.",
+    "anonymityEyebrow": "Anonymity",
+    "anonymityTitle": "Why Anonymous Storytelling?",
+    "anonymityPara1": "Sharing deeply personal experiences should never come at the cost of someone's safety.",
+    "anonymityPara2": "For many girls and young women, speaking openly about child marriage, gender based violence, discrimination, family pressure, or other sensitive experiences can expose them to stigma, retaliation, or further harm. Too often, silence is not a choice. It is a survival strategy.",
+    "anonymityPara3": "By allowing stories to be shared anonymously, Muriyar Ta removes some of those barriers. We believe girls should be able to speak honestly without fear of judgment or consequences. Anonymity allows contributors to remain protected while ensuring their experiences can still educate, inspire, and contribute to meaningful conversations.",
+    "missionVisionEyebrow": "Mission & Vision",
+    "missionVisionTitle": "What we're building",
+    "missionTitle": "Our Mission",
+    "missionBody": "To create a safe and anonymous platform where girls and young women can share their stories freely, without fear, stigma, or judgment. Through storytelling, digital media, and advocacy, Muriyar Ta amplifies voices that too often go unheard, helping transform lived experiences into awareness, dialogue, and action. Rather than speaking on behalf of girls and young women, Muriyar Ta exists to create a space where they can speak for themselves.",
+    "visionTitle": "Our Vision",
+    "visionBody": "A world where every girl has the opportunity to safely share her story, have her voice heard, and contribute to shaping the policies, programs, and social norms that affect her life.",
+    "valuesEyebrow": "Values",
+    "valuesTitle": "Our Values",
+    "values": {
+      "voice": {
+        "title": "Voice"
+      },
+      "safety": {
+        "title": "Safety"
+      },
+      "authenticity": {
+        "title": "Authenticity"
+      },
+      "empowerment": {
+        "title": "Empowerment"
+      },
+      "inclusion": {
+        "title": "Inclusion"
+      },
+      "advocacy": {
+        "title": "Advocacy Through Storytelling"
+      }
+    },
+    "nameEyebrow": "The name",
+    "nameTitle": "Why \"Muriyar Ta\"?",
+    "namePara1": "Muriyar Ta means \"Her Voice\" in Hausa. More than a name, it is a promise. A promise that every girl who visits this platform will find a space where her voice matters, and her story will help shed light on the injustices faced by girls and women.",
+    "founderEyebrow": "From the founder",
+    "founderTitle": "Meet the Founder",
+    "founderPara1": "Growing up in Maradi, Niger, I often questioned the silence surrounding issues that shaped the lives of girls and young women. I was curious, constantly asking questions about traditions, expectations, and topics that were rarely discussed openly.",
+    "founderPara2": "From a very young age, I was exposed to community work and leadership experiences that transformed my understanding of advocacy. They taught me that meaningful change begins by listening to the people most affected.",
+    "founderPara3": "Why do we so rarely hear directly from the girls whose lives are being discussed?",
+    "founderPara4": "Too often, their experiences are summarized through statistics, reports, and research while their own voices remain absent. Muriyar Ta was born from the belief that every statistic represents a real person with a story worth hearing. I wanted to create a space where girls and young women could share those experiences safely, anonymously, and in their own words. A space where they are not spoken for, but listened to.",
+    "founderPara5": "As someone passionate about gender equality, education, international development, and social impact, I believe storytelling is more than a way of sharing experiences. It is a way of building understanding, challenging harmful norms, and informing better policies and solutions.",
+    "pullQuote": "Silence protects perpetrators, not victims. Speaking up is the only way to break the silence and the cycle of violence.",
+    "ctaEyebrow": "Join us",
+    "ctaTitle": "Help Us Break the Silence",
+    "ctaBody": "Every story shared is a step toward breaking silence, building understanding, and creating change. Join us in building a future where every girl feels safe to be heard.",
+    "ctaShareStory": "Share Your Story",
+    "ctaExploreResources": "Explore Resources",
+    "ctaPartnerWithUs": "Partner With Us"
   },
-
-  "nameEyebrow": "The name",
-  "nameTitle": "Why \"Muriyar Ta\"?",
-  "namePara1": "Muriyar Ta means \"Her Voice\" in Hausa. More than a name, it is a promise. A promise that every girl who visits this platform will find a space where her voice matters, and her story will help shed light on the injustices faced by girls and women.",
-
-  "founderEyebrow": "From the founder",
-  "founderTitle": "Meet the Founder",
-  "founderPara1": "Growing up in Maradi, Niger, I often questioned the silence surrounding issues that shaped the lives of girls and young women. I was curious, constantly asking questions about traditions, expectations, and topics that were rarely discussed openly.",
-  "founderPara2": "From a very young age, I was exposed to community work and leadership experiences that transformed my understanding of advocacy. They taught me that meaningful change begins by listening to the people most affected.",
-  "founderPara3": "Why do we so rarely hear directly from the girls whose lives are being discussed?",
-  "founderPara4": "Too often, their experiences are summarized through statistics, reports, and research while their own voices remain absent. Muriyar Ta was born from the belief that every statistic represents a real person with a story worth hearing. I wanted to create a space where girls and young women could share those experiences safely, anonymously, and in their own words. A space where they are not spoken for, but listened to.",
-  "founderPara5": "As someone passionate about gender equality, education, international development, and social impact, I believe storytelling is more than a way of sharing experiences. It is a way of building understanding, challenging harmful norms, and informing better policies and solutions.",
-
-  "pullQuote": "Silence protects perpetrators, not victims. Speaking up is the only way to break the silence and the cycle of violence.",
-
-  "ctaEyebrow": "Join us",
-  "ctaTitle": "Help Us Break the Silence",
-  "ctaBody": "Every story shared is a step toward breaking silence, building understanding, and creating change. Join us in building a future where every girl feels safe to be heard.",
-  "ctaShareStory": "Share Your Story",
-  "ctaExploreResources": "Explore Resources",
-  "ctaPartnerWithUs": "Partner With Us"
-},
-
-"partner": {
-  "metaTitle": "Partner With Us",
-  "metaDescription": "Muriyar Ta collaborates with organizations, researchers, educators, media, and donors advancing the rights and voices of girls and young women.",
-  "heroEyebrow": "Partner",
-  "heroTitle": "Partner With Us",
-  "heroBody": "Muriyar Ta grows through collaboration. If your work advances the safety, education, or voice of girls and young women in Niger and across West Africa, there is a place for you here.",
-  "ctaPartnerWithUs": "Partner with Us",
-  
-  "whyEyebrow": "Why partner",
-  "whyTitle": "Why we partner",
-  "whyPara1": "Lasting change is never the work of a single organization. Ending child marriage, expanding access to education, and confronting gender-based violence require coalitions — of survivors, communities, researchers, educators, and institutions that can act at scale.",
-  "whyPara2": "Partnership is how we turn stories into policy, awareness into action, and isolated efforts into shared momentum. We work with partners who bring rigor, care, and a commitment to centering the voices of the people most affected.",
-
-  "audiencesEyebrow": "Audiences",
-  "audiencesTitle": "Who we work with",
-  "audiencesDescription": "We welcome collaboration with a wide range of organizations and individuals.",
-  "audiences": {
-    "ngos": {
-      "title": "NGOs",
-      "body": "Local, national, and international organizations working on gender equality, education, and child protection."
+  "partner": {
+    "metaTitle": "Partner With Us",
+    "metaDescription": "Muriyar Ta collaborates with organizations, researchers, educators, media, and donors advancing the rights and voices of girls and young women.",
+    "heroEyebrow": "Partner",
+    "heroTitle": "Partner With Us",
+    "heroBody": "Muriyar Ta grows through collaboration. If your work advances the safety, education, or voice of girls and young women in Niger and across West Africa, there is a place for you here.",
+    "ctaPartnerWithUs": "Partner with Us",
+    "whyEyebrow": "Why partner",
+    "whyTitle": "Why we partner",
+    "whyPara1": "Lasting change is never the work of a single organization. Ending child marriage, expanding access to education, and confronting gender-based violence require coalitions — of survivors, communities, researchers, educators, and institutions that can act at scale.",
+    "whyPara2": "Partnership is how we turn stories into policy, awareness into action, and isolated efforts into shared momentum. We work with partners who bring rigor, care, and a commitment to centering the voices of the people most affected.",
+    "audiencesEyebrow": "Audiences",
+    "audiencesTitle": "Who we work with",
+    "audiencesDescription": "We welcome collaboration with a wide range of organizations and individuals.",
+    "audiences": {
+      "ngos": {
+        "title": "NGOs",
+        "body": "Local, national, and international organizations working on gender equality, education, and child protection."
+      },
+      "researchers": {
+        "title": "Researchers",
+        "body": "Academics and independent researchers studying storytelling, gender, education, and public health in West Africa."
+      },
+      "education": {
+        "title": "Educational Institutions",
+        "body": "Schools, universities, and training programs integrating survivor-centered storytelling into curricula and outreach."
+      },
+      "donors": {
+        "title": "Foundations & Donors",
+        "body": "Foundations, philanthropists, and grant-makers investing in gender equality and youth empowerment."
+      },
+      "media": {
+        "title": "Media",
+        "body": "Journalists, podcasters, and outlets committed to responsible reporting on sensitive issues."
+      },
+      "volunteers": {
+        "title": "Volunteers",
+        "body": "Translators, editors, designers, and community members lending time and skills to the mission."
+      }
     },
-    "researchers": {
-      "title": "Researchers",
-      "body": "Academics and independent researchers studying storytelling, gender, education, and public health in West Africa."
+    "collaborationsEyebrow": "Collaboration",
+    "collaborationsTitle": "Ways we can collaborate",
+    "collaborationsDescription": "Every partnership is shaped by what each side brings. These are the areas where we most often work together.",
+    "collaborations": {
+      "outreach": {
+        "title": "Community Outreach",
+        "body": "Reaching girls and young women where they live, learn, and gather."
+      },
+      "research": {
+        "title": "Research",
+        "body": "Joint studies, data sharing under strict ethical safeguards, and evidence generation."
+      },
+      "podcasts": {
+        "title": "Podcasts",
+        "body": "Co-produced episodes, guest interviews, and cross-promotion with aligned shows."
+      },
+      "workshops": {
+        "title": "Workshops",
+        "body": "In-person and online sessions on storytelling, digital safety, and advocacy."
+      },
+      "advocacy": {
+        "title": "Advocacy Campaigns",
+        "body": "Joint campaigns amplifying survivor voices in policy and public dialogue."
+      },
+      "resources": {
+        "title": "Resource Development",
+        "body": "Guides, toolkits, and educational materials produced collaboratively."
+      },
+      "translation": {
+        "title": "Translation",
+        "body": "Making our platform and content accessible in Hausa, Zarma, French, and beyond."
+      },
+      "grants": {
+        "title": "Grant Partnerships",
+        "body": "Applying jointly for funding that supports shared projects and long-term impact."
+      }
     },
-    "education": {
-      "title": "Educational Institutions",
-      "body": "Schools, universities, and training programs integrating survivor-centered storytelling into curricula and outreach."
+    "principlesEyebrow": "Principles",
+    "principlesTitle": "Our principles",
+    "principles": {
+      "privacy": "Privacy",
+      "ethics": "Ethics",
+      "community": "Community First",
+      "respect": "Respect",
+      "collaboration": "Collaboration",
+      "evidence": "Evidence Informed"
     },
-    "donors": {
-      "title": "Foundations & Donors",
-      "body": "Foundations, philanthropists, and grant-makers investing in gender equality and youth empowerment."
+    "prioritiesEyebrow": "Right now",
+    "prioritiesTitle": "Current priorities",
+    "prioritiesDescription": "Areas where we're actively looking for partners in the months ahead.",
+    "priorities": {
+      "regional": "Partnerships across Niger and West Africa",
+      "translation": "Translation Volunteers",
+      "academic": "Academic Collaborations",
+      "guests": "Podcast Guests",
+      "organizational": "Organizational Partnerships",
+      "funding": "Long Term Funding Opportunities"
     },
-    "media": {
-      "title": "Media",
-      "body": "Journalists, podcasters, and outlets committed to responsible reporting on sensitive issues."
+    "processEyebrow": "Process",
+    "processTitle": "How partnerships take shape",
+    "processDescription": "A straightforward path from a first message to meaningful collaboration.",
+    "processStepLabel": "Step {step}",
+    "process": {
+      "reach": {
+        "title": "Reach Out",
+        "body": "Send a message describing your organization and what you'd like to explore."
+      },
+      "talk": {
+        "title": "Let's Talk",
+        "body": "We schedule an initial conversation to understand your goals and share ours."
+      },
+      "explore": {
+        "title": "Explore Opportunities",
+        "body": "Together we identify where our missions overlap and what a partnership could look like."
+      },
+      "build": {
+        "title": "Build Meaningful Impact Together",
+        "body": "We formalize the collaboration and begin the shared work."
+      }
     },
-    "volunteers": {
-      "title": "Volunteers",
-      "body": "Translators, editors, designers, and community members lending time and skills to the mission."
-    }
+    "ctaEyebrow": "Get in touch",
+    "ctaTitle": "Let's Build Something Meaningful Together",
+    "ctaBody": "If any of this speaks to your work, we'd love to hear from you. Send us a message and we'll take it from there.",
+    "ctaButton": "Contact us"
   },
-
-  "collaborationsEyebrow": "Collaboration",
-  "collaborationsTitle": "Ways we can collaborate",
-  "collaborationsDescription": "Every partnership is shaped by what each side brings. These are the areas where we most often work together.",
-  "collaborations": {
-    "outreach": {
-      "title": "Community Outreach",
-      "body": "Reaching girls and young women where they live, learn, and gather."
+  "report": {
+    "metaTitle": "Report a concern",
+    "metaDescription": "Confidentially report a concern to the Muriyar Ta team.",
+    "heroEyebrow": "Report Center",
+    "heroTitle": "Report a Concern",
+    "heroSubtitle": "If you or someone you know is experiencing child marriage, gender-based violence, barriers to education, or another serious concern, you can safely share information here.",
+    "noticeTitle": "Important",
+    "noticeNotEmergency": "This is not an emergency service.",
+    "noticeCallEmergency": "If someone is in immediate danger, contact local emergency services right away.",
+    "noticeModerationReview": "Reports may be reviewed by the Muriyar Ta moderation team.",
+    "formEyebrow": "Report",
+    "formTitle": "Share what you know",
+    "formDescription": "Only the fields marked required are needed. Add any detail you feel comfortable sharing.",
+    "categoryLabel": "Concern category",
+    "categoryPlaceholder": "Choose a category",
+    "categoryOptions": {
+      "child_marriage": "Child marriage",
+      "gbv": "Gender-based violence",
+      "education": "Education barrier",
+      "trafficking": "Human trafficking",
+      "harassment": "Harassment",
+      "mental_health": "Mental health concern",
+      "other": "Other"
     },
-    "research": {
-      "title": "Research",
-      "body": "Joint studies, data sharing under strict ethical safeguards, and evidence generation."
+    "descriptionLabel": "Description",
+    "descriptionHelp": "Explain what happened in your own words. Up to 8,000 characters.",
+    "countryLabel": "Country",
+    "regionLabel": "Region or state",
+    "cityLabel": "City or village",
+    "emailLabel": "Email",
+    "emailHelp": "Only used if the moderation team needs to reach you.",
+    "phoneLabel": "Phone",
+    "phoneHelp": "Only used if the moderation team needs to reach you.",
+    "consentLabel": "I understand this report may be reviewed by the Muriyar Ta moderation team.",
+    "optionalHint": "(optional)",
+    "submitButton": "Submit report",
+    "submittingLabel": "Submitting…",
+    "successTitle": "Thank you for sharing",
+    "successBody": "Your report has been received. The Muriyar Ta team will review it and, if you provided contact information, may follow up.",
+    "successAction": "Submit another report",
+    "errors": {
+      "categoryRequired": "Choose a category.",
+      "descriptionRequired": "Please describe the concern.",
+      "consentRequired": "Please confirm your acknowledgement to submit.",
+      "genericFailure": "Something went wrong. Please try again."
     },
-    "podcasts": {
-      "title": "Podcasts",
-      "body": "Co-produced episodes, guest interviews, and cross-promotion with aligned shows."
-    },
-    "workshops": {
-      "title": "Workshops",
-      "body": "In-person and online sessions on storytelling, digital safety, and advocacy."
-    },
-    "advocacy": {
-      "title": "Advocacy Campaigns",
-      "body": "Joint campaigns amplifying survivor voices in policy and public dialogue."
-    },
-    "resources": {
-      "title": "Resource Development",
-      "body": "Guides, toolkits, and educational materials produced collaboratively."
-    },
-    "translation": {
-      "title": "Translation",
-      "body": "Making our platform and content accessible in Hausa, Zarma, French, and beyond."
-    },
-    "grants": {
-      "title": "Grant Partnerships",
-      "body": "Applying jointly for funding that supports shared projects and long-term impact."
-    }
+    "supportEyebrow": "Support",
+    "supportTitle": "Need immediate support?",
+    "supportDescription": "If you need help right away, these direct resources are available.",
+    "supportResourcesTitle": "Browse resources",
+    "supportResourcesBody": "Find organizations, hotlines, and educational programs for issues affecting girls and young women in West Africa.",
+    "supportResourcesCta": "Browse resources",
+    "supportCrisisTitle": "Go to crisis resources",
+    "supportCrisisBody": "Immediate-help resources for people experiencing crisis or in danger.",
+    "supportCrisisCta": "Crisis resources"
   },
-
-  "principlesEyebrow": "Principles",
-  "principlesTitle": "Our principles",
-  "principles": {
-    "privacy": "Privacy",
-    "ethics": "Ethics",
-    "community": "Community First",
-    "respect": "Respect",
-    "collaboration": "Collaboration",
-    "evidence": "Evidence Informed"
+  "contact": {
+    "metaTitle": "Contact Muriyar Ta",
+    "metaDescription": "Get in touch with the Muriyar Ta team.",
+    "heroEyebrow": "Contact",
+    "heroTitle": "Get in Touch",
+    "heroDescription": "Whether you're a survivor, researcher, journalist, NGO, educator, or potential partner, we'd love to hear from you.",
+    "formEyebrow": "Message",
+    "formTitle": "Send us a message",
+    "formDescription": "The Muriyar Ta team reads every message. Please share a bit about who you are and what you'd like to talk about.",
+    "nameLabel": "Full name",
+    "emailLabel": "Email address",
+    "organizationLabel": "Organization",
+    "organizationOptional": "(optional)",
+    "subjectLabel": "Subject",
+    "messageLabel": "Message",
+    "messageHelp": "Up to 8,000 characters.",
+    "consentLabel": "I understand this message may be reviewed by the Muriyar Ta team.",
+    "submitButton": "Send message",
+    "successTitle": "Thank you for reaching out",
+    "successBody": "Your message has been received. The Muriyar Ta team will read it and reply as soon as we can.",
+    "successAction": "Send another message",
+    "errors": {
+      "nameRequired": "Please enter your name.",
+      "emailRequired": "Please enter your email address.",
+      "emailInvalid": "Please enter a valid email address.",
+      "subjectRequired": "Please add a subject.",
+      "messageRequired": "Please write a message.",
+      "consentRequired": "Please confirm your acknowledgement to submit."
+    },
+    "channelsEyebrow": "Direct contact",
+    "channelsTitle": "Ways to reach us",
+    "channelsDescription": "For specific requests, you can email us directly at the address that fits your needs.",
+    "channels": {
+      "general": {
+        "title": "General inquiries",
+        "body": "Questions, feedback, or anything that doesn't fit elsewhere."
+      },
+      "partnerships": {
+        "title": "Partnerships",
+        "body": "NGOs, educational institutions, and community organizations looking to collaborate."
+      },
+      "media": {
+        "title": "Media",
+        "body": "Journalists, podcasters, and press requesting interviews or comment."
+      },
+      "research": {
+        "title": "Research",
+        "body": "Researchers and academics interested in the platform, its data, or its methodology."
+      }
+    },
+    "faqEyebrow": "Common questions",
+    "faqTitle": "Frequently asked questions",
+    "faqDescription": "A few of the questions we get most often.",
+    "faq": {
+      "anonymity": {
+        "q": "Can I remain anonymous?",
+        "a": "Yes. You can share a story anonymously via the Submit page and contact us here without providing personal details beyond a name and email."
+      },
+      "response_time": {
+        "q": "How long does a response take?",
+        "a": "We try to reply within a few working days. Complex requests, especially research or partnership discussions, may take longer."
+      },
+      "partner": {
+        "q": "Can organizations partner with Muriyar Ta?",
+        "a": "Yes. We work with NGOs, educational institutions, and community groups across West Africa. Reach out via the Partnerships channel to start a conversation."
+      },
+      "research": {
+        "q": "Can I request research access?",
+        "a": "Researchers can email us at the Research channel with a short description of their project. We review requests carefully to protect the people who share their stories with us."
+      }
+    },
+    "footerNote": "Muriyar Ta is committed to protecting the safety and dignity of the people who share their stories with us. Please do not include identifying details about others in your message."
   },
-
-  "prioritiesEyebrow": "Right now",
-  "prioritiesTitle": "Current priorities",
-  "prioritiesDescription": "Areas where we're actively looking for partners in the months ahead.",
-  "priorities": {
-    "regional": "Partnerships across Niger and West Africa",
-    "translation": "Translation Volunteers",
-    "academic": "Academic Collaborations",
-    "guests": "Podcast Guests",
-    "organizational": "Organizational Partnerships",
-    "funding": "Long Term Funding Opportunities"
-  },
-
-  "processEyebrow": "Process",
-  "processTitle": "How partnerships take shape",
-  "processDescription": "A straightforward path from a first message to meaningful collaboration.",
-  "processStepLabel": "Step {step}",
-  "process": {
-    "reach": {
-      "title": "Reach Out",
-      "body": "Send a message describing your organization and what you'd like to explore."
-    },
-    "talk": {
-      "title": "Let's Talk",
-      "body": "We schedule an initial conversation to understand your goals and share ours."
-    },
-    "explore": {
-      "title": "Explore Opportunities",
-      "body": "Together we identify where our missions overlap and what a partnership could look like."
-    },
-    "build": {
-      "title": "Build Meaningful Impact Together",
-      "body": "We formalize the collaboration and begin the shared work."
-    }
-  },
-
-  "ctaEyebrow": "Get in touch",
-  "ctaTitle": "Let's Build Something Meaningful Together",
-  "ctaBody": "If any of this speaks to your work, we'd love to hear from you. Send us a message and we'll take it from there.",
-  "ctaButton": "Contact us"
-},
-
-"report": {
-  "metaTitle": "Report a concern",
-  "metaDescription": "Confidentially report a concern to the Muriyar Ta team.",
-  "heroEyebrow": "Report Center",
-  "heroTitle": "Report a Concern",
-  "heroSubtitle": "If you or someone you know is experiencing child marriage, gender-based violence, barriers to education, or another serious concern, you can safely share information here.",
-  "noticeTitle": "Important",
-  "noticeNotEmergency": "This is not an emergency service.",
-  "noticeCallEmergency": "If someone is in immediate danger, contact local emergency services right away.",
-  "noticeModerationReview": "Reports may be reviewed by the Muriyar Ta moderation team.",
-  "formEyebrow": "Report",
-  "formTitle": "Share what you know",
-  "formDescription": "Only the fields marked required are needed. Add any detail you feel comfortable sharing.",
-  "categoryLabel": "Concern category",
-  "categoryPlaceholder": "Choose a category",
-  "categoryOptions": {
-    "child_marriage": "Child marriage",
-    "gbv": "Gender-based violence",
-    "education": "Education barrier",
-    "trafficking": "Human trafficking",
-    "harassment": "Harassment",
-    "mental_health": "Mental health concern",
-    "other": "Other"
-  },
-  "descriptionLabel": "Description",
-  "descriptionHelp": "Explain what happened in your own words. Up to 8,000 characters.",
-  "countryLabel": "Country",
-  "regionLabel": "Region or state",
-  "cityLabel": "City or village",
-  "emailLabel": "Email",
-  "emailHelp": "Only used if the moderation team needs to reach you.",
-  "phoneLabel": "Phone",
-  "phoneHelp": "Only used if the moderation team needs to reach you.",
-  "consentLabel": "I understand this report may be reviewed by the Muriyar Ta moderation team.",
-  "optionalHint": "(optional)",
-  "submitButton": "Submit report",
-  "submittingLabel": "Submitting…",
-  "successTitle": "Thank you for sharing",
-  "successBody": "Your report has been received. The Muriyar Ta team will review it and, if you provided contact information, may follow up.",
-  "successAction": "Submit another report",
-  "errors": {
-    "categoryRequired": "Choose a category.",
-    "descriptionRequired": "Please describe the concern.",
-    "consentRequired": "Please confirm your acknowledgement to submit.",
-    "genericFailure": "Something went wrong. Please try again."
-  },
-  "supportEyebrow": "Support",
-  "supportTitle": "Need immediate support?",
-  "supportDescription": "If you need help right away, these direct resources are available.",
-  "supportResourcesTitle": "Browse resources",
-  "supportResourcesBody": "Find organizations, hotlines, and educational programs for issues affecting girls and young women in West Africa.",
-  "supportResourcesCta": "Browse resources",
-  "supportCrisisTitle": "Go to crisis resources",
-  "supportCrisisBody": "Immediate-help resources for people experiencing crisis or in danger.",
-  "supportCrisisCta": "Crisis resources"
-},
-"contact": {
-  "metaTitle": "Contact Muriyar Ta",
-  "metaDescription": "Get in touch with the Muriyar Ta team.",
-  "heroEyebrow": "Contact",
-  "heroTitle": "Get in Touch",
-  "heroDescription": "Whether you're a survivor, researcher, journalist, NGO, educator, or potential partner, we'd love to hear from you.",
-  "formEyebrow": "Message",
-  "formTitle": "Send us a message",
-  "formDescription": "The Muriyar Ta team reads every message. Please share a bit about who you are and what you'd like to talk about.",
-  "nameLabel": "Full name",
-  "emailLabel": "Email address",
-  "organizationLabel": "Organization",
-  "organizationOptional": "(optional)",
-  "subjectLabel": "Subject",
-  "messageLabel": "Message",
-  "messageHelp": "Up to 8,000 characters.",
-  "consentLabel": "I understand this message may be reviewed by the Muriyar Ta team.",
-  "submitButton": "Send message",
-  "successTitle": "Thank you for reaching out",
-  "successBody": "Your message has been received. The Muriyar Ta team will read it and reply as soon as we can.",
-  "successAction": "Send another message",
-  "errors": {
-    "nameRequired": "Please enter your name.",
-    "emailRequired": "Please enter your email address.",
-    "emailInvalid": "Please enter a valid email address.",
-    "subjectRequired": "Please add a subject.",
-    "messageRequired": "Please write a message.",
-    "consentRequired": "Please confirm your acknowledgement to submit."
-  },
-  "channelsEyebrow": "Direct contact",
-  "channelsTitle": "Ways to reach us",
-  "channelsDescription": "For specific requests, you can email us directly at the address that fits your needs.",
-  "channels": {
-    "general": {
-      "title": "General inquiries",
-      "body": "Questions, feedback, or anything that doesn't fit elsewhere."
-    },
-    "partnerships": {
-      "title": "Partnerships",
-      "body": "NGOs, educational institutions, and community organizations looking to collaborate."
-    },
-    "media": {
-      "title": "Media",
-      "body": "Journalists, podcasters, and press requesting interviews or comment."
-    },
-    "research": {
-      "title": "Research",
-      "body": "Researchers and academics interested in the platform, its data, or its methodology."
-    }
-  },
-  "faqEyebrow": "Common questions",
-  "faqTitle": "Frequently asked questions",
-  "faqDescription": "A few of the questions we get most often.",
-  "faq": {
-    "anonymity": {
-      "q": "Can I remain anonymous?",
-      "a": "Yes. You can share a story anonymously via the Submit page and contact us here without providing personal details beyond a name and email."
-    },
-    "response_time": {
-      "q": "How long does a response take?",
-      "a": "We try to reply within a few working days. Complex requests, especially research or partnership discussions, may take longer."
-    },
-    "partner": {
-      "q": "Can organizations partner with Muriyar Ta?",
-      "a": "Yes. We work with NGOs, educational institutions, and community groups across West Africa. Reach out via the Partnerships channel to start a conversation."
-    },
-    "research": {
-      "q": "Can I request research access?",
-      "a": "Researchers can email us at the Research channel with a short description of their project. We review requests carefully to protect the people who share their stories with us."
-    }
-  },
-  "footerNote": "Muriyar Ta is committed to protecting the safety and dignity of the people who share their stories with us. Please do not include identifying details about others in your message."
-},
-
   "nav": {
     "stories": "Stories",
     "podcast": "Podcast",
@@ -606,73 +603,159 @@
     "notFoundTitle": "Story not found",
     "notFoundBody": "This story may have been removed or is not yet published."
   },
-
   "resources": {
-  "listTitle": "Resources",
-  "listSubtitle": "A curated directory of support for girls and young women — across education, health, legal aid, and crisis services.",
-  "allCategories": "All",
-  "searchLabel": "Search resources",
-  "searchPlaceholder": "Search by name or description…",
-  "searchSubmit": "Search",
-  "visitWebsite": "Visit website",
-  "verified": "Verified",
-  "lastVerified": "Last verified",
-  "region": "Region",
-  "languages": "Languages",
-  "featured": "Featured",
-  "crisisHeading": "Need help now?",
-  "crisisLink": "View crisis resources",
-  "crisisTitle": "Crisis resources",
-  "crisisSubtitle": "Immediate support reachable now. If you are in danger, please contact local emergency services.",
-  "crisisEmptyTitle": "Crisis resources will appear here soon",
-  "crisisEmptyBody": "We are curating verified crisis support. In the meantime, please contact your local emergency services.",
-  "backToAll": "Back to all resources",
-  "emptyTitle": "No resources yet",
-  "emptyBody": "Verified resources will appear here once they are added.",
-  "emptyBodySearch": "No resources match “{q}”. Try a different term or clear the search."
-},
-
-"backToPodcast": "Back to podcast",
-"metaSeries": "Series",
-"metaLanguage": "Language",
-"metaDuration": "Duration",
-"metaPublished": "Published",
-"playerUnavailableTitle": "Audio is being prepared",
-"playerUnavailableBody": "This episode does not yet have a playable audio source. The transcript below is the canonical version of the episode.",
-"playerDownload": "Download audio",
-"transcriptHeading": "Transcript",
-"transcriptEmptyTitle": "A transcript is being prepared",
-"transcriptEmptyBody": "Transcripts are an essential part of Muriyar Ta. This episode's transcript will appear here as soon as it is ready.",
-"transcriptStatusLabel": "Transcript",
-"transcriptStatusAuto": "Auto-generated",
-"transcriptStatusHuman": "Reviewed by an editor",
-"transcriptStatusNone": "Transcript not yet available",
-"aboutEyebrow": "About",
-"aboutTitle": "About this episode",
-"relatedStoryEyebrow": "Anonymous story",
-"relatedStoryHeading": "Inspired by an anonymous story",
-"relatedStoryDescription": "This episode begins with an anonymous story shared on Muriyar Ta. Read it in the contributor's own words.",
-"relatedStoryCta": "Read the story",
-"relatedResourcesEyebrow": "Support",
-"relatedResourcesHeading": "Resources related to this episode",
-"relatedResourcesDescription": "Curated support connected to the themes of this episode.",
-"relatedResourcesVisit": "Visit website",
-"seriesRecsEyebrow": "More",
-"seriesRecsHeading": "More from {series}",
-"themeRecsEyebrow": "More",
-"themeRecsHeading": "More on this theme",
-"notFoundTitle": "Episode not found",
-"notFoundBody": "This episode may have been removed, archived, or is not yet published.",
-"notFoundCta": "Back to podcast",
-
-"podcastEyebrow": "Listen",
-"podcastHeading": "Listen to the podcast",
-"podcastDescription": "This story has inspired one or more conversations on the Muriyar Ta podcast.",
-"resourcesEyebrow": "Support",
-"resourcesHeading": "Find support",
-"resourcesDescription": "Curated organizations connected to the themes of this story.",
-"resourcesVisit": "Visit website",
-"minutes": "min",
-"advisoryStrong": "Sensitive content",
-"advisoryMild": "Mature themes"
+    "listTitle": "Resources",
+    "listSubtitle": "A curated directory of support for girls and young women — across education, health, legal aid, and crisis services.",
+    "allCategories": "All",
+    "searchLabel": "Search resources",
+    "searchPlaceholder": "Search by name or description…",
+    "searchSubmit": "Search",
+    "visitWebsite": "Visit website",
+    "verified": "Verified",
+    "lastVerified": "Last verified",
+    "region": "Region",
+    "languages": "Languages",
+    "featured": "Featured",
+    "crisisHeading": "Need help now?",
+    "crisisLink": "View crisis resources",
+    "crisisTitle": "Crisis resources",
+    "crisisSubtitle": "Immediate support reachable now. If you are in danger, please contact local emergency services.",
+    "crisisEmptyTitle": "Crisis resources will appear here soon",
+    "crisisEmptyBody": "We are curating verified crisis support. In the meantime, please contact your local emergency services.",
+    "backToAll": "Back to all resources",
+    "emptyTitle": "No resources yet",
+    "emptyBody": "Verified resources will appear here once they are added.",
+    "emptyBodySearch": "No resources match “{q}”. Try a different term or clear the search."
+  },
+  "backToPodcast": "Back to podcast",
+  "metaSeries": "Series",
+  "metaLanguage": "Language",
+  "metaDuration": "Duration",
+  "metaPublished": "Published",
+  "playerUnavailableTitle": "Audio is being prepared",
+  "playerUnavailableBody": "This episode does not yet have a playable audio source. The transcript below is the canonical version of the episode.",
+  "playerDownload": "Download audio",
+  "transcriptHeading": "Transcript",
+  "transcriptEmptyTitle": "A transcript is being prepared",
+  "transcriptEmptyBody": "Transcripts are an essential part of Muriyar Ta. This episode's transcript will appear here as soon as it is ready.",
+  "transcriptStatusLabel": "Transcript",
+  "transcriptStatusAuto": "Auto-generated",
+  "transcriptStatusHuman": "Reviewed by an editor",
+  "transcriptStatusNone": "Transcript not yet available",
+  "aboutEyebrow": "About",
+  "aboutTitle": "About this episode",
+  "relatedStoryEyebrow": "Anonymous story",
+  "relatedStoryHeading": "Inspired by an anonymous story",
+  "relatedStoryDescription": "This episode begins with an anonymous story shared on Muriyar Ta. Read it in the contributor's own words.",
+  "relatedStoryCta": "Read the story",
+  "relatedResourcesEyebrow": "Support",
+  "relatedResourcesHeading": "Resources related to this episode",
+  "relatedResourcesDescription": "Curated support connected to the themes of this episode.",
+  "relatedResourcesVisit": "Visit website",
+  "seriesRecsEyebrow": "More",
+  "seriesRecsHeading": "More from {series}",
+  "themeRecsEyebrow": "More",
+  "themeRecsHeading": "More on this theme",
+  "notFoundTitle": "Episode not found",
+  "notFoundBody": "This episode may have been removed, archived, or is not yet published.",
+  "notFoundCta": "Back to podcast",
+  "podcastEyebrow": "Listen",
+  "podcastHeading": "Listen to the podcast",
+  "podcastDescription": "This story has inspired one or more conversations on the Muriyar Ta podcast.",
+  "resourcesEyebrow": "Support",
+  "resourcesHeading": "Find support",
+  "resourcesDescription": "Curated organizations connected to the themes of this story.",
+  "resourcesVisit": "Visit website",
+  "minutes": "min",
+  "advisoryStrong": "Sensitive content",
+  "advisoryMild": "Mature themes",
+  "home": {
+    "hero": {
+      "eyebrow": "HANSE GA. LAABO GA. BORO BANDE.",
+      "title": "Sohõ wayboro ga laabo d'a kaa si ma.",
+      "subtitle": "Muriyar Ta wida beri kaa nd'a bori-bori kaa, mosone wayboro nd'a hanseyan g'i laabo no. Mana, i laabo ni yaamarandi, podcast, cimi nd'ikoy-bonda.",
+      "ctaShareStory": "I laabo baa",
+      "ctaExploreStories": "Laabey kaabu",
+      "reassurance": "I laabo boro ga. I baa goo no, ay zaari.",
+      "illustrationAlt": "Aquarelle wayboro mana bore kuro gaa d'a kaa laabo bese."
+    },
+    "trust": {
+      "items": [
+        "Bori-bori nga no",
+        "Fo kande doŋ kaŋ a se goyyan",
+        "Ay ga yaamar feere yoo ga woo"
+      ]
+    },
+    "voices": {
+      "eyebrow": "Hanseyan",
+      "title": "I go-go konciyan.",
+      "cta": "Laabey kul kaabu",
+      "empty": "Laabey farsay g'a kaa woo si ciya."
+    },
+    "how": {
+      "eyebrow": "Laabo baa waawo",
+      "title": "I laabo i beri no.",
+      "cta": "Mana iri i laabo bori",
+      "steps": [
+        {
+          "title": "Bori-bori ga kaa",
+          "body": "Hay kaŋ ay ga hãa no. Asuso goo sino."
+        },
+        {
+          "title": "Fo g'a karanta",
+          "body": "Fo kande doŋ g'i laabo karanta hantum nd'a bori-bori."
+        },
+        {
+          "title": "Ay ga yaamar",
+          "body": "I laabo bori-bori no, sanda ay ga goy d'i no."
+        }
+      ]
+    },
+    "mission": {
+      "eyebrow": "Iri feere",
+      "title": "Laabey si feere kaŋ bori.",
+      "body": "Sohõ misal ga, fo ga laabo. Muriyar Ta tun wayboro hanseyan yaamarandi ga, nd'ikoy-bonda nd'a cimi.",
+      "cta": "Muriyar Ta kaabu"
+    },
+    "podcast": {
+      "eyebrow": "Maatam",
+      "title": "Laabey ka maatam.",
+      "body": "Laabey bori-bori, hadikay hanseyan, nd'i-goo Nijar nd'Afrîka Yãa hãa goo-goo.",
+      "cta": "Podcast kaabu"
+    },
+    "name": {
+      "eyebrow": "Tumu",
+      "title": "\"Muriyar Ta\" me kaa.",
+      "body": "Muriyar Ta kaŋ Hausa ga \"Hanse Ga\" — sãsã tumu no, mana alkawari: wayboro kul kaŋ boro woo ga na, hanse ga woo ga d'a boro."
+    },
+    "impact": {
+      "eyebrow": "Feere bori kaŋ",
+      "title": "Hanseyan bã'o ga yaamarandi nd'ikoy-bonda.",
+      "pullQuote": "Yaa-yaa ga bonyan bori, mana wayboreyan sino. Koyne no, yaa kul ka kaa."
+    },
+    "pathways": {
+      "discover": "Muriyar Ta kaabu",
+      "items": [
+        {
+          "label": "Podcast",
+          "href": "/podcast"
+        },
+        {
+          "label": "Albarkatu",
+          "href": "/resources"
+        },
+        {
+          "label": "Ortaklık",
+          "href": "/partner"
+        }
+      ]
+    },
+    "submit": {
+      "eyebrow": "I laabo baa",
+      "title": "I hanse woo ga no.",
+      "body": "Hay kaŋ ay na koy no, i laabo si d'a ma. I baa bori-bori, boro-boro, i go-go konciyan.",
+      "cta": "I laabo baa",
+      "safetyNote": "Asuso sino. Hay kaŋ i ga goy bori-bori sina."
+    }
+  }
 }

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Inter, Cormorant_Garamond } from "next/font/google";
+import { Source_Sans_3, Lora } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale, getMessages, getTranslations } from "next-intl/server";
 import { routing, localeDir, type Locale } from "@/lib/i18n/routing";
@@ -13,13 +13,14 @@ import { PublicRouteChrome } from "@/components/layout/public-route-chrome";
 import { RouteContent } from "@/components/layout/route-content";
 import "../globals.css";
 
-const inter = Inter({
+const sourceSans = Source_Sans_3({
   subsets: ["latin"],
   variable: "--font-sans-stack",
   display: "swap",
+  weight: ["300", "400", "600", "700"],
 });
 
-const cormorant = Cormorant_Garamond({
+const lora = Lora({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
@@ -65,7 +66,7 @@ export default async function LocaleLayout({
     <html
   lang={locale}
   dir={dir}
-  className={`${inter.variable} ${cormorant.variable}`}
+  className={`${sourceSans.variable} ${lora.variable}`}
   suppressHydrationWarning
 >
       <body className="flex min-h-dvh flex-col bg-surface font-sans text-ink antialiased">
