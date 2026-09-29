@@ -239,61 +239,106 @@
       "ctaShareStory": "Share Your Story",
       "ctaExploreStories": "Explore Stories",
       "reassurance": "Your story belongs to you. Sharing it is always your choice.",
-      "illustrationAlt": "A watercolor illustration of an anonymous girl writing beneath a flowering tree."
+      "testiLabel": "Anonymous voice",
+      "testiQuote": "I never thought anyone would listen. Here, I felt heard for the first time.",
+      "testiCredit": "Anonymous contributor"
     },
-    "trust": {
-      "items": [
-        "Anonymous by default",
-        "Read by a trained person",
-        "You decide what happens next"
-      ]
+    "name": {
+      "eyebrow": "The name",
+      "titleStart": "In Hausa, ",
+      "titleAccent": "Muriyar Ta",
+      "titleEnd": " means "Her Voice."",
+      "body": "More than a name, it is a promise — that every girl who visits this platform will find a space where her voice matters, her story is heard, and her experience can help shape change."
     },
-    "voices": {
-      "eyebrow": "Voices",
-      "title": "In their own words.",
+    "stats": {
+      "label": "Platform at a glance",
+      "languages": "Languages supported",
+      "stories": "Stories shared",
+      "categories": "Support categories",
+      "storiesEmpty": "—",
+      "categoriesEmpty": "—"
+    },
+    "stories": {
+      "eyebrow": "Stories",
+      "title": "Stories from her life.",
       "cta": "Read all stories",
       "empty": "The first stories will appear here soon."
     },
-    "how": {
-      "eyebrow": "How sharing works",
+    "submitInvite": {
+      "eyebrow": "Share your story",
+      "title": "Your voice deserves to be heard.",
+      "bullets": [
+        "No account or real name required",
+        "Share only what you choose, at your pace",
+        "A trained person reads every story with care",
+        "Nothing is published without your consent"
+      ],
+      "cardEyebrow": "Begin sharing",
+      "cardTitle": "Your story, in your words.",
+      "cardBody": "Whatever you have lived through, there is a space for it here. Anonymous, safe, and always yours.",
+      "cta": "Share your story",
+      "safety": "No account required. Anonymous by default."
+    },
+    "journey": {
+      "eyebrow": "How it works",
       "title": "Your story stays in your hands.",
-      "cta": "How we protect your story",
+      "cta": "Learn how we protect your story",
       "steps": [
         {
           "title": "Write anonymously",
-          "body": "Share only what you choose. No account or name is needed."
+          "body": "Share only what you choose. No account or name is ever required."
         },
         {
-          "title": "A person reads it",
-          "body": "A trained team member reviews it with care and without judgment."
+          "title": "Your story is protected",
+          "body": "We remove identifying details and keep your submission private and secure."
         },
         {
-          "title": "You decide",
-          "body": "Your story stays private unless you choose to share it with the world."
+          "title": "A person reviews it",
+          "body": "A trained team member reads every story with care and without judgment."
+        },
+        {
+          "title": "You decide what happens",
+          "body": "Your story stays private unless you choose to let it reach the world."
+        },
+        {
+          "title": "Stories create change",
+          "body": "Shared voices become awareness, podcasts, research, and advocacy."
         }
       ]
-    },
-    "mission": {
-      "eyebrow": "Our purpose",
-      "title": "Why stories matter.",
-      "body": "Behind every statistic is a person with a story. Muriyar Ta exists so those stories are no longer left unheard — amplifying girls' voices to build awareness, challenge harmful norms, and inform change.",
-      "cta": "Learn about Muriyar Ta"
     },
     "podcast": {
       "eyebrow": "Listen",
       "title": "Stories you can hear.",
       "body": "Anonymous stories, expert voices, and conversations on the topics communities rarely discuss aloud — across Niger and West Africa.",
-      "cta": "Explore the podcast"
+      "cta": "Explore the podcast",
+      "episodesLabel": "Recent episodes",
+      "episodeLabel": "Episode",
+      "minutesLabel": "min",
+      "soonBadge": "Soon",
+      "soon1": "Anonymous Voices — Episode 01",
+      "soon2": "Breaking the Silence — Episode 01",
+      "soon3": "Beyond the Story — Episode 01"
     },
-    "name": {
-      "eyebrow": "The name",
-      "title": "What \"Muriyar Ta\" means.",
-      "body": "Muriyar Ta means \"Her Voice\" in Hausa. More than a name, it is a promise — that every girl who visits this platform will find a space where her voice matters."
+    "resources": {
+      "eyebrow": "Support",
+      "title": "Find help near you.",
+      "cta": "Browse all resources",
+      "pillsLabel": "Browse by category",
+      "note": "All resources are verified by the Muriyar Ta team. Last updated regularly."
     },
-    "impact": {
-      "eyebrow": "Why it matters",
-      "title": "Shared voices can build awareness and inform change.",
-      "pullQuote": "Silence protects perpetrators, not victims. Speaking up is the only way to break the cycle."
+    "insights": {
+      "eyebrow": "Research & Impact",
+      "title": "When many voices speak, patterns become visible.",
+      "body": "As this platform grows, shared stories — with contributor consent — will inform research and advocacy. We are building toward that future carefully and transparently.",
+      "ctaPartner": "Partner with us",
+      "ctaAbout": "Our approach"
+    },
+    "finalCta": {
+      "eyebrow": "Your turn",
+      "title": "Every story that is shared makes the next one easier.",
+      "ctaShare": "Share your story",
+      "ctaExplore": "Explore stories",
+      "safety": "Anonymous. Private. Always your choice."
     },
     "pathways": {
       "discover": "Explore Muriyar Ta",
@@ -311,13 +356,6 @@
           "href": "/partner"
         }
       ]
-    },
-    "submit": {
-      "eyebrow": "Share your story",
-      "title": "Your voice belongs here.",
-      "body": "Whatever you have lived through, your story deserves to be heard. Share it anonymously, at your own pace, in your own words.",
-      "cta": "Share your story",
-      "safetyNote": "No account required. Nothing is published without your consent."
     }
   },
   "about": {

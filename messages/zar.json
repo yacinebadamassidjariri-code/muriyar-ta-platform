@@ -679,59 +679,110 @@
       "reassurance": "I laabo boro ga. I baa goo no, ay zaari.",
       "illustrationAlt": "Aquarelle wayboro mana bore kuro gaa d'a kaa laabo bese."
     },
-    "trust": {
-      "items": [
-        "Bori-bori nga no",
-        "Fo kande doŋ kaŋ a se goyyan",
-        "Ay ga yaamar feere yoo ga woo"
-      ]
+    "testiLabel": "Waybore laabo",
+    "testiQuote": "Si n'a hakiika mo inni hanse. Nda, n'a hanse fo beere doŋ.",
+    "testiCredit": "Waybore kaŋ a tee bori-bori",
+    "scrollLabel": "Laabey kaabu",
+    "name": {
+      "eyebrow": "Tumu",
+      "titleStart": "Hanse ga — ",
+      "titleAccent": "Muriyar Ta",
+      "titleEnd": " — feere bori kaŋ.",
+      "subtext": "Muriyar Ta kaŋ Hausa ga \"Hanse Ga\" — sãsã tumu no, mana alkawari: wayboro kul kaŋ boro woo ga na, hanse ga woo ga d'a boro.",
+      "cta": "Mana iri i laabo bori"
     },
-    "voices": {
-      "eyebrow": "Hanseyan",
+    "stats": {
+      "storiesLabel": "Laabey bori kaŋ",
+      "storiesEmpty": "—",
+      "languagesLabel": "Harsuna",
+      "categoriesLabel": "Ikoy-bonda feere",
+      "categoriesEmpty": "—"
+    },
+    "stories": {
+      "eyebrow": "Laabey",
       "title": "I go-go konciyan.",
       "cta": "Laabey kul kaabu",
-      "empty": "Laabey farsay g'a kaa woo si ciya."
+      "empty": "Laabey farsay g'a kaa woo si ciya.",
+      "readLabel": "Laabo karanta"
     },
-    "how": {
-      "eyebrow": "Laabo baa waawo",
+    "submitInvite": {
+      "eyebrow": "I laabo baa",
+      "title": "I hanse woo ga no.",
+      "body": "Hay kaŋ ay na koy no, i laabo si d'a ma. I baa bori-bori, boro-boro, i go-go konciyan.",
+      "bullets": [
+        "Bori-bori nga no",
+        "Fo kande doŋ kaŋ a se goyyan",
+        "I laabo i ga hãa, i se sanda ay ga hãa",
+        "Ay ga yaamar feere yoo ga woo"
+      ],
+      "cardTitle": "I laabo baa",
+      "cardBody": "Laabey baa si d'a ma. Ay ga yaamar bori-bori nd'a hanseyan.",
+      "cta": "I laabo baa",
+      "safetyNote": "Asuso sino. Hay kaŋ i ga goy bori-bori sina."
+    },
+    "journey": {
+      "eyebrow": "Waawo",
       "title": "I laabo i beri no.",
-      "cta": "Mana iri i laabo bori",
       "steps": [
         {
-          "title": "Bori-bori ga kaa",
-          "body": "Hay kaŋ ay ga hãa no. Asuso goo sino."
+          "num": "01",
+          "title": "I laabo baa",
+          "body": "Hay kaŋ ay ga hãa no, bori-bori, no kul."
         },
         {
+          "num": "02",
           "title": "Fo g'a karanta",
           "body": "Fo kande doŋ g'i laabo karanta hantum nd'a bori-bori."
         },
         {
+          "num": "03",
           "title": "Ay ga yaamar",
           "body": "I laabo bori-bori no, sanda ay ga goy d'i no."
+        },
+        {
+          "num": "04",
+          "title": "Bori-bori ga kaa",
+          "body": "I ga hãa sanda ay ga hãa, bori-bori nd'a bori."
+        },
+        {
+          "num": "05",
+          "title": "Laabey ka maatam",
+          "body": "Laabey bori-bori nd'i-goo nd'Afrîka Yãa hãa goo-goo."
         }
       ]
-    },
-    "mission": {
-      "eyebrow": "Iri feere",
-      "title": "Laabey si feere kaŋ bori.",
-      "body": "Sohõ misal ga, fo ga laabo. Muriyar Ta tun wayboro hanseyan yaamarandi ga, nd'ikoy-bonda nd'a cimi.",
-      "cta": "Muriyar Ta kaabu"
     },
     "podcast": {
       "eyebrow": "Maatam",
       "title": "Laabey ka maatam.",
       "body": "Laabey bori-bori, hadikay hanseyan, nd'i-goo Nijar nd'Afrîka Yãa hãa goo-goo.",
-      "cta": "Podcast kaabu"
+      "cta": "Podcast kaabu",
+      "episodesLabel": "Maatam bori kaŋ",
+      "episodeLabel": "Maatam",
+      "minutesLabel": "miniti",
+      "soonBadge": "KAABU",
+      "soon1": "Laabey bori kaŋ — Nijar",
+      "soon2": "Hanse ga — wayboro laabey",
+      "soon3": "Ikoy-bonda nd'a waawo"
     },
-    "name": {
-      "eyebrow": "Tumu",
-      "title": "\"Muriyar Ta\" me kaa.",
-      "body": "Muriyar Ta kaŋ Hausa ga \"Hanse Ga\" — sãsã tumu no, mana alkawari: wayboro kul kaŋ boro woo ga na, hanse ga woo ga d'a boro."
+    "resources": {
+      "eyebrow": "Ikoy-bonda",
+      "title": "Ikoy-bonda kaabu.",
+      "body": "Ikoy-bonda kaŋ i ga yaamarandi nd'i hanseyan d'i laabey.",
+      "cta": "Ikoy-bonda kul kaabu",
+      "empty": "Ikoy-bonda farsay g'a kaa woo si ciya."
     },
-    "impact": {
+    "insights": {
       "eyebrow": "Feere bori kaŋ",
-      "title": "Hanseyan bã'o ga yaamarandi nd'ikoy-bonda.",
-      "pullQuote": "Yaa-yaa ga bonyan bori, mana wayboreyan sino. Koyne no, yaa kul ka kaa."
+      "title": "Laabey bori kaŋ, feere bori kaŋ.",
+      "body": "Yaa-yaa ga bonyan bori, mana wayboreyan sino. Koyne no, yaa kul ka kaa.",
+      "ctaPartner": "Ortaklık",
+      "ctaAbout": "Muriyar Ta kaabu"
+    },
+    "finalCta": {
+      "eyebrow": "Laabo baa",
+      "title": "I hanse woo ga no.",
+      "ctaShare": "I laabo baa",
+      "ctaExplore": "Laabey kaabu"
     },
     "pathways": {
       "discover": "Muriyar Ta kaabu",
@@ -741,7 +792,7 @@
           "href": "/podcast"
         },
         {
-          "label": "Albarkatu",
+          "label": "Ikoy-bonda",
           "href": "/resources"
         },
         {
@@ -749,13 +800,6 @@
           "href": "/partner"
         }
       ]
-    },
-    "submit": {
-      "eyebrow": "I laabo baa",
-      "title": "I hanse woo ga no.",
-      "body": "Hay kaŋ ay na koy no, i laabo si d'a ma. I baa bori-bori, boro-boro, i go-go konciyan.",
-      "cta": "I laabo baa",
-      "safetyNote": "Asuso sino. Hay kaŋ i ga goy bori-bori sina."
     }
   }
 }

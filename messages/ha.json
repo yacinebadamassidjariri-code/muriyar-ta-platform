@@ -677,23 +677,48 @@
       "ctaShareStory": "Raba Labarinki",
       "ctaExploreStories": "Bincika Labaroni",
       "reassurance": "Labarinkta naki ne. Raba shi ko a'a zaɓinki ne.",
-      "illustrationAlt": "Zanen aquarelle da ke nuna wata yarinya mai asiri tana rubuta ƙarƙashin itace mai fure."
+      "testiLabel": "Murya mai asiri",
+      "testiQuote": "Ban taɓa tunanin wani zai saurare ni ba. Nan, an ji ni karo na farko.",
+      "testiCredit": "Mai ba da gudummawa mai asiri"
     },
-    "trust": {
-      "items": [
-        "Asiri ta asali",
-        "An karanta ta mutum da aka horar",
-        "Ke zaɓa abin da ke faruwa gaba"
-      ]
+    "name": {
+      "eyebrow": "Sunan",
+      "titleStart": "A Hausa, ",
+      "titleAccent": "Muriyar Ta",
+      "titleEnd": " na nufin \"Muryarta\".",
+      "body": "Fiye da suna, alƙawari ne — cewa kowace yarinya da ta ziyarci wannan dandali za ta sami wuri inda muryarta ke da muhimmanci, labarin ta ya ji, kuma kwarewarta na iya taimakawa wajen canjin al'umma."
     },
-    "voices": {
-      "eyebrow": "Muryoyi",
-      "title": "Da kalmominsu da kansu.",
+    "stats": {
+      "label": "Dandali a gajarce",
+      "languages": "Harsunan da ake tallafa musu",
+      "stories": "Labaroni da aka raba",
+      "categories": "Nau'in tallafi",
+      "storiesEmpty": "—",
+      "categoriesEmpty": "—"
+    },
+    "stories": {
+      "eyebrow": "Labaroni",
+      "title": "Labaroni daga rayuwarta.",
       "cta": "Karanta dukkan labaroni",
       "empty": "Labaroni na farko za su bayyana nan ba da daɗewa ba."
     },
-    "how": {
-      "eyebrow": "Yadda raba labari ke aiki",
+    "submitInvite": {
+      "eyebrow": "Raba labarinki",
+      "title": "Muryarki ta cancanci a ji.",
+      "bullets": [
+        "Ba a buƙatar asusun ko sunan ainihi",
+        "Raba kawai abin da kuke so, a ƙimarki",
+        "Mutum da aka horar ya karanta kowace labari da kulawa",
+        "Ba a buga kome ba tare da yardanki ba"
+      ],
+      "cardEyebrow": "Fara",
+      "cardTitle": "Labarinki, da kalmominki.",
+      "cardBody": "Ko dai me kuka zauna ta ciki, akwai wuri gare shi nan. Asiri, aminci, kuma na ki kullum.",
+      "cta": "Raba labarinki",
+      "safety": "Ba a buƙatar asusun. Asiri ta asali."
+    },
+    "journey": {
+      "eyebrow": "Yadda ake aiki",
       "title": "Labarinki yana hannunki.",
       "cta": "Yadda muke kare labarinki",
       "steps": [
@@ -702,36 +727,56 @@
           "body": "Raba kawai abin da kuke so. Ba a buƙatar asusun ko suna."
         },
         {
-          "title": "Mutum ya karanta",
-          "body": "Ɗan ƙungiyar da aka horar ya karanta shi da kulawa kuma ba tare da shari'a ba."
+          "title": "Labarinki yana kariya",
+          "body": "Muna cire bayanan gane kai kuma muna adana maidowarki cikin sirri da aminci."
         },
         {
-          "title": "Ki zaɓa",
+          "title": "Mutum ya karanta",
+          "body": "Ɗan ƙungiyar da aka horar ya karanta kowace labari da kulawa."
+        },
+        {
+          "title": "Ki zaɓa abin da ke faruwa",
           "body": "Labarinki yana sirrin sai ki zaɓi raba shi da duniya."
+        },
+        {
+          "title": "Labaroni na canza al'umma",
+          "body": "Muryoyin da aka raba suna zama wayar da kai, faye, bincike, da kira da gyara."
         }
       ]
-    },
-    "mission": {
-      "eyebrow": "Manufarmu",
-      "title": "Dalilin da labaroni ke da muhimmanci.",
-      "body": "A bayan kowane ƙididdiga akwai mutum mai labari. Muriyar Ta tana nan don wadannan labaroni ba su ƙara zama a rufe ba — ta hanyar ɗaukaka muryoyin 'yan mata don gina wayar da kai da tallafawa canjin al'umma.",
-      "cta": "Koyo game da Muriyar Ta"
     },
     "podcast": {
       "eyebrow": "Saurara",
       "title": "Labaroni da za ku ji.",
       "body": "Shaidu masu asiri, muryoyin gwanaye, da tattaunawa kan batutuwan da al'ummomi ke ƙin tattauna a sarari — a duk faɗin Nijar da Afirka ta Yamma.",
-      "cta": "Bincika faye"
+      "cta": "Bincika faye",
+      "episodesLabel": "Kwanan nan episodes",
+      "episodeLabel": "Episode",
+      "minutesLabel": "min",
+      "soonBadge": "Ba da daɗewa",
+      "soon1": "Muryoyi Masu Asiri — Fasali na 01",
+      "soon2": "Karya Shiru — Fasali na 01",
+      "soon3": "Bayan Labarin — Fasali na 01"
     },
-    "name": {
-      "eyebrow": "Sunan",
-      "title": "Ma'anar \"Muriyar Ta\".",
-      "body": "Muriyar Ta na nufin \"Muryarta\" a Hausa. Fiye da suna, alƙawari ne — cewa kowace yarinya da ta ziyarci wannan dandali za ta sami wuri inda muryarta ke da muhimmanci."
+    "resources": {
+      "eyebrow": "Taimako",
+      "title": "Nemi taimako kusa da ki.",
+      "cta": "Duba dukkan albarkatu",
+      "pillsLabel": "Bincika ta rukuni",
+      "note": "Ƙungiyar Muriyar Ta ta tabbatar da dukkan albarkatu. Ana sabunta su akai-akai."
     },
-    "impact": {
-      "eyebrow": "Dalilin da ya ke da muhimmanci",
-      "title": "Muryoyin da aka raba na iya gina wayar da kai da sanar da canjin al'umma.",
-      "pullQuote": "Shiru na kare masu laifi, ba wadanda aka zalunta ba. Magana shine kadai hanyar karya silsila."
+    "insights": {
+      "eyebrow": "Bincike da Tasiri",
+      "title": "Da yawa muryoyi suka yi magana, ana iya ganin salon al'amura.",
+      "body": "Da dandali ke girma, labaroni da aka raba — da izinin masu ba da gudummawa — za su iya sanar da bincike da kira da gyara. Muna gina wannan nan gaba da kulawa da gaskiya.",
+      "ctaPartner": "Zama abokin tarayya",
+      "ctaAbout": "Tsarinmu"
+    },
+    "finalCta": {
+      "eyebrow": "Juyanki",
+      "title": "Kowane labari da aka raba yana sauƙaƙa na gaba.",
+      "ctaShare": "Raba labarinki",
+      "ctaExplore": "Bincika labaroni",
+      "safety": "Asiri. Sirri. Zaɓinki kullum."
     },
     "pathways": {
       "discover": "Bincika Muriyar Ta",
@@ -749,13 +794,6 @@
           "href": "/partner"
         }
       ]
-    },
-    "submit": {
-      "eyebrow": "Raba labarinki",
-      "title": "Muryarki tana da wurinta nan.",
-      "body": "Ko dai me kuka zauna ta ciki, labarinki ya cancanci a ji. Rabashi cikin asiri, a ƙimar ki, da kalmominki da kanki.",
-      "cta": "Raba labarinki",
-      "safetyNote": "Ba a buƙatar asusun. Ba a buga kome ba tare da yardanki ba."
     }
   }
 }
