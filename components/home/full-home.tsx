@@ -86,13 +86,6 @@ export async function FullHome({ locale }: { locale: Locale }) {
           </div>
         </div>
 
-        {/* Floating testimonial card — bottom-right */}
-        <aside className={styles.heroTestiCard} aria-label={t("hero.testiLabel")}>
-          <span className={styles.heroTestiQuoteMark} aria-hidden="true">{"““"}</span>
-          <p className={styles.heroTestiQuote}>{t("hero.testiQuote")}</p>
-          <span className={styles.heroTestiCredit}>— {t("hero.testiCredit")}</span>
-        </aside>
-
         {/* Scroll indicator — bottom-right */}
         <div className={styles.heroScroll} aria-hidden="true">
           <span className={styles.heroScrollLabel}>SCROLL</span>
@@ -181,6 +174,8 @@ export async function FullHome({ locale }: { locale: Locale }) {
               {stories.map((story) => (
                 <li key={story.story_id} className={styles.storyCard}>
                   {/* Dark editorial gradient — no photography in published_stories_public view */}
+                  {/* Image hook: drop a <Image> or background-image into storyCardBg
+                      to add photography without redesigning the card layout. */}
                   <div className={styles.storyCardBg} aria-hidden="true" />
                   <div className={styles.storyCardContent}>
                     {/* Full-card click overlay */}
@@ -371,23 +366,14 @@ export async function FullHome({ locale }: { locale: Locale }) {
                     </Link>
                   </li>
                 ))
-              : [
-                  t("podcast.soon1"),
-                  t("podcast.soon2"),
-                  t("podcast.soon3"),
-                ].map((label, i) => (
-                  <li key={i} className={styles.episodeRow}>
-                    <span className={styles.episodeNum}>
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <div className={styles.episodeInfo}>
-                      <h3 className={styles.episodeTitle}>{label}</h3>
-                    </div>
-                    <span className={styles.episodeSoonBadge}>
-                      {t("podcast.soonBadge")}
-                    </span>
+              : (
+                  /* No published episodes yet — single intentional coming-soon panel.
+                     Episode rows will appear here automatically once episodes are published. */
+                  <li className={styles.episodeEmptyPanel}>
+                    <span className={styles.episodeEmptyDot} aria-hidden="true">●</span>
+                    <p className={styles.episodeEmptyText}>{t("podcast.episodesComingSoon")}</p>
                   </li>
-                ))}
+                )}
           </ol>
         </div>
       </section>

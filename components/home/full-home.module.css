@@ -1109,21 +1109,32 @@
 .episodeArrow:focus-visible { outline: 2px solid var(--terra-l); outline-offset: 2px; }
 .episodeArrow svg { width: 0.85rem; height: 0.85rem; }
 
-/* "SOON" badge (placeholder episodes) */
-.episodeSoonBadge {
-  display: inline-block;
-  padding: 0.2rem 0.65rem;
-  background: rgba(200,168,122,0.1);
-  border: 1px solid rgba(200,168,122,0.22);
+/* Empty-state panel — shown when zero episodes are published */
+.episodeEmptyPanel {
+  list-style: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 2rem 1.5rem;
+  border-top: 1px solid rgba(200,168,122,0.12);
+  border-bottom: 1px solid rgba(200,168,122,0.12);
+}
+
+.episodeEmptyDot {
   color: var(--sand);
-  border-radius: 1px;
-  font-family: var(--sans);
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  white-space: nowrap;
+  opacity: 0.5;
+  font-size: 0.5rem;
+  margin-top: 0.35rem;
   flex: none;
+}
+
+.episodeEmptyText {
+  font-family: var(--sans);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: rgba(255,255,255,0.5);
+  margin: 0;
+  font-style: italic;
 }
 
 /* ─────────────────────────────────────────────────────────────

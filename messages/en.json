@@ -239,10 +239,7 @@
       "subtitle": "Your voice deserves to be heard. Muriyar Ta means \"Her Voice.\" A space for girls and young women to share what they have lived, felt, questioned, survived, or simply want others to understand.",
       "ctaShareStory": "Share your story",
       "ctaExploreStories": "Read our stories",
-      "reassurance": "You can share your story anonymously",
-      "testiLabel": "Anonymous voice",
-      "testiQuote": "I wanted to tell someone what was happening. Not for help — just for someone to know.",
-      "testiCredit": "Anonymous contributor"
+      "reassurance": "You can share your story anonymously"
     },
     "name": {
       "eyebrow": "WHAT IS MURIYAR TA?",
@@ -327,13 +324,10 @@
       "body": "Conversations with girls and young women — in their own voices, in their own languages. Not interviews about them. Conversations with them.",
       "comingSoon": "First episodes arriving soon — subscribe to be notified",
       "cta": "Subscribe to the podcast",
-      "episodesLabel": "Upcoming episodes",
+      "episodesLabel": "Latest episodes",
       "episodeLabel": "Episode",
       "minutesLabel": "min",
-      "soonBadge": "SOON",
-      "soon1": "When home is not safe",
-      "soon2": "The girls who kept studying",
-      "soon3": "What I wish my mother knew"
+      "episodesComingSoon": "Episodes are on their way — subscribe to be notified when the first one arrives."
     },
     "resources": {
       "eyebrow": "PRACTICAL SUPPORT",

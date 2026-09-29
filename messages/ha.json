@@ -677,10 +677,7 @@
       "subtitle": "Muryarki ta cancanci a ji. Muriyar Ta na nufin \"Muryarta\". Wuri ne don 'yan mata da matasan mata don raba abin da suka rayu, ji, tambaya, tsira, ko kawai suna so wasu su fahimta.",
       "ctaShareStory": "Raba labarinki",
       "ctaExploreStories": "Karanta labaroninmu",
-      "reassurance": "Zaki iya raba labarinki cikin asiri",
-      "testiLabel": "Murya mai asiri",
-      "testiQuote": "Na so in gaya wa wani abin da ke faruwa. Ba don taimako ba — kawai don wani ya san.",
-      "testiCredit": "Mai ba da gudummawa mai asiri"
+      "reassurance": "Zaki iya raba labarinki cikin asiri"
     },
     "name": {
       "eyebrow": "MENENE MURIYAR TA?",
@@ -748,10 +745,7 @@
       "episodesLabel": "Fasaloli masu zuwa",
       "episodeLabel": "Fasali",
       "minutesLabel": "min",
-      "soonBadge": "BA DA DAƊEWA",
-      "soon1": "Lokacin da gida ba shi da aminci",
-      "soon2": "'Yan matan da suka ci gaba da karatun",
-      "soon3": "Abin da na so mahamina ta sani"
+      "episodesComingSoon": "Sassan farko suna zuwa da sauri — yi rajista don samun sanarwa."
     },
     "resources": {
       "eyebrow": "TALLAFI NA AIKI",

@@ -239,10 +239,7 @@
       "subtitle": "Votre voix mérite d'être entendue. Muriyar Ta signifie « Sa Voix ». Un espace pour les filles et les jeunes femmes pour partager ce qu'elles ont vécu, ressenti, questionné, survécu, ou simplement ce qu'elles veulent que les autres comprennent.",
       "ctaShareStory": "Partager mon histoire",
       "ctaExploreStories": "Lire nos histoires",
-      "reassurance": "Vous pouvez partager votre histoire anonymement",
-      "testiLabel": "Voix anonyme",
-      "testiQuote": "Je voulais dire à quelqu'un ce qui se passait. Pas pour de l'aide — juste pour que quelqu'un sache.",
-      "testiCredit": "Contributrice anonyme"
+      "reassurance": "Vous pouvez partager votre histoire anonymement"
     },
     "name": {
       "eyebrow": "QU'EST-CE QUE MURIYAR TA ?",
@@ -310,10 +307,7 @@
       "episodesLabel": "Épisodes à venir",
       "episodeLabel": "Épisode",
       "minutesLabel": "min",
-      "soonBadge": "BIENTÔT",
-      "soon1": "Quand la maison n'est pas sûre",
-      "soon2": "Les filles qui ont continué à étudier",
-      "soon3": "Ce que j'aurais voulu que ma mère sache"
+      "episodesComingSoon": "Les premiers épisodes arrivent bientôt — abonnez-vous pour être notifié dès leur parution."
     },
     "resources": {
       "eyebrow": "SOUTIEN PRATIQUE",

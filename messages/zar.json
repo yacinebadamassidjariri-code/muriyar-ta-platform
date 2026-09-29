@@ -677,10 +677,7 @@
       "subtitle": "I hanse si d'a ma. Muriyar Ta feere bori kaŋ \"Hanse Ga\". Wida woo wayboro nd'a mosone kaŋ i laabo, i hãa, i maahu, i kan, nd'a hay kaŋ i ga hanse borey.",
       "ctaShareStory": "I laabo baa",
       "ctaExploreStories": "Iri laabey karanta",
-      "reassurance": "I laabo bori-bori ga baa",
-      "testiLabel": "Hanse bori-bori",
-      "testiQuote": "N'a hanse fo d'abin da ke faruwa. Taimako sino — fo d'a sani kawai.",
-      "testiCredit": "Waybore kaŋ a tee bori-bori"
+      "reassurance": "I laabo bori-bori ga baa"
     },
     "name": {
       "eyebrow": "MURIYAR TA MANTI?",
@@ -748,10 +745,7 @@
       "episodesLabel": "Maatam masu zuwa",
       "episodeLabel": "Maatam",
       "minutesLabel": "miniti",
-      "soonBadge": "KAABU",
-      "soon1": "Wida si aminci no",
-      "soon2": "Wayboro kaŋ i ci karanta",
-      "soon3": "Hay kaŋ n'a hanse izo ga"
+      "episodesComingSoon": "Maatoŋ feŋ koyne no ga — i jabe ceeci fo i ga hantum."
     },
     "resources": {
       "eyebrow": "IKOY-BONDA",
