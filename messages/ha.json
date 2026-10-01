@@ -557,7 +557,10 @@
     "reports": "Report",
     "about": "About",
     "submit": "Share your story",
-    "contact": "Contact"
+    "contact": "Contact",
+    "tagline": "Her voice",
+    "menu": "Menu",
+    "close": "Close menu"
   },
   "a11y": {
     "skipToContent": "Skip to main content",
@@ -582,7 +585,14 @@
     "contactTitle": "Partner with us",
     "contactBody": "NGOs, researchers, educators, and policymakers are welcome to reach out.",
     "rights": "All rights reserved.",
-    "tagline": "Inspiring advocacy and change through lived experiences."
+    "tagline": "Inspiring advocacy and change through lived experiences.",
+    "groupPlatform": "Platform",
+    "groupOrganization": "Organization",
+    "groupLanguages": "Languages",
+    "groupLegal": "Safety & legal",
+    "partner": "Partner with us",
+    "crisisResources": "Crisis resources",
+    "reportConcern": "Report a concern"
   },
   "errors": {
     "title": "Something went wrong",
@@ -679,10 +689,13 @@
       "eyebrow": "MURIYAR TA · MURYARTA",
       "titleLine1": "Labarinki",
       "titleLine2": "naki ne.",
-      "subtitle": "Muryarki ta cancanci a ji. Muriyar Ta na nufin \"Muryarta\". Wuri ne don 'yan mata da matasan mata don raba abin da suka rayu, ji, tambaya, tsira, ko kawai suna so wasu su fahimta.",
       "ctaShareStory": "Raba labarinki",
       "ctaExploreStories": "Karanta labaroninmu",
-      "reassurance": "Zaki iya raba labarinki cikin asiri"
+      "reassurance": "Zaki iya raba labarinki cikin asiri",
+      "emphasis": "Muryarki ta cancanci a ji.",
+      "intro": "Muriyar Ta na nufin \"Muryarta\". Wuri ne don 'yan mata da matasan mata don raba abin da suka rayu, ji, tambaya, tsira, ko kawai suna so wasu su fahimta.",
+      "quoteLabel": "From a published story",
+      "quoteCta": "Read her story"
     },
     "name": {
       "eyebrow": "MENENE MURIYAR TA?",
@@ -691,15 +704,21 @@
       "titleLine1End": " na nufin",
       "titleLine2": "\"Muryarta\".",
       "body": "Wannan wuri ne da aka ƙirƙira don 'yan mata da matasan mata — musamman a Nijar, da a duk faɗin Afirka ta Yamma — don magana da kalmominsu. Game da ilimi, aure, iyali, asali, mafarkai, wariya, da gaskiyar rayuwa ta girma a matsayin mata.",
-      "body2": "Labaroni da aka raba nan ana kula da su da kulawa kuma ana bugawa da yarda. Za su iya zama fayafai, abun ciki na wayar da kai, da shaidun da masu fafutuka, masu bincike, da masu tsara manufofi za su iya amfani da su — koyaushe an cire sunayen, koyaushe ana kula da su da girmamawa."
-    },
-    "stats": {
-      "label": "Dandali a gajarce",
-      "languages": "Harsuna",
-      "stories": "Labaroni da aka buga",
-      "categories": "Batutuwan da aka rufe",
-      "storiesEmpty": "—",
-      "categoriesEmpty": "—"
+      "body2": "Labaroni da aka raba nan ana kula da su da kulawa kuma ana bugawa da yarda. Za su iya zama fayafai, abun ciki na wayar da kai, da shaidun da masu fafutuka, masu bincike, da masu tsara manufofi za su iya amfani da su — koyaushe an cire sunayen, koyaushe ana kula da su da girmamawa.",
+      "pillars": [
+        {
+          "title": "A place to belong",
+          "body": "Written for girls and young women, in the languages they live in."
+        },
+        {
+          "title": "Your own words",
+          "body": "No script and no perfect story. Only what you choose to say."
+        },
+        {
+          "title": "Heard with dignity",
+          "body": "Every story is read by a person and handled with care and consent."
+        }
+      ]
     },
     "stories": {
       "eyebrow": "KALMOMIN SU",
@@ -707,7 +726,9 @@
       "titleItalic": "rayuwarta",
       "cta": "Karanta dukkan labaroni",
       "readCta": "Karanta labarinta",
-      "empty": "Labaroni na farko za su bayyana nan ba da daɗewa ba."
+      "empty": "Labaroni na farko za su bayyana nan ba da daɗewa ba.",
+      "languageLabel": "Language",
+      "emptyCta": "Be among the first to share"
     },
     "submitInvite": {
       "eyebrow": "LABARINKI MA",
@@ -722,11 +743,12 @@
         "Wannan ba sabis na rikici ko gaggawa ba ne."
       ],
       "cardEyebrow": "FARA NAN",
-      "cardTitle": "\"Duk abin da na raba na mine ne.\"",
-      "cardBody": "Labarinki naki ne. Ki zaɓi abin da muke iya yi da shi — kawai da yardarki za a buga ko raba kowane ɓangare.",
+      "cardTitle": "You decide what to share.",
+      "cardBody": "Nothing is published without your consent. Every story is read by a person before it appears, and identifying details can be removed to protect you.",
       "cta": "Raba labarinki",
       "cardLanguages": "Akwai a Hausa · Français · English · Zarma",
-      "safety": "Ba a buƙatar asusun. Asiri ta asali."
+      "crisisNote": "In danger right now? This platform cannot respond to emergencies.",
+      "crisisLink": "Find crisis support"
     },
     "journey": {
       "eyebrow": "TAFIYAR LABARI",
@@ -735,42 +757,43 @@
       "steps": [
         {
           "num": "1",
-          "title": "Muryarki",
-          "body": "Ki raba kwarewanki da kalmominki"
+          "title": "Your voice",
+          "body": "Share an experience in your own words."
         },
         {
           "num": "2",
-          "title": "Labarinta",
-          "body": "An bincika, an gyara da kulawa, an buga da yardarki"
+          "title": "Her story",
+          "body": "Reviewed with care and published with consent."
         },
         {
           "num": "3",
-          "title": "Tattaunawa",
-          "body": "Fayafai da tattaunawar al'umma da muryoyi na gaske"
+          "title": "Conversation",
+          "body": "Stories can inform podcasts and conversations."
         },
         {
           "num": "4",
-          "title": "Batutuwa da aka raba",
-          "body": "Salon muryoyi da yawa, an cire sunayen kuma an tattara"
+          "title": "Shared themes",
+          "body": "Recurring patterns can be examined using de-identified information."
         },
         {
           "num": "5",
-          "title": "Kira da Bincike",
-          "body": "Shaidar da za ta iya tsara manufofi da fahimta"
+          "title": "Advocacy & Research",
+          "body": "Insights can contribute to research, programs, advocacy and policy conversations."
         }
-      ]
+      ],
+      "note": "This is the path a story can take, always with consent. Not every story travels every step."
     },
     "podcast": {
       "eyebrow": "SAURARI MURYARTA",
       "titleLine1": "Muryarta",
       "titleLine2": "Faye",
       "body": "Tattaunawa da 'yan mata da matasan mata — da muryoyinsu, da harsunansu. Ba tambayoyi game da su ba. Tattaunawa tare da su.",
-      "comingSoon": "Farkon fasaloli suna zuwa — yi rajista don a sanar da ki",
-      "cta": "Yi rajistan faye",
+      "comingSoon": "Coming soon",
+      "cta": "Visit the podcast",
       "episodesLabel": "Fasaloli masu zuwa",
       "episodeLabel": "Fasali",
       "minutesLabel": "min",
-      "episodesComingSoon": "Sassan farko suna zuwa da sauri — yi rajista don samun sanarwa."
+      "episodesComingSoon": "The first episodes are being prepared. When they are published, they will appear here."
     },
     "resources": {
       "eyebrow": "TALLAFI NA AIKI",
@@ -779,18 +802,23 @@
       "body": "Bayani da tallafi da aka tsara a kusa da batutuwan da 'yan mata ke fuskanta da gaske — ba a tsara su bisa nau'ikan cibiyoyi ba.",
       "cta": "Duba dukkan albarkatu",
       "pillsLabel": "Bincika ta rukuni",
-      "note": "Ƙungiyar Muriyar Ta ta tabbatar da dukkan albarkatu."
+      "emptyBody": "Support listings are being verified and will appear here."
     },
     "insights": {
       "eyebrow": "DON ABOKAN TARAYYA DA MASU BINCIKE",
       "titleStart": "Da yawa muryoyi suka yi magana, ",
       "titleItalic": "salon al'amura suna bayyana.",
-      "body": "Muriyar Ta na gano batutuwan da ke maimaitawa a cikin labaroni mara sunayen kuma tana canza su zuwa taƙaitattun bayanai na batutuwa — shaidun da za su iya sanar da bincike, shirye-shiryen NGO, da tattaunawar manufofi.",
+      "body": "Over time, recurring themes across de-identified stories can be studied together — to help researchers, organizations and decision-makers understand what girls are living, without exposing anyone.",
       "dataNote": "Ba a taba bayyana asalin mutane ba. Kowace taƙaitaccen bayanai an gina shi bisa salon da aka tattara, ba lissafin da za a iya dangantawa ba.",
-      "cardComingSoon": "Taƙaitattun bayanai masu zuwa",
-      "cardComingSoonBody": "Da labaroni ke tara da yardar masu ba da gudummawa, za mu buga taƙaitattun bayanai na batutuwa mara sunayen nan. Babu asali. Babu lissafin da za a iya dangantawa. Salonai kawai.",
-      "ctaInsights": "Duba taƙaitattun bayanai",
-      "ctaPartner": "Zama abokin tarayya"
+      "cardComingSoonBody": "A first brief will only be published once enough stories have been shared with consent. No identities. No attributable accounts. Only patterns.",
+      "ctaPartner": "Zama abokin tarayya",
+      "cardLabel": "Pilot Insights Brief",
+      "cardStatus": "In preparation",
+      "principles": [
+        "De-identified before analysis",
+        "Aggregated, never individual",
+        "Built only on consented stories"
+      ]
     },
     "finalCta": {
       "titleStart": "Ko menene labarinki, ",

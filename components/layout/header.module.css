@@ -1,0 +1,336 @@
+/* Muriyar Ta — public masthead (ivory). Admin uses its own shell. */
+
+.masthead {
+  position: relative;
+  z-index: 50;
+  background: var(--mt-ivory);
+  color: var(--mt-charcoal);
+  border-bottom: 1px solid rgb(42 34 24 / 0.1);
+}
+
+.mastheadInner {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: var(--mt-content-shell);
+  height: var(--mt-header-height);
+  margin-inline: auto;
+  padding-inline: var(--mt-gutter);
+}
+
+/* ── Brand lockup ─────────────────────────────────────────── */
+.brand {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--mt-charcoal);
+  text-decoration: none;
+}
+
+.brandMark {
+  width: 1.55rem;
+  height: 1.55rem;
+  color: var(--mt-terracotta);
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.brandName {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.32rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.brandTagline {
+  margin-top: 0.3rem;
+  color: var(--mt-terracotta);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+/* ── Desktop navigation ───────────────────────────────────── */
+.desktopNav {
+  display: none;
+}
+
+@media (min-width: 64rem) {
+  .desktopNav {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    gap: clamp(1.5rem, 2.6vw, 2.5rem);
+  }
+}
+
+.navLink {
+  position: relative;
+  padding-block: 0.4rem;
+  color: var(--mt-charcoal-soft);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--mt-motion) ease;
+}
+
+.navLink::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -0.1rem;
+  height: 1.5px;
+  background: var(--mt-terracotta);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--mt-motion) ease;
+}
+
+.navLink:hover,
+.navLink[aria-current="page"] {
+  color: var(--mt-charcoal);
+}
+
+.navLink:hover::after,
+.navLink[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+/* ── Right cluster ────────────────────────────────────────── */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-inline-start: auto;
+}
+
+@media (min-width: 64rem) {
+  .actions {
+    margin-inline-start: 0;
+  }
+}
+
+.desktopOnly {
+  display: none;
+}
+
+@media (min-width: 64rem) {
+  .desktopOnly {
+    display: block;
+  }
+}
+
+.crisisLink {
+  display: none;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--mt-charcoal-soft);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--mt-motion) ease;
+}
+
+.crisisLink svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  color: var(--mt-terracotta);
+}
+
+.crisisLink:hover,
+.crisisLink[aria-current="page"] {
+  color: var(--mt-terracotta);
+}
+
+@media (min-width: 80rem) {
+  .crisisLink {
+    display: inline-flex;
+  }
+}
+
+.ctaButton {
+  display: none;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: 999px;
+  background: var(--mt-terracotta);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background var(--mt-motion) ease;
+}
+
+.ctaButton:hover {
+  background: var(--mt-terracotta-hover);
+}
+
+@media (min-width: 40rem) {
+  .ctaButton {
+    display: inline-flex;
+  }
+}
+
+.menuButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid rgb(42 34 24 / 0.16);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mt-charcoal);
+  cursor: pointer;
+}
+
+.menuButton svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+@media (min-width: 64rem) {
+  .menuButton {
+    display: none;
+  }
+}
+
+/* ── Mobile sheet ─────────────────────────────────────────── */
+.mobilePanel {
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  z-index: 40;
+  max-height: calc(100dvh - var(--mt-header-height));
+  overflow-y: auto;
+  background: var(--mt-ivory);
+  border-bottom: 1px solid rgb(42 34 24 / 0.12);
+  box-shadow: 0 24px 40px -24px rgb(42 34 24 / 0.35);
+  visibility: hidden;
+  opacity: 0;
+  clip-path: inset(0 0 100% 0);
+  pointer-events: none;
+  transition:
+    opacity 160ms ease-out,
+    clip-path 220ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    visibility 0s linear 220ms;
+}
+
+.mobilePanelOpen {
+  visibility: visible;
+  opacity: 1;
+  clip-path: inset(0);
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+
+@media (min-width: 64rem) {
+  .mobilePanel {
+    display: none;
+  }
+}
+
+.mobileNav {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem var(--mt-gutter) 0;
+}
+
+.mobileLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 3.5rem;
+  border-bottom: 1px solid rgb(42 34 24 / 0.1);
+  color: var(--mt-charcoal);
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.45rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.mobileLink svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--mt-sand);
+}
+
+.mobileLink[aria-current="page"] {
+  color: var(--mt-terracotta);
+}
+
+.mobileFooter {
+  display: grid;
+  gap: 1.25rem;
+  padding: 1.5rem var(--mt-gutter) 2rem;
+}
+
+.mobileCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  border-radius: 999px;
+  background: var(--mt-terracotta);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.mobileCta svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.mobileMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.mobileCrisis {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--mt-terracotta);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.mobileCrisis svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Focus — terracotta ring on ivory meets contrast. */
+.brand:focus-visible,
+.navLink:focus-visible,
+.crisisLink:focus-visible,
+.ctaButton:focus-visible,
+.menuButton:focus-visible,
+.mobileLink:focus-visible,
+.mobileCta:focus-visible,
+.mobileCrisis:focus-visible {
+  outline: 2px solid var(--mt-terracotta);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobilePanel,
+  .mobilePanelOpen,
+  .navLink::after {
+    transition: none;
+  }
+}

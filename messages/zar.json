@@ -557,7 +557,10 @@
     "reports": "Report",
     "about": "About",
     "submit": "Share your story",
-    "contact": "Contact"
+    "contact": "Contact",
+    "tagline": "Her voice",
+    "menu": "Menu",
+    "close": "Close menu"
   },
   "a11y": {
     "skipToContent": "Skip to main content",
@@ -582,7 +585,14 @@
     "contactTitle": "Partner with us",
     "contactBody": "NGOs, researchers, educators, and policymakers are welcome to reach out.",
     "rights": "All rights reserved.",
-    "tagline": "Inspiring advocacy and change through lived experiences."
+    "tagline": "Inspiring advocacy and change through lived experiences.",
+    "groupPlatform": "Platform",
+    "groupOrganization": "Organization",
+    "groupLanguages": "Languages",
+    "groupLegal": "Safety & legal",
+    "partner": "Partner with us",
+    "crisisResources": "Crisis resources",
+    "reportConcern": "Report a concern"
   },
   "errors": {
     "title": "Something went wrong",
@@ -679,10 +689,13 @@
       "eyebrow": "MURIYAR TA · HANSE GA",
       "titleLine1": "I laabo",
       "titleLine2": "boro ga.",
-      "subtitle": "I hanse si d'a ma. Muriyar Ta feere bori kaŋ \"Hanse Ga\". Wida woo wayboro nd'a mosone kaŋ i laabo, i hãa, i maahu, i kan, nd'a hay kaŋ i ga hanse borey.",
       "ctaShareStory": "I laabo baa",
       "ctaExploreStories": "Iri laabey karanta",
-      "reassurance": "I laabo bori-bori ga baa"
+      "reassurance": "I laabo bori-bori ga baa",
+      "emphasis": "I hanse si d'a ma.",
+      "intro": "Muriyar Ta feere bori kaŋ \"Hanse Ga\". Wida woo wayboro nd'a mosone kaŋ i laabo, i hãa, i maahu, i kan, nd'a hay kaŋ i ga hanse borey.",
+      "quoteLabel": "From a published story",
+      "quoteCta": "Read her story"
     },
     "name": {
       "eyebrow": "MURIYAR TA MANTI?",
@@ -691,15 +704,21 @@
       "titleLine1End": " feere bori kaŋ",
       "titleLine2": "\"Hanse Ga\".",
       "body": "Wida woo kaŋ wayboro nd'a mosone — goo-goo Nijar nd'Afrîka Yãa hãa — i go-go konciyan. Ilmu, aure, izo, asali, taghatiyan, ikoy-bonda, nd'a go-go konciyan wayboro se.",
-      "body2": "Laabey bori kaŋ woo ga i karanta hantum nd'a bori nd'a yarda. I si boro podcast, yaamarandi, nd'a cimi kaŋ i ga yaamarandi — bori-bori kul, hantum kul."
-    },
-    "stats": {
-      "label": "Dandali a gajarce",
-      "languages": "Harsuna",
-      "stories": "Laabey bori kaŋ",
-      "categories": "Ikoy-bonda feere",
-      "storiesEmpty": "—",
-      "categoriesEmpty": "—"
+      "body2": "Laabey bori kaŋ woo ga i karanta hantum nd'a bori nd'a yarda. I si boro podcast, yaamarandi, nd'a cimi kaŋ i ga yaamarandi — bori-bori kul, hantum kul.",
+      "pillars": [
+        {
+          "title": "A place to belong",
+          "body": "Written for girls and young women, in the languages they live in."
+        },
+        {
+          "title": "Your own words",
+          "body": "No script and no perfect story. Only what you choose to say."
+        },
+        {
+          "title": "Heard with dignity",
+          "body": "Every story is read by a person and handled with care and consent."
+        }
+      ]
     },
     "stories": {
       "eyebrow": "I KONCIYAN",
@@ -707,7 +726,9 @@
       "titleItalic": "i go-go",
       "cta": "Laabey kul kaabu",
       "readCta": "I laabo karanta",
-      "empty": "Laabey farsay g'a kaa woo si ciya."
+      "empty": "Laabey farsay g'a kaa woo si ciya.",
+      "languageLabel": "Language",
+      "emptyCta": "Be among the first to share"
     },
     "submitInvite": {
       "eyebrow": "I LAABO MA",
@@ -722,11 +743,12 @@
         "Woo si sabis rikici kaa."
       ],
       "cardEyebrow": "NDA FARA",
-      "cardTitle": "\"Hay kaŋ ay ga baa boro ga.\"",
-      "cardBody": "I laabo boro ga. I zaari hay kaŋ i ga iya goy — yarda nd'i ga bori kande.",
+      "cardTitle": "You decide what to share.",
+      "cardBody": "Nothing is published without your consent. Every story is read by a person before it appears, and identifying details can be removed to protect you.",
       "cta": "I laabo baa",
       "cardLanguages": "Hausa · Français · English · Zarma ga",
-      "safety": "Asuso sino. Bori-bori ta asali."
+      "crisisNote": "In danger right now? This platform cannot respond to emergencies.",
+      "crisisLink": "Find crisis support"
     },
     "journey": {
       "eyebrow": "LAABO TAFIYA",
@@ -735,42 +757,43 @@
       "steps": [
         {
           "num": "1",
-          "title": "I hanse",
-          "body": "I laabo i go-go konciyan nd'i"
+          "title": "Your voice",
+          "body": "Share an experience in your own words."
         },
         {
           "num": "2",
-          "title": "I laabo",
-          "body": "I karanta, i gyara hantum, i bori nd'i yarda"
+          "title": "Her story",
+          "body": "Reviewed with care and published with consent."
         },
         {
           "num": "3",
-          "title": "Maatam",
-          "body": "Podcast nd'i-goo maatam nd'a hanse gaaskiyan"
+          "title": "Conversation",
+          "body": "Stories can inform podcasts and conversations."
         },
         {
           "num": "4",
-          "title": "Ikoy-bonda",
-          "body": "Hanse bori-bori nd'a waawo, bori-bori nd'a tatara"
+          "title": "Shared themes",
+          "body": "Recurring patterns can be examined using de-identified information."
         },
         {
           "num": "5",
-          "title": "Kira nd'Cimi",
-          "body": "Cimi kaŋ si boro maana-maana nd'a hãa"
+          "title": "Advocacy & Research",
+          "body": "Insights can contribute to research, programs, advocacy and policy conversations."
         }
-      ]
+      ],
+      "note": "This is the path a story can take, always with consent. Not every story travels every step."
     },
     "podcast": {
       "eyebrow": "HANSE GA MAATAM",
       "titleLine1": "Hanse Ga",
       "titleLine2": "Podcast",
       "body": "Maatam nd'a wayboro nd'a mosone — i hanseyan ga, i harsuna ga. Tambaya i se sino. Maatam nd'i.",
-      "comingSoon": "Maatam farsay g'a kaa — bori-bori baa d'a sanar",
-      "cta": "Podcast bori-bori baa",
+      "comingSoon": "Coming soon",
+      "cta": "Visit the podcast",
       "episodesLabel": "Maatam masu zuwa",
       "episodeLabel": "Maatam",
       "minutesLabel": "miniti",
-      "episodesComingSoon": "Maatoŋ feŋ koyne no ga — i jabe ceeci fo i ga hantum."
+      "episodesComingSoon": "The first episodes are being prepared. When they are published, they will appear here."
     },
     "resources": {
       "eyebrow": "IKOY-BONDA",
@@ -779,18 +802,23 @@
       "body": "Bayani nd'a ikoy-bonda kaŋ i tatara wayboro konciyan hãa — mana cibiyoyi nau'i hãa.",
       "cta": "Ikoy-bonda kul kaabu",
       "pillsLabel": "Ikoy-bonda feere kaabu",
-      "note": "Ƙungiyar Muriyar Ta ta tabbatar da ikoy-bonda kul."
+      "emptyBody": "Support listings are being verified and will appear here."
     },
     "insights": {
       "eyebrow": "ORTAKLAR ND'A CIMI",
       "titleStart": "Hanse bori kaŋ, ",
       "titleItalic": "feere bori kaŋ.",
-      "body": "Muriyar Ta ga laabey bori-bori feere kaabu nd'a taghatiyan ga bori — cimi kaŋ si boro cimi, NGO, nd'a maana-maana.",
+      "body": "Over time, recurring themes across de-identified stories can be studied together — to help researchers, organizations and decision-makers understand what girls are living, without exposing anyone.",
       "dataNote": "Tumu feere si bayyana. Cimi kul bori-bori tatara hãa — lissafi bori-bori sino.",
-      "cardComingSoon": "Taƙaitattun cimi masu zuwa",
-      "cardComingSoonBody": "Laabey ka tatara nd'a yarda, iri ga bori taghatiyan bori-bori. Tumu sino. Lissafi sino. Feere kawai.",
-      "ctaInsights": "Cimi kaabu",
-      "ctaPartner": "Ortaklık baa"
+      "cardComingSoonBody": "A first brief will only be published once enough stories have been shared with consent. No identities. No attributable accounts. Only patterns.",
+      "ctaPartner": "Ortaklık baa",
+      "cardLabel": "Pilot Insights Brief",
+      "cardStatus": "In preparation",
+      "principles": [
+        "De-identified before analysis",
+        "Aggregated, never individual",
+        "Built only on consented stories"
+      ]
     },
     "finalCta": {
       "titleStart": "I laabo manti, ",

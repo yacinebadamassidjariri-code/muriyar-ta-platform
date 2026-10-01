@@ -24,6 +24,17 @@
   --mt-indigo: #2C3A6B;
   --mt-indigo-deep: #1E2A50;
   --mt-reassurance: #4f8b79;
+
+  /* Approved Figma direction — editorial homepage + shared public chrome. */
+  --mt-ivory: #FAF7F0;
+  --mt-ivory-deep: #F2EBDD;
+  --mt-terracotta: #B8512E;
+  --mt-terracotta-hover: #9E4224;
+  --mt-terracotta-light: #E08A66;
+  --mt-charcoal: #2A2218;
+  --mt-charcoal-soft: #5E5246;
+  --mt-charcoal-deep: #1D170F;
+  --mt-header-height: 72px;
   --mt-divider: rgb(23 56 75 / 18%);
   --mt-divider-soft: rgb(23 56 75 / 9%);
   --mt-divider-dark: rgb(255 255 255 / 10%);
@@ -65,6 +76,11 @@
   --color-mt-rust-hover: var(--mt-rust-hover);
   --color-mt-rust-bright: var(--mt-rust-bright);
   --color-mt-ink: var(--mt-ink);
+  --color-mt-ivory: var(--mt-ivory);
+  --color-mt-terracotta: var(--mt-terracotta);
+  --color-mt-charcoal: var(--mt-charcoal);
+  --color-mt-indigo: var(--mt-indigo);
+  --color-mt-sand: var(--mt-sand);
   /* =================================================================
    * Legacy editorial tokens — retained temporarily for internal pages that
    * have not yet migrated to the approved Muriyar Ta identity.
