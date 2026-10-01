@@ -236,10 +236,13 @@
       "eyebrow": "MURIYAR TA · HER VOICE",
       "titleLine1": "Your story",
       "titleLine2": "belongs to you.",
-      "subtitle": "Your voice deserves to be heard. Muriyar Ta means \"Her Voice.\" A space for girls and young women to share what they have lived, felt, questioned, survived, or simply want others to understand.",
       "ctaShareStory": "Share your story",
       "ctaExploreStories": "Read our stories",
-      "reassurance": "You can share your story anonymously"
+      "reassurance": "You can share your story anonymously.",
+      "emphasis": "Your voice deserves to be heard.",
+      "intro": "Muriyar Ta means “Her Voice.” A space for girls and young women to share what they have lived, felt, questioned, survived, or simply want others to understand.",
+      "quoteLabel": "From a published story",
+      "quoteCta": "Read her story"
     },
     "name": {
       "eyebrow": "WHAT IS MURIYAR TA?",
@@ -248,15 +251,21 @@
       "titleLine1End": " means",
       "titleLine2": "\"Her Voice.\"",
       "body": "This is a space created for girls and young women — primarily in Niger, and across West Africa — to speak in their own words. About education, marriage, family, identity, dreams, discrimination, and the quiet realities of growing up female.",
-      "body2": "The stories shared here are moderated with care and published with consent. They can become podcasts, awareness content, and evidence that advocates, researchers, and policymakers can use — always de-identified, always respectfully handled."
-    },
-    "stats": {
-      "label": "Platform at a glance",
-      "languages": "Languages",
-      "stories": "Stories published",
-      "categories": "Themes covered",
-      "storiesEmpty": "—",
-      "categoriesEmpty": "—"
+      "body2": "The stories shared here are moderated with care and published with consent. They can become podcasts, awareness content, and evidence that advocates, researchers, and policymakers can use — always de-identified, always respectfully handled.",
+      "pillars": [
+        {
+          "title": "A place to belong",
+          "body": "Written for girls and young women, in the languages they live in."
+        },
+        {
+          "title": "Your own words",
+          "body": "No script and no perfect story. Only what you choose to say."
+        },
+        {
+          "title": "Heard with dignity",
+          "body": "Every story is read by a person and handled with care and consent."
+        }
+      ]
     },
     "stories": {
       "eyebrow": "THEIR WORDS",
@@ -264,7 +273,9 @@
       "titleItalic": "her life",
       "cta": "Read all stories",
       "readCta": "Read her story",
-      "empty": "The first stories will appear here soon."
+      "empty": "The first stories will appear here soon.",
+      "languageLabel": "Language",
+      "emptyCta": "Be among the first to share"
     },
     "submitInvite": {
       "eyebrow": "YOUR STORY TOO",
@@ -279,11 +290,12 @@
         "This is not a crisis or emergency service."
       ],
       "cardEyebrow": "START HERE",
-      "cardTitle": "\"Whatever I share belongs to me.\"",
-      "cardBody": "Your story stays yours. You decide what we can do with it — only with your consent will any part of it be published or shared.",
+      "cardTitle": "You decide what to share.",
+      "cardBody": "Nothing is published without your consent. Every story is read by a person before it appears, and identifying details can be removed to protect you.",
       "cta": "Share your story",
       "cardLanguages": "Available in Hausa · Français · English · Zarma",
-      "safety": "No account required. Anonymous by default."
+      "crisisNote": "In danger right now? This platform cannot respond to emergencies.",
+      "crisisLink": "Find crisis support"
     },
     "journey": {
       "eyebrow": "THE JOURNEY OF A STORY",
@@ -293,41 +305,42 @@
         {
           "num": "1",
           "title": "Your voice",
-          "body": "You share your experience in your own words"
+          "body": "Share an experience in your own words."
         },
         {
           "num": "2",
           "title": "Her story",
-          "body": "Reviewed, edited with care, published with your consent"
+          "body": "Reviewed with care and published with consent."
         },
         {
           "num": "3",
           "title": "Conversation",
-          "body": "Podcasts and community discussions with real voices"
+          "body": "Stories can inform podcasts and conversations."
         },
         {
           "num": "4",
           "title": "Shared themes",
-          "body": "Patterns from many voices, de-identified and aggregated"
+          "body": "Recurring patterns can be examined using de-identified information."
         },
         {
           "num": "5",
           "title": "Advocacy & Research",
-          "body": "Evidence that can shape policy, programs, and understanding"
+          "body": "Insights can contribute to research, programs, advocacy and policy conversations."
         }
-      ]
+      ],
+      "note": "This is the path a story can take, always with consent. Not every story travels every step."
     },
     "podcast": {
       "eyebrow": "LISTEN TO HER VOICE",
       "titleLine1": "Her Voice",
       "titleLine2": "Podcast",
-      "body": "Conversations with girls and young women — in their own voices, in their own languages. Not interviews about them. Conversations with them.",
-      "comingSoon": "First episodes arriving soon — subscribe to be notified",
-      "cta": "Subscribe to the podcast",
+      "body": "Conversations with girls and young women — in their own voices, in their own languages.",
+      "comingSoon": "Coming soon",
+      "cta": "Visit the podcast",
       "episodesLabel": "Latest episodes",
       "episodeLabel": "Episode",
       "minutesLabel": "min",
-      "episodesComingSoon": "Episodes are on their way — subscribe to be notified when the first one arrives."
+      "episodesComingSoon": "The first episodes are being prepared. When they are published, they will appear here."
     },
     "resources": {
       "eyebrow": "PRACTICAL SUPPORT",
@@ -336,18 +349,23 @@
       "body": "Information and support organized around the themes girls actually encounter — not organized around institutional categories.",
       "cta": "Browse all resources",
       "pillsLabel": "Browse by category",
-      "note": "All resources are verified by the Muriyar Ta team."
+      "emptyBody": "Support listings are being verified and will appear here."
     },
     "insights": {
       "eyebrow": "FOR PARTNERS & RESEARCHERS",
       "titleStart": "When many voices speak, ",
       "titleItalic": "patterns become visible.",
-      "body": "Muriyar Ta identifies recurring themes across de-identified stories and transforms them into thematic insights briefs — evidence that can inform research, NGO programming, and policy conversations.",
+      "body": "Over time, recurring themes across de-identified stories can be studied together — to help researchers, organizations and decision-makers understand what girls are living, without exposing anyone.",
       "dataNote": "Individual identities are never exposed. Every brief is built on aggregated patterns, not attributable accounts.",
-      "cardComingSoon": "Insights briefs coming soon",
-      "cardComingSoonBody": "As stories accumulate with contributor consent, we will publish anonymised thematic briefs here. No identities. No attributable accounts. Only patterns.",
-      "ctaInsights": "View insights briefs",
-      "ctaPartner": "Partner with us"
+      "cardComingSoonBody": "A first brief will only be published once enough stories have been shared with consent. No identities. No attributable accounts. Only patterns.",
+      "ctaPartner": "Partner with us",
+      "cardLabel": "Pilot Insights Brief",
+      "cardStatus": "In preparation",
+      "principles": [
+        "De-identified before analysis",
+        "Aggregated, never individual",
+        "Built only on consented stories"
+      ]
     },
     "finalCta": {
       "titleStart": "Whatever your story is, ",
@@ -685,7 +703,10 @@
     "reports": "Report",
     "about": "About",
     "submit": "Share your story",
-    "contact": "Contact"
+    "contact": "Contact",
+    "tagline": "Her voice",
+    "menu": "Menu",
+    "close": "Close menu"
   },
   "a11y": {
     "skipToContent": "Skip to main content",
@@ -710,7 +731,14 @@
     "contactTitle": "Partner with us",
     "contactBody": "NGOs, researchers, educators, and policymakers are welcome to reach out.",
     "rights": "All rights reserved.",
-    "tagline": "Inspiring advocacy and change through lived experiences."
+    "tagline": "Inspiring advocacy and change through lived experiences.",
+    "groupPlatform": "Platform",
+    "groupOrganization": "Organization",
+    "groupLanguages": "Languages",
+    "groupLegal": "Safety & legal",
+    "partner": "Partner with us",
+    "crisisResources": "Crisis resources",
+    "reportConcern": "Report a concern"
   },
   "errors": {
     "title": "Something went wrong",

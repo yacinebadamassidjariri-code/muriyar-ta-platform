@@ -1,68 +1,69 @@
-import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/i18n/navigation";
 import { footerNav } from "@/lib/constants/navigation";
 import { isPrelaunchMode } from "@/lib/config/prelaunch";
-import { LocaleSwitcher } from "./locale-switcher";
+import { AgadezBand, AgadezMark } from "@/components/brand/agadez";
+import { FooterLanguages } from "./footer-languages";
+import styles from "./footer.module.css";
 
-function FooterLink({ href, children }: { href: string; children: ReactNode }) {
-  return (
-    <Link
-      href={href}
-      className="text-sm text-[var(--mt-text-on-dark-muted)] transition-colors hover:text-[var(--mt-text-on-dark)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--mt-focus-color)]"
-    >
-      {children}
-    </Link>
-  );
-}
+type FooterItem = { key: string; href: string; footerKey?: boolean };
+
+// Pre-launch keeps the reduced public surface it had before.
+const PRELAUNCH_HREFS = new Set(["/resources", "/about", "/resources/crisis"]);
 
 export function Footer() {
   const t = useTranslations("footer");
   const tn = useTranslations("nav");
-  const tc = useTranslations("crisis");
   const year = new Date().getFullYear();
   const prelaunch = isPrelaunchMode();
-  const links = prelaunch
-    ? footerNav.filter(({ href }) => ["/resources", "/about"].includes(href))
-    : footerNav.filter(({ href }) => !["/report", "/contact"].includes(href));
+
+  const visible = (items: readonly FooterItem[]) =>
+    prelaunch ? items.filter((i) => PRELAUNCH_HREFS.has(i.href)) : items;
+  const label = (i: FooterItem) => (i.footerKey ? t(i.key) : tn(i.key));
+
+  const groups = [
+    { id: "platform", title: t("groupPlatform"), items: visible(footerNav.platform) },
+    { id: "organization", title: t("groupOrganization"), items: visible(footerNav.organization) },
+    { id: "legal", title: t("groupLegal"), items: visible(footerNav.legal) },
+  ].filter((g) => g.items.length > 0);
 
   return (
-    <footer className="border-t border-[var(--mt-divider-dark)] bg-[var(--mt-slate)] text-[var(--mt-text-on-dark-muted)]">
-      <div className="mx-auto max-w-[var(--mt-content-shell)] px-5 sm:px-8 lg:px-10">
-        <div className="grid gap-7 py-8 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:items-center lg:gap-12">
-          <Link
-            href="/"
-            className="w-fit text-2xl font-semibold text-[var(--mt-text-on-dark)] [font-family:var(--font-display),Georgia,serif] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--mt-focus-color)]"
-          >
+    <footer className={styles.footer}>
+      <div className={styles.band}>
+        <AgadezBand />
+      </div>
+      <div className={styles.inner}>
+        <div className={styles.brandCol}>
+          <Link href="/" className={styles.brand}>
+            <AgadezMark className={styles.brandMark} />
             Muriyar Ta
           </Link>
+          <p className={styles.tagline}>{t("mission")}</p>
+        </div>
 
-          <nav aria-label={t("explore")}>
-            <ul className="flex flex-wrap gap-x-6 gap-y-3">
-              {links.map((item) => (
-                <li key={item.href}><FooterLink href={item.href}>{tn(item.key)}</FooterLink></li>
-              ))}
-            </ul>
+        <div className={styles.groups}>
+          {groups.map((g) => (
+            <nav key={g.id} aria-labelledby={`footer-${g.id}`} className={styles.group}>
+              <h2 id={`footer-${g.id}`} className={styles.groupTitle}>{g.title}</h2>
+              <ul className={styles.list}>
+                {g.items.map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href} className={styles.link}>
+                      {label(item)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+          <nav aria-labelledby="footer-languages" className={styles.group}>
+            <h2 id="footer-languages" className={styles.groupTitle}>{t("groupLanguages")}</h2>
+            <FooterLanguages />
           </nav>
-
-          <div className="flex items-center gap-5 lg:justify-self-end">
-            <Link
-              href="/resources/crisis"
-              className="text-sm font-semibold text-[var(--mt-rust-soft)] transition-colors hover:text-[var(--mt-rust-pale)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--mt-focus-color)]"
-            >
-              {tc("getHelp")}
-            </Link>
-            <LocaleSwitcher variant="dark" />
-          </div>
         </div>
-
-        <div className="flex flex-col gap-2 border-t border-[var(--mt-divider-dark)] py-4 text-xs text-[var(--mt-text-on-dark-faint)] sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} Muriyar Ta. {t("rights")}</p>
-          <div className="flex gap-5">
-            <FooterLink href="/report">{tn("reports")}</FooterLink>
-            <FooterLink href="/contact">{tn("contact")}</FooterLink>
-          </div>
-        </div>
+      </div>
+      <div className={styles.bottom}>
+        <p>© {year} Muriyar Ta. {t("rights")}</p>
       </div>
     </footer>
   );

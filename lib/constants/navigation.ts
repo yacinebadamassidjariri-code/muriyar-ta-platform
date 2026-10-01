@@ -2,14 +2,12 @@ import type { Permission } from "./permissions";
 
 // Public navigation. `key` indexes the "nav" message namespace; `href` is a
 // locale-agnostic path (the i18n <Link> adds the locale prefix).
-// Ordered as two editorial clusters: the "voices" a reader encounters and adds
-// to (Stories, Podcast, Share your story), then the surrounding context
-// (Resources, Report, About). Hrefs are unchanged; only the sequence reflects
-// Muriyar Ta's editorial priorities. Consumed only by the masthead.
+// Centre navigation of the masthead. "Share your story" (/submit) is not
+// listed here: the masthead renders it as its own terracotta call to action.
+// Consumed only by the masthead.
 export const mainNav = [
   { key: "stories", href: "/stories" },
   { key: "podcast", href: "/podcast" },
-  { key: "submit", href: "/submit" },
   { key: "resources", href: "/resources" },
   { key: "about", href: "/about" },
 ] as const;
@@ -21,14 +19,25 @@ export const prelaunchNav = [
   { key: "about", href: "/about" },
 ] as const;
 
-export const footerNav = [
-  { key: "stories", href: "/stories" },
-  { key: "podcast", href: "/podcast" },
-  { key: "resources", href: "/resources" },
-  { key: "reports", href: "/report" },
-  { key: "contact", href: "/contact" },
-  { key: "about", href: "/about" },
-] as const;
+// Footer groups. Only existing public routes. `key` indexes "nav" unless the
+// entry sets `footerKey`, which indexes the "footer" namespace instead.
+export const footerNav = {
+  platform: [
+    { key: "stories", href: "/stories" },
+    { key: "podcast", href: "/podcast" },
+    { key: "resources", href: "/resources" },
+    { key: "submit", href: "/submit" },
+  ],
+  organization: [
+    { key: "about", href: "/about" },
+    { key: "partner", href: "/partner", footerKey: true },
+    { key: "contact", href: "/contact" },
+  ],
+  legal: [
+    { key: "crisisResources", href: "/resources/crisis", footerKey: true },
+    { key: "reportConcern", href: "/report", footerKey: true },
+  ],
+} as const;
 
 export type AdminNavKey = "overview" | "moderation" | "podcast" | "resources";
 

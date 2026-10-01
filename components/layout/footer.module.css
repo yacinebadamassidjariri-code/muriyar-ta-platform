@@ -1,0 +1,120 @@
+/* Muriyar Ta — compact public footer (charcoal). */
+
+.footer {
+  background: var(--mt-charcoal-deep);
+  color: rgb(250 247 240 / 0.72);
+}
+
+.band {
+  height: 12px;
+  color: rgb(200 168 122 / 0.35);
+}
+
+.band svg {
+  display: block;
+}
+
+.inner {
+  display: grid;
+  gap: 2.5rem;
+  max-width: var(--mt-content-shell);
+  margin-inline: auto;
+  padding: 3.25rem var(--mt-gutter) 2.5rem;
+}
+
+@media (min-width: 64rem) {
+  .inner {
+    grid-template-columns: minmax(16rem, 1fr) 2.4fr;
+    gap: 4rem;
+  }
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--mt-ivory);
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.brandMark {
+  width: 1.4rem;
+  height: 1.4rem;
+  color: var(--mt-sand);
+}
+
+.tagline {
+  max-width: 22rem;
+  margin: 0.9rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem 1.5rem;
+}
+
+@media (min-width: 48rem) {
+  .groups {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.groupTitle {
+  margin: 0 0 0.9rem;
+  color: var(--mt-sand);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.list {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  color: rgb(250 247 240 / 0.78);
+  font-size: 0.92rem;
+  text-decoration: none;
+  transition: color var(--mt-motion) ease;
+}
+
+.link:hover,
+.link[aria-current="true"] {
+  color: var(--mt-ivory);
+}
+
+.link[aria-current="true"] {
+  text-decoration: underline;
+  text-decoration-color: var(--mt-terracotta-light);
+  text-underline-offset: 0.3em;
+}
+
+.brand:focus-visible,
+.link:focus-visible {
+  outline: 2px solid var(--mt-terracotta-light);
+  outline-offset: 3px;
+}
+
+.bottom {
+  max-width: var(--mt-content-shell);
+  margin-inline: auto;
+  padding: 1.1rem var(--mt-gutter) 1.5rem;
+  border-top: 1px solid rgb(250 247 240 / 0.09);
+  font-size: 0.78rem;
+  color: rgb(250 247 240 / 0.55);
+}
+
+.bottom p {
+  margin: 0;
+}
