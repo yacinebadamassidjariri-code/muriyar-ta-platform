@@ -130,7 +130,19 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
       {/* ── FOUNDER ────────────────────────────────────────────────── */}
       <section className={styles.founderSection} aria-labelledby="about-founder">
         <div className={styles.shell}>
-          <div className={styles.founderInner}>
+          <div className={styles.founderLayout}>
+            <div className={styles.founderPortrait}>
+              <div className={styles.founderFrame}>
+                <Image
+                  src="/editorial/founder-yacine.jpg"
+                  alt="Yacine Badamassi Djariri, founder of Muriyar Ta"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 36rem"
+                  className="object-cover object-top"
+                />
+              </div>
+              <p className={styles.founderCaption}>Yacine Badamassi Djariri</p>
+            </div>
             <div className={styles.founderCopy}>
               <p className={styles.eyebrow}>{t("founderEyebrow")}</p>
               <h2 id="about-founder" className={styles.sectionTitle}>{t("founderTitle")}</h2>
