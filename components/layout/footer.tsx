@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/lib/i18n/navigation";
 import { footerNav } from "@/lib/constants/navigation";
 import { isPrelaunchMode } from "@/lib/config/prelaunch";
-import { AgadezBand, MuriyarTaMark } from "@/components/brand/agadez";
+import Image from "next/image";
 import { FooterLanguages } from "./footer-languages";
 import styles from "./footer.module.css";
 
@@ -29,14 +29,17 @@ export function Footer() {
 
   return (
     <footer className={styles.footer}>
-      <div className={styles.band}>
-        <AgadezBand />
-      </div>
       <div className={styles.inner}>
         <div className={styles.brandCol}>
           <Link href="/" className={styles.brand}>
-            <MuriyarTaMark className={styles.brandMark} />
-            Muriyar Ta
+            <Image
+              src="/muriyar-ta-logo.png"
+              alt="Muriyar Ta"
+              height={32}
+              width={128}
+              className={styles.brandMark}
+              style={{ objectFit: "contain", objectPosition: "left center", filter: "brightness(0) invert(1)" }}
+            />
           </Link>
           <p className={styles.tagline}>{t("mission")}</p>
         </div>

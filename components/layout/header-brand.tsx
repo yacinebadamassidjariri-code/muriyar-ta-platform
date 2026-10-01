@@ -1,19 +1,25 @@
+import Image from "next/image";
 import { Link } from "@/lib/i18n/navigation";
-import { MuriyarTaMark } from "@/components/brand/agadez";
 import styles from "./header.module.css";
 
 /**
- * Official Muriyar Ta brand lockup: icon mark + serif wordmark + tagline.
+ * Official Muriyar Ta brand lockup: approved logo PNG + tagline.
+ * The PNG contains both the icon mark and the "Muriyar Ta" wordmark.
  * `tagline` is localized by the caller.
  */
 export function HeaderBrand({ tagline }: { tagline: string }) {
   return (
     <Link href="/" className={styles.brand}>
-      <MuriyarTaMark className={styles.brandMark} />
-      <span className={styles.brandText}>
-        <span className={styles.brandName}>Muriyar Ta</span>
-        <span className={styles.brandTagline}>{tagline}</span>
-      </span>
+      <Image
+        src="/muriyar-ta-logo.png"
+        alt="Muriyar Ta"
+        height={36}
+        width={144}
+        className={styles.brandLogo}
+        style={{ objectFit: "contain", objectPosition: "left center" }}
+        priority
+      />
+      <span className={styles.brandTagline}>{tagline}</span>
     </Link>
   );
 }

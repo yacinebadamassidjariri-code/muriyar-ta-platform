@@ -5,15 +5,6 @@
   color: rgb(250 247 240 / 0.72);
 }
 
-.band {
-  height: 12px;
-  color: rgb(200 168 122 / 0.35);
-}
-
-.band svg {
-  display: block;
-}
-
 .inner {
   display: grid;
   gap: 2.5rem;

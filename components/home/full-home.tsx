@@ -21,7 +21,6 @@ import {
   publicResourceThemeCategoryName,
 } from "@/components/resources/content";
 import { deriveExcerpt } from "@/lib/utils/excerpt";
-import { AgadezCross, AgadezDivider, AgadezMark } from "@/components/brand/agadez";
 import styles from "@/components/home/full-home.module.css";
 
 /**
@@ -85,12 +84,10 @@ export async function FullHome({ locale }: { locale: Locale }) {
           className={styles.heroImage}
         />
         <div className={styles.heroShade} aria-hidden="true" />
-        <AgadezCross className={styles.heroCross} />
 
         <div className={styles.heroInner}>
           <div className={styles.heroCopy}>
             <p className={styles.heroEyebrow}>
-              <AgadezMark className={styles.eyebrowMark} />
               {t("hero.eyebrow")}
             </p>
             <h1 id="home-hero-title" className={styles.heroTitle}>
@@ -145,7 +142,6 @@ export async function FullHome({ locale }: { locale: Locale }) {
       {/* ── 2. WHAT IS MURIYAR TA ────────────────────────────────── */}
       <section className={styles.name} aria-labelledby="name-title">
         <div className={styles.nameInner}>
-          <AgadezDivider className={styles.divider} />
           <p className={styles.eyebrow}>{t("name.eyebrow")}</p>
           <h2 id="name-title" className={styles.nameHeading}>
             {t("name.titleLine1Start")}
@@ -158,7 +154,6 @@ export async function FullHome({ locale }: { locale: Locale }) {
             <ul className={styles.pillars}>
               {pillars.map((p) => (
                 <li key={p.title} className={styles.pillar}>
-                  <AgadezMark className={styles.pillarMark} />
                   <h3 className={styles.pillarTitle}>{p.title}</h3>
                   <p className={styles.pillarBody}>{p.body}</p>
                 </li>
@@ -237,7 +232,6 @@ export async function FullHome({ locale }: { locale: Locale }) {
             </ul>
           ) : (
             <div className={styles.emptyPanel}>
-              <AgadezMark className={styles.emptyMark} />
               <p>{t("stories.empty")}</p>
               <Link className={styles.textLink} href="/submit">
                 {t("stories.emptyCta")}
@@ -261,7 +255,6 @@ export async function FullHome({ locale }: { locale: Locale }) {
             <ul className={styles.inviteList}>
               {submitBullets.map((bullet) => (
                 <li key={bullet}>
-                  <AgadezMark className={styles.inviteBullet} />
                   <span>{bullet}</span>
                 </li>
               ))}
@@ -269,7 +262,6 @@ export async function FullHome({ locale }: { locale: Locale }) {
           </div>
 
           <aside className={styles.invitePanel} aria-labelledby="invite-panel-title">
-            <AgadezCross className={styles.invitePanelCross} />
             <p className={styles.eyebrowOnDark}>{t("submitInvite.cardEyebrow")}</p>
             <h3 id="invite-panel-title" className={styles.invitePanelTitle}>
               {t("submitInvite.cardTitle")}
@@ -294,7 +286,6 @@ export async function FullHome({ locale }: { locale: Locale }) {
       <section className={styles.journey} aria-labelledby="journey-title">
         <div className={styles.shell}>
           <header className={styles.journeyHeader}>
-            <AgadezDivider className={styles.dividerOnDark} />
             <p className={styles.eyebrowOnDark}>{t("journey.eyebrow")}</p>
             <h2 id="journey-title" className={styles.journeyTitle}>
               {t("journey.title")}
@@ -407,7 +398,6 @@ export async function FullHome({ locale }: { locale: Locale }) {
                     href={`/resources?category=${cat.category_id}`}
                     className={styles.resourceCard}
                   >
-                    <AgadezMark className={styles.resourceMark} />
                     <span className={styles.resourceName}>{cat.name}</span>
                     <ArrowRight aria-hidden="true" className={styles.resourceArrow} />
                   </Link>
@@ -446,7 +436,6 @@ export async function FullHome({ locale }: { locale: Locale }) {
           <div className={styles.brief}>
             <div className={styles.briefHeader}>
               <span className={styles.briefBrand}>
-                <AgadezMark className={styles.briefMark} />
                 Muriyar Ta
               </span>
               <span className={styles.briefStatus}>{t("insights.cardStatus")}</span>
@@ -478,7 +467,6 @@ export async function FullHome({ locale }: { locale: Locale }) {
         />
         <div className={styles.finalShade} aria-hidden="true" />
         <div className={styles.finalInner}>
-          <AgadezDivider className={styles.dividerOnDark} />
           <h2 id="final-cta-title" className={styles.finalTitle}>
             {t("finalCta.titleStart")}
             <em>{t("finalCta.titleItalic")}</em>
