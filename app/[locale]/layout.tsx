@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { Source_Sans_3, Lora } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale, getMessages, getTranslations } from "next-intl/server";
-import { Analytics } from "@vercel/analytics/next";
 import { routing, localeDir, type Locale } from "@/lib/i18n/routing";
 import { Providers } from "@/components/providers";
 import { SkipLink } from "@/components/a11y/skip-link";
@@ -83,7 +82,6 @@ export default async function LocaleLayout({
             </PublicRouteChrome>
           </Providers>
         </NextIntlClientProvider>
-        <Analytics />
       </body>
     </html>
   );
