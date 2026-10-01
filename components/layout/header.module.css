@@ -29,9 +29,9 @@
 }
 
 .brandMark {
-  width: 1.55rem;
-  height: 1.55rem;
-  color: var(--mt-terracotta);
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
 }
 
 .brandText {

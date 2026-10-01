@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/lib/i18n/navigation";
 import { footerNav } from "@/lib/constants/navigation";
 import { isPrelaunchMode } from "@/lib/config/prelaunch";
-import { AgadezBand, AgadezMark } from "@/components/brand/agadez";
+import { AgadezBand, MuriyarTaMark } from "@/components/brand/agadez";
 import { FooterLanguages } from "./footer-languages";
 import styles from "./footer.module.css";
 
@@ -35,7 +35,7 @@ export function Footer() {
       <div className={styles.inner}>
         <div className={styles.brandCol}>
           <Link href="/" className={styles.brand}>
-            <AgadezMark className={styles.brandMark} />
+            <MuriyarTaMark className={styles.brandMark} />
             Muriyar Ta
           </Link>
           <p className={styles.tagline}>{t("mission")}</p>

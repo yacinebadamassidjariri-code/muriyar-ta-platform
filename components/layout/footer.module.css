@@ -41,9 +41,9 @@
 }
 
 .brandMark {
-  width: 1.4rem;
-  height: 1.4rem;
-  color: var(--mt-sand);
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
 }
 
 .tagline {
