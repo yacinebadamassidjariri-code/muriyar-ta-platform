@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { LifeBuoy } from "lucide-react";
 import { submitStory, type SubmitState } from "@/lib/actions/submit-story";
-import { GEOGRAPHIC_CONTEXT_MAX, STORY_MIN, STORY_MAX } from "@/lib/validation/submission";
+import { AGE_MIN, AGE_MAX, GEOGRAPHIC_CONTEXT_MAX, STORY_MIN, STORY_MAX } from "@/lib/validation/submission";
 import { locales, localeLabels } from "@/lib/i18n/routing";
 import type { SubmitCopy } from "@/components/submit/content";
 import { Link } from "@/lib/i18n/navigation";
@@ -63,6 +63,19 @@ export function StoryForm({ copy, locale }: { copy: SubmitCopy; locale: string }
             {locales.map((language) => <option key={language} value={language}>{localeLabels[language]}</option>)}
           </select>
           {state.errors?.language ? <p id="language-error" className={styles.fieldError}>{err(state.errors.language)}</p> : null}
+        </div>
+
+        <div className={styles.field}>
+          <label htmlFor="age">{copy.form.ageLabel}</label>
+          <p id="age-help" className={styles.fieldHelp}>{copy.form.ageHelp}</p>
+          <input
+            id="age" name="age" type="number" inputMode="numeric"
+            min={AGE_MIN} max={AGE_MAX} autoComplete="off"
+            aria-invalid={!!state.errors?.age}
+            aria-describedby={state.errors?.age ? "age-help age-error" : "age-help"}
+            className={styles.ageInput}
+          />
+          {state.errors?.age ? <p id="age-error" className={styles.fieldError}>{err(state.errors.age)}</p> : null}
         </div>
 
         <fieldset className={styles.locationFields}>

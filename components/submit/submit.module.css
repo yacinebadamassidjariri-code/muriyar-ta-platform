@@ -18,6 +18,7 @@
 .supportingFields,.decision{border-top:1px solid var(--mt-divider);padding-block:clamp(2rem,4vw,3rem)}.supportingFields{display:grid;gap:2.5rem}
 .field label,.locationFields legend{display:block;margin-bottom:.6rem;font-size:.84rem;font-weight:750}.field input,.field select{min-height:3rem;padding:.7rem .85rem;font:inherit}
 .locationFields{min-width:0;margin:0;padding:0;border:0}.locationFields legend{color:var(--mt-text-muted)}.locationNote{max-width:36rem;margin:0 0 1rem}.locationGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.fieldHelp{margin:.5rem 0 0}
+.ageInput{max-width:8rem}
 .decision h2{margin:0;font-family:var(--font-display),Georgia,serif;font-size:clamp(1.8rem,4vw,2.5rem);font-weight:650}.consentNote{margin:.6rem 0 1.25rem;font-size:.9rem}
 .consentControl{display:flex;align-items:flex-start;gap:.85rem;border-left:2px solid var(--mt-reassurance);background:color-mix(in srgb,var(--mt-reassurance) 7%,transparent);padding:1.1rem 1.15rem}.consentControl input{width:1.15rem;height:1.15rem;flex:0 0 auto;margin-top:.22rem;accent-color:var(--mt-slate)}.consentControl label{cursor:pointer;font-size:.94rem;line-height:1.6}
 .researchDecision{margin-top:1.5rem;border-top:1px solid var(--mt-divider-soft);padding-top:1.5rem}.researchDecision h3{margin:0 0 .8rem;font-size:.86rem;font-weight:800}.researchDecision .consentControl{border-left-color:var(--mt-divider);background:transparent}.researchConsentNote{max-width:44rem;margin:.75rem 0 0;color:var(--mt-text-muted);font-size:.82rem;line-height:1.55}

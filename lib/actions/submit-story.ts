@@ -22,6 +22,7 @@ export async function submitStory(
     story: String(formData.get("story") ?? ""),
     country: String(formData.get("country") ?? ""),
     region: String(formData.get("region") ?? ""),
+    age: String(formData.get("age") ?? ""),
     consent:
       formData.get("consent") === "on" || formData.get("consent") === "true",
     researchConsent:
@@ -43,6 +44,7 @@ export async function submitStory(
       p_research_consent: data.researchConsent,
       p_country: data.country,
       p_region: data.region,
+      p_age: data.age,
     });
 
     if (error) {
@@ -62,6 +64,9 @@ export async function submitStory(
       }
       if (code === "region_too_long") {
         return { status: "error", errors: { region: "region_long" } };
+      }
+      if (code === "age_out_of_range") {
+        return { status: "error", errors: { age: "age_invalid" } };
       }
       return { status: "error", errors: { form: "submit_failed" } };
     }

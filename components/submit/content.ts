@@ -6,7 +6,9 @@ export type SubmitCopy = {
   form: {
     detailsLabel: string; languageLabel: string; storyLabel: string; storyPlaceholder: string;
     storyHelp: string; charsSuffix: string; locationLabel: string; locationHelp: string;
-    countryLabel: string; regionLabel: string; regionHelp: string; consentHeading: string;
+    countryLabel: string; regionLabel: string; regionHelp: string;
+    ageLabel: string; ageHelp: string;
+    consentHeading: string;
     consentNote: string; consentLabel: string; researchConsentHeading: string;
     researchConsentLabel: string; researchConsentNote: string; submit: string; submitting: string;
   };
@@ -34,17 +36,19 @@ const en: SubmitCopy = {
     charsSuffix: "characters", locationLabel: "Location (optional)",
     locationHelp: "Leave this blank unless broad location helps give your story context.", countryLabel: "Country",
     regionLabel: "Region, state, or province", regionHelp: "Do not include your city, village, neighborhood, or address.",
+    ageLabel: "Your age (optional)", ageHelp: "We collect age only, never your date of birth.",
     consentHeading: "Your consent", consentNote: "Your story stays private unless you consent to anonymized publication.",
     consentLabel: "I understand my story will be reviewed and may be published in anonymized form, and I consent to this.",
-    researchConsentHeading: "Research consent (optional)",
-    researchConsentLabel: "I allow Muriyar Ta to use my story for de-identified thematic analysis, research insights, research briefs, and educational or facilitated workshop materials.",
-    researchConsentNote: "Declining does not affect submission or publication eligibility. Raw stories are not shared with organizations; only de-identified patterns across opted-in stories may be used.",
+    researchConsentHeading: "Research and insights consent (optional)",
+    researchConsentLabel: "I allow Muriyar Ta to use my story for de-identified and aggregated analysis, research and insights briefs, educational and advocacy work, and materials shared with partner organizations and researchers. Information that directly identifies me will not be included in these materials.",
+    researchConsentNote: "This is separate from publication consent. Declining does not affect your ability to submit or have your story published.",
     submit: "Submit story", submitting: "Submitting…",
   },
   errors: {
     language_invalid: "Please choose a language.", story_required: "Please write your story.",
     story_short: "Your story should be at least 50 characters.", story_long: "Your story is too long.",
     country_long: "Country must be 100 characters or fewer.", region_long: "Region, state, or province must be 100 characters or fewer.",
+    age_invalid: "Please enter your age as a number between 10 and 99, or leave it blank.",
     consent_required: "Please confirm consent to continue.", submit_failed: "Something went wrong. Please try again.",
   },
   success: {
@@ -72,17 +76,19 @@ const fr: SubmitCopy = {
     charsSuffix: "caractères", locationLabel: "Lieu (facultatif)",
     locationHelp: "Laissez ce champ vide sauf si un lieu général aide à comprendre votre récit.", countryLabel: "Pays",
     regionLabel: "Région, État ou province", regionHelp: "N’indiquez pas votre ville, village, quartier ou adresse.",
+    ageLabel: "Votre âge (facultatif)", ageHelp: "Nous enregistrons uniquement votre âge, jamais votre date de naissance.",
     consentHeading: "Votre consentement", consentNote: "Votre récit reste privé sauf si vous consentez à sa publication anonymisée.",
     consentLabel: "Je comprends que mon récit sera examiné et pourra être publié sous forme anonymisée, et j’y consens.",
-    researchConsentHeading: "Consentement à la recherche (facultatif)",
-    researchConsentLabel: "J’autorise Muriyar Ta à utiliser mon récit pour une analyse thématique dépersonnalisée, des enseignements et synthèses de recherche, et des supports éducatifs ou d’ateliers animés.",
-    researchConsentNote: "Refuser n’affecte ni l’envoi ni l’admissibilité à la publication. Les récits bruts ne sont pas transmis aux organisations ; seuls des thèmes dépersonnalisés issus des récits ayant reçu ce consentement peuvent être utilisés.",
+    researchConsentHeading: "Consentement à la recherche et aux analyses (facultatif)",
+    researchConsentLabel: "J’autorise Muriyar Ta à utiliser mon témoignage à des fins d’analyse dépersonnalisée et agrégée, de notes de recherche et d’analyse, de travaux éducatifs et de plaidoyer, et de documents partagés avec des organisations et chercheurs partenaires. Les informations permettant de m’identifier directement ne figureront pas dans ces documents.",
+    researchConsentNote: "Ce consentement est distinct du consentement à la publication. Refuser n’affecte ni l’envoi ni la possibilité de publier votre récit.",
     submit: "Envoyer le récit", submitting: "Envoi…",
   },
   errors: {
     language_invalid: "Veuillez choisir une langue.", story_required: "Veuillez écrire votre récit.",
     story_short: "Votre récit doit comporter au moins 50 caractères.", story_long: "Votre récit est trop long.",
     country_long: "Le pays doit comporter 100 caractères maximum.", region_long: "La région, l’État ou la province doit comporter 100 caractères maximum.",
+    age_invalid: "Veuillez indiquer votre âge sous forme de nombre entre 10 et 99, ou laissez ce champ vide.",
     consent_required: "Veuillez confirmer votre consentement pour continuer.", submit_failed: "Une erreur s'est produite. Veuillez réessayer.",
   },
   success: {
