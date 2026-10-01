@@ -307,21 +307,24 @@
 }
 
 .detailHeader {
-  margin-top: 3.25rem;
+  margin-top: 2.75rem;
 }
 
 .detailHeader h1 {
-  font-size: clamp(3rem, 6vw, 5.4rem);
-  line-height: 0.98;
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
   overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 
 .detailMeta {
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem 0.7rem;
-  margin: 0;
+  margin: 0 0 1rem;
   color: var(--mt-text-faint);
+  font-size: 0.8rem;
 }
 
 .detailMeta span + span::before {
@@ -331,15 +334,17 @@
 }
 
 .attribution {
-  margin: 1.25rem 0 0;
+  margin: 0.75rem 0 0;
   color: var(--mt-text-muted);
-  font-size: 0.86rem;
+  font-size: 0.84rem;
 }
 
 .storyBody {
-  margin-top: 3.25rem;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--mt-divider);
   color: #293e47;
-  font-size: clamp(1.08rem, 1.5vw, 1.2rem);
+  font-size: clamp(1.05rem, 1.5vw, 1.15rem);
   line-height: 1.85;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
@@ -359,7 +364,7 @@
   .storyLink { grid-template-columns: 1fr; gap: 0.85rem; padding: 1.75rem 0; }
   .readLabel { margin-top: 0.15rem; }
   .detailInner { padding-top: 2.25rem; }
-  .detailHeader { margin-top: 2.5rem; }
-  .storyBody { margin-top: 2.5rem; line-height: 1.75; }
+  .detailHeader { margin-top: 2rem; }
+  .storyBody { margin-top: 2rem; padding-top: 1.75rem; line-height: 1.75; }
   .endLinks { margin-top: 3rem; }
 }
