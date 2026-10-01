@@ -126,7 +126,8 @@ export function ResourceCard({
         <div className="mt-auto pt-3">
           <ResourceWebsiteLink
             href={resource.website_url}
-            resourceName={resource.name}
+            categoryLabel={categoryLabel}
+            isCrisis={resource.is_crisis_resource}
             label={labels.visitWebsite}
           />
         </div>

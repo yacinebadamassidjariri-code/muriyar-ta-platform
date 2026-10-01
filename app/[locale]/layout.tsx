@@ -12,6 +12,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { PublicRouteChrome } from "@/components/layout/public-route-chrome";
 import { RouteContent } from "@/components/layout/route-content";
+import { OutreachTracker } from "@/components/analytics/outreach-tracker";
 import "../globals.css";
 
 const sourceSans = Source_Sans_3({
@@ -73,6 +74,7 @@ export default async function LocaleLayout({
       <body className="flex min-h-dvh flex-col bg-surface font-sans text-ink antialiased">
         <NextIntlClientProvider messages={messages}>
           <Providers>
+            <OutreachTracker />
             <PublicRouteChrome>
               <SkipLink />
               <Header />

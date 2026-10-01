@@ -2,19 +2,11 @@ import { setRequestLocale } from "next-intl/server";
 import { type Locale } from "@/lib/i18n/routing";
 import { submitCopy } from "@/components/submit/content";
 import { StoryForm } from "@/components/submit/story-form";
-import { recordOutreachVisit } from "@/lib/analytics/record-outreach";
 import styles from "@/components/submit/submit.module.css";
 
-export default async function SubmitPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ locale: string }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
+export default async function SubmitPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  void recordOutreachVisit(await searchParams);
   const copy = submitCopy[locale as Locale] ?? submitCopy.en;
 
   return (
