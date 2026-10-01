@@ -404,16 +404,13 @@
   padding: clamp(5rem, 8vw, 8rem) var(--gutter);
   text-align: center;
 }
-.nameCrossRow {
+/* Decorative divider rows (replaces old Agadez cross ornaments) */
+.nameDividerRow {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1rem;
   margin-bottom: 2rem;
-}
-.nameCross {
-  width: 28px;
-  flex: none;
 }
 .nameDividerLine {
   flex: 1;
@@ -421,7 +418,15 @@
   height: 1px;
   background: var(--divider);
 }
-.nameCrossRowBottom {
+.nameDividerDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--terra);
+  opacity: 0.45;
+  flex: none;
+}
+.nameDividerRowBottom {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -484,14 +489,6 @@
   border-top: 1px solid var(--divider);
   border-bottom: 1px solid var(--divider);
   background: color-mix(in srgb, var(--sand-l) 10%, var(--ivory));
-}
-.statsTopCross {
-  display: flex;
-  justify-content: center;
-  padding-top: 1.5rem;
-}
-.statsCrossIcon {
-  width: 20px;
 }
 .statsInner {
   display: grid;
@@ -688,16 +685,20 @@
 }
 .submitLeft { align-self: center; }
 
-/* Eyebrow row with inline Agadez cross */
+/* Eyebrow row */
 .submitEyebrowRow {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 0.5rem;
 }
-.submitEyebrowIcon {
-  width: 20px;
+.submitEyebrowAccent {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--terra);
   flex: none;
+  border-radius: 1px;
 }
 .submitHeading {
   margin: 0.5rem 0 0;
@@ -1246,8 +1247,12 @@
   background: rgba(255,249,240,0.04);
   border-bottom: 1px solid rgba(255,249,240,0.08);
 }
-.insightsCardCross {
-  width: 18px;
+.insightsCardBrandDot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--terra-l);
   flex: none;
 }
 .insightsCardBrand {
@@ -1291,16 +1296,20 @@
 /* Right — copy column */
 .insightsRight { }
 
-/* Eyebrow row with inline cross */
+/* Eyebrow row */
 .insightsEyebrowRow {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 0.25rem;
 }
-.insightsEyebrowIcon {
-  width: 18px;
+.insightsEyebrowAccent {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--terra-l);
   flex: none;
+  border-radius: 1px;
 }
 .insightsTitle {
   margin: 0.85rem 0 0;
@@ -1353,13 +1362,21 @@
   display: flex;
   align-items: center;
 }
+/* Editorial photography background (thematic, not biographical) */
+.finalCtaPhoto {
+  position: absolute;
+  inset: 0;
+}
+.finalCtaPhoto img {
+  object-position: center 25%;
+}
 .finalCtaShade {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     90deg,
-    rgba(20,28,58,0.96) 0%,
-    rgba(20,28,58,0.82) 55%,
+    rgba(20,28,58,0.97) 0%,
+    rgba(20,28,58,0.88) 50%,
     rgba(20,28,58,0.55) 100%
   );
 }

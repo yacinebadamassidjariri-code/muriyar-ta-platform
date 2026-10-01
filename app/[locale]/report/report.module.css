@@ -1,7 +1,208 @@
-.page{width:100%;background:var(--mt-paper-soft);color:var(--mt-ink)}
-.shell{width:min(100%,52rem);margin-inline:auto;padding:clamp(3.5rem,7vw,6rem) var(--mt-gutter) clamp(4.5rem,8vw,7rem)}
-.hero{max-width:44rem}.eyebrow{margin:0;color:var(--mt-rust);font-size:var(--mt-eyebrow-size);font-weight:800;letter-spacing:var(--mt-eyebrow-tracking);text-transform:uppercase}.hero h1{margin:.8rem 0 0;font-family:var(--font-display),Georgia,serif;font-size:clamp(3rem,6vw,5rem);font-weight:650;letter-spacing:-.03em;line-height:var(--mt-display-leading)}.hero>p:last-child{margin:1rem 0 0;color:var(--mt-text-muted);font-size:1rem;line-height:var(--mt-body-leading)}
-.notice{margin-top:2rem;border-block:1px solid var(--mt-divider);border-left:3px solid var(--mt-rust);padding:1.2rem 0 1.2rem 1.2rem}.noticeInner{display:flex;gap:.75rem}.noticeIcon{flex:0 0 auto;margin-top:.15rem;color:var(--mt-rust)}.notice h2{margin:0;font-size:.92rem}.notice ul{display:grid;gap:.3rem;margin:.55rem 0 0;padding-left:1.15rem;color:var(--mt-text-muted);font-size:.82rem;line-height:1.5}
-.section{margin-top:clamp(3rem,6vw,4.5rem)!important;border-top:1px solid var(--mt-divider);padding-top:1.5rem}.section>p:first-child{color:var(--mt-rust);font-size:var(--mt-eyebrow-size);letter-spacing:var(--mt-eyebrow-tracking)}.section>h2{margin:.55rem 0 0!important;font-family:var(--font-display),Georgia,serif;font-size:clamp(2rem,4vw,2.8rem)!important;font-weight:650!important;line-height:1.05}.section>h2+ p{margin-top:.65rem!important;color:var(--mt-text-muted);font-size:.9rem;line-height:1.55}.section>div:last-child{margin-top:1.5rem!important}
-.supportList{border-top:1px solid var(--mt-divider-soft)}.supportItem{border:0;border-bottom:1px solid var(--mt-divider-soft);border-radius:0;background:transparent;padding:1.35rem 0}.supportItem>span{display:none}.supportItem h3{margin:0;font-size:1rem}.supportItem p{max-width:34rem;margin:.35rem 0 0;color:var(--mt-text-muted);font-size:.82rem;line-height:1.5}.supportAction{margin-top:.85rem}.linkButton{border:0!important;background:transparent!important;padding:0 0 .2rem!important;color:var(--mt-ink)!important;text-decoration:underline;text-decoration-color:var(--mt-rust-bright);text-underline-offset:.28em}.linkButton:hover{color:var(--mt-rust-hover)!important}.linkButton:focus-visible{outline:var(--mt-focus-ring)!important;outline-offset:3px!important}
-@media(max-width:40rem){.shell{padding-top:3rem}}
+/* ============================================================
+   Muriyar Ta — Report a Concern page
+   Design system: Lora · Source Sans 3
+   Palette: Warm ivory · Terracotta · Deep indigo · Charcoal
+   ============================================================ */
+
+.page {
+  --ivory:    #FAF7F0;
+  --terra:    #B8512E;
+  --terra-l:  #D4744E;
+  --indigo:   #2C3A6B;
+  --charcoal: #2A2218;
+  --muted:    #7A6F62;
+  --divider:  rgba(42,34,24,.13);
+  --on-dark:  #FFF9F0;
+  --on-dark-muted: #D5CCBF;
+
+  --display: var(--font-display, Georgia, serif);
+  --sans:    var(--font-sans-stack, Arial, sans-serif);
+  --gutter:  clamp(1.25rem, 4vw, 3rem);
+  --section: clamp(4rem, 6vw, 6rem);
+
+  width: 100%;
+  color: var(--charcoal);
+  background: var(--ivory);
+}
+
+/* ── Shell ─────────────────────────────────────────────────── */
+.shell {
+  width: min(100%, 56rem);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* ── Eyebrow ────────────────────────────────────────────────── */
+.eyebrow {
+  margin: 0;
+  color: var(--terra);
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* ── HERO ─────────────────────────────────────────────────────
+   Typographic hero — calm and private
+   ──────────────────────────────────────────────────────────── */
+.hero {
+  padding-block: clamp(3.5rem, 6vw, 5.5rem) clamp(2.5rem, 4vw, 4rem);
+  border-bottom: 1px solid var(--divider);
+}
+
+.hero h1 {
+  margin: 0.8rem 0 0;
+  font-family: var(--display);
+  font-size: clamp(2.6rem, 5.5vw, 4.5rem);
+  font-weight: 600;
+  line-height: 0.97;
+  letter-spacing: -0.03em;
+  color: var(--charcoal);
+}
+
+.hero > p:last-child {
+  margin: 1.25rem 0 0;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+  line-height: 1.7;
+}
+
+/* ── Notice / aside ─────────────────────────────────────────── */
+.notice {
+  margin-top: 2.5rem;
+  border-left: 3px solid var(--terra);
+  border-block: 1px solid rgba(184,81,46,.2);
+  padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+  background: rgba(184,81,46,.04);
+}
+
+.noticeInner {
+  display: flex;
+  gap: 0.85rem;
+}
+
+.noticeIcon {
+  flex: none;
+  margin-top: 0.1rem;
+  color: var(--terra);
+}
+
+.notice h2 {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--charcoal);
+}
+
+.notice ul {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.6rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+/* ── Section ────────────────────────────────────────────────── */
+.section {
+  padding-block: var(--section);
+  border-bottom: 1px solid var(--divider);
+}
+
+.sectionEyebrow {
+  composes: eyebrow;
+}
+
+.sectionTitle {
+  margin: 0.75rem 0 0;
+  font-family: var(--display);
+  font-size: clamp(1.9rem, 3vw, 2.6rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--charcoal);
+}
+
+.sectionDescription {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: clamp(0.9rem, 1.3vw, 1rem);
+  line-height: 1.65;
+}
+
+.sectionBody {
+  margin-top: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+/* ── Support list ───────────────────────────────────────────── */
+.supportList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  gap: 0;
+  border-top: 1px solid var(--divider);
+}
+
+.supportItem {
+  border-bottom: 1px solid var(--divider);
+  padding-block: 1.75rem;
+  padding-right: 2rem;
+}
+
+.supportItemTitle {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+  font-weight: 600;
+  color: var(--charcoal);
+}
+
+.supportItemBody {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 0.875rem;
+  line-height: 1.65;
+  max-width: 32rem;
+}
+
+.supportAction {
+  margin-top: 1rem;
+}
+
+.supportLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--charcoal);
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--terra-l);
+  text-underline-offset: 0.28em;
+  transition: color 150ms;
+}
+
+.supportLink:hover { color: var(--terra); }
+.supportLink:focus-visible { outline: 2px solid var(--terra-l); outline-offset: 3px; }
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 40rem) {
+  .shell {
+    padding-block: 3rem 4rem;
+  }
+
+  .supportList {
+    grid-template-columns: 1fr;
+  }
+
+  .supportItem {
+    padding-right: 0;
+  }
+}

@@ -49,7 +49,7 @@
 
 @theme inline {
   --font-sans: var(--font-sans-stack), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-cormorant), ui-serif, Georgia, "Times New Roman", serif;
+  --font-display: var(--font-display), ui-serif, Georgia, "Times New Roman", serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-mono: var(--font-geist-mono);
@@ -189,10 +189,11 @@
   --ring-editorial-offset: 2px;
 }
 
+/* Dark mode: keep the Muriyar Ta editorial palette — deep charcoal rather than pure black */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #1a1510;
+    --foreground: var(--mt-text-on-dark);
   }
 }
 
@@ -200,4 +201,126 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans-stack), Arial, Helvetica, sans-serif;
+}
+
+/* ── Muriyar Ta public design system shared utilities ─────────────────────── */
+
+/* Shared page shell — used across all public pages */
+.mt-page {
+  color: var(--mt-ink);
+}
+
+.mt-page-ivory {
+  background: #FAF7F0;
+  color: var(--mt-ink);
+}
+
+/* Section container */
+.mt-shell {
+  width: min(100%, var(--mt-content-wide));
+  margin-inline: auto;
+  padding-inline: var(--mt-gutter);
+}
+
+.mt-shell-narrow {
+  width: min(100%, calc(var(--mt-reading-width) + 2 * var(--mt-gutter)));
+  margin-inline: auto;
+  padding-inline: var(--mt-gutter);
+}
+
+/* Eyebrow label */
+.mt-eyebrow {
+  margin: 0;
+  color: var(--mt-rust);
+  font-size: var(--mt-eyebrow-size);
+  font-weight: 800;
+  letter-spacing: var(--mt-eyebrow-tracking);
+  text-transform: uppercase;
+}
+
+/* Display headings */
+.mt-display-xl {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(3.25rem, 7vw, 6rem);
+  font-weight: 600;
+  line-height: var(--mt-display-leading);
+  letter-spacing: -0.03em;
+}
+
+.mt-display-lg {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 600;
+  line-height: 0.97;
+  letter-spacing: -0.025em;
+}
+
+.mt-display-md {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.85rem, 3vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+
+/* Editorial divider */
+.mt-divider {
+  border: none;
+  border-top: 1px solid var(--mt-divider);
+}
+
+/* Indigo section background */
+.mt-section-indigo {
+  background: var(--mt-indigo);
+  color: #FAF7F0;
+}
+
+/* Charcoal section background */
+.mt-section-charcoal {
+  background: #2A2218;
+  color: #FAF7F0;
+}
+
+/* Terracotta/rust accent text */
+.mt-accent {
+  color: var(--mt-rust);
+}
+
+/* Editorial imagery — responsive, object-fit cover */
+.mt-editorial-image {
+  position: relative;
+  overflow: hidden;
+  background: var(--mt-paper-deep);
+}
+
+.mt-editorial-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Page hero section shared base */
+.mt-hero {
+  background: var(--mt-paper);
+  padding-block: var(--mt-section-space);
+}
+
+.mt-hero-indigo {
+  background: var(--mt-indigo);
+  color: #FAF7F0;
+  padding-block: var(--mt-section-space);
+}
+
+/* Focus ring — applied globally to interactive elements */
+:focus-visible {
+  outline: var(--mt-focus-ring);
+  outline-offset: 3px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

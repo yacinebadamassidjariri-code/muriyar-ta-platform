@@ -1,6 +1,7 @@
-import { Play, ArrowRight, Info, ShieldCheck } from "lucide-react";
+import { Play, ArrowRight, Info } from "lucide-react";
 import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
+import Image from "next/image";
 import { Link } from "@/lib/i18n/navigation";
 import { type Locale } from "@/lib/i18n/routing";
 import { listHomepageStories } from "@/lib/data/stories";
@@ -8,7 +9,7 @@ import { listLatestEpisodes } from "@/lib/data/podcast";
 import { listCategories } from "@/lib/data/resources";
 import { deriveExcerpt } from "@/lib/utils/excerpt";
 import { FullHomeHeroMedia } from "@/components/home/full-home-hero-media";
-import { AgadezCross, AgadezCrossSmall } from "@/components/home/agadez-cross";
+import { AgadezCross } from "@/components/home/agadez-cross";
 import styles from "@/components/home/full-home.module.css";
 
 export async function FullHome({ locale }: { locale: Locale }) {
@@ -96,10 +97,10 @@ export async function FullHome({ locale }: { locale: Locale }) {
       {/* ── 2. NAME / INTRODUCTION ──────────────────────────────────────────── */}
       <section className={styles.nameSection} aria-labelledby="name-title">
         <div className={styles.nameInner}>
-          {/* Agadez cross ornament above */}
-          <div className={styles.nameCrossRow} aria-hidden="true">
+            {/* Decorative divider above */}
+          <div className={styles.nameDividerRow} aria-hidden="true">
             <span className={styles.nameDividerLine} />
-            <AgadezCrossSmall className={styles.nameCross} color="#B8512E" opacity={0.22} />
+            <span className={styles.nameDividerDot} />
             <span className={styles.nameDividerLine} />
           </div>
 
@@ -117,10 +118,10 @@ export async function FullHome({ locale }: { locale: Locale }) {
           <p className={styles.nameBody}>{t("name.body")}</p>
           <p className={styles.nameBody2}>{t("name.body2")}</p>
 
-          {/* Agadez cross ornament below */}
-          <div className={styles.nameCrossRowBottom} aria-hidden="true">
+          {/* Decorative divider below */}
+          <div className={styles.nameDividerRowBottom} aria-hidden="true">
             <span className={styles.nameDividerLine} />
-            <AgadezCrossSmall className={styles.nameCross} color="#B8512E" opacity={0.22} />
+            <span className={styles.nameDividerDot} />
             <span className={styles.nameDividerLine} />
           </div>
         </div>
@@ -128,10 +129,6 @@ export async function FullHome({ locale }: { locale: Locale }) {
 
       {/* ── 3. STATS ROW ────────────────────────────────────────────────────── */}
       <div className={styles.statsStrip} aria-label={t("stats.label")}>
-        {/* Small Agadez cross above stats */}
-        <div className={styles.statsTopCross} aria-hidden="true">
-          <AgadezCrossSmall className={styles.statsCrossIcon} color="#B8512E" opacity={0.25} />
-        </div>
         <div className={styles.statsInner}>
           <div className={styles.statItem}>
             <p className={styles.statNumber}>4</p>
@@ -221,9 +218,9 @@ export async function FullHome({ locale }: { locale: Locale }) {
         <div className={styles.submitInner}>
           {/* Left column */}
           <div className={styles.submitLeft}>
-            {/* Eyebrow with inline Agadez icon */}
+            {/* Eyebrow */}
             <div className={styles.submitEyebrowRow}>
-              <AgadezCrossSmall className={styles.submitEyebrowIcon} color="#B8512E" opacity={0.7} />
+              <span className={styles.submitEyebrowAccent} aria-hidden="true" />
               <p className={styles.eyebrow}>{t("submitInvite.eyebrow")}</p>
             </div>
 
@@ -416,7 +413,7 @@ export async function FullHome({ locale }: { locale: Locale }) {
           {/* Left — document card preview (coming-soon, no fabricated data) */}
           <div className={styles.insightsCard}>
             <div className={styles.insightsCardHeader}>
-              <AgadezCrossSmall className={styles.insightsCardCross} color="#B8512E" opacity={0.6} />
+              <span className={styles.insightsCardBrandDot} aria-hidden="true" />
               <span className={styles.insightsCardBrand}>MURIYAR TA INSIGHTS</span>
               <span className={styles.insightsCardIssue}>{t("insights.cardComingSoon")}</span>
             </div>
@@ -429,7 +426,7 @@ export async function FullHome({ locale }: { locale: Locale }) {
           {/* Right — copy */}
           <div className={styles.insightsRight}>
             <div className={styles.insightsEyebrowRow}>
-              <AgadezCrossSmall className={styles.insightsEyebrowIcon} color="#B8512E" opacity={0.7} />
+              <span className={styles.insightsEyebrowAccent} aria-hidden="true" />
               <p className={styles.eyebrow}>{t("insights.eyebrow")}</p>
             </div>
             <h2 id="insights-title" className={styles.insightsTitle}>
@@ -451,6 +448,17 @@ export async function FullHome({ locale }: { locale: Locale }) {
 
       {/* ── 10. FINAL CTA ───────────────────────────────────────────────────── */}
       <section className={styles.finalCta} aria-labelledby="final-cta-title">
+        {/* Editorial photography background — thematic, not biographical */}
+        <div className={styles.finalCtaPhoto} aria-hidden="true">
+          <Image
+            src="/editorial/writing-bw.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover object-center"
+            priority={false}
+          />
+        </div>
         <div className={styles.finalCtaShade} aria-hidden="true" />
         <div className={styles.finalCtaInner}>
           <h2 id="final-cta-title" className={styles.finalCtaHeading}>
