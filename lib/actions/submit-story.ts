@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { validateSubmission, type SubmissionErrors } from "@/lib/validation/submission";
+import { recordEvent } from "@/lib/actions/record-event";
 
 export type SubmitState = {
   status: "idle" | "success" | "error";
@@ -70,6 +71,9 @@ export async function submitStory(
       }
       return { status: "error", errors: { form: "submit_failed" } };
     }
+
+    // Record conversion — locale only, no submission ID or personal data.
+    void recordEvent("submission_completed", "locale", input.locale);
 
     return { status: "success" };
   } catch {

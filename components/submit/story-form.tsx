@@ -7,6 +7,7 @@ import { AGE_MIN, AGE_MAX, GEOGRAPHIC_CONTEXT_MAX, STORY_MIN, STORY_MAX } from "
 import { locales, localeLabels } from "@/lib/i18n/routing";
 import type { SubmitCopy } from "@/components/submit/content";
 import { Link } from "@/lib/i18n/navigation";
+import { useSubmissionStart } from "@/lib/hooks/use-submission-start";
 import styles from "@/components/submit/submit.module.css";
 
 const initialState: SubmitState = { status: "idle" };
@@ -16,6 +17,7 @@ export function StoryForm({ copy, locale }: { copy: SubmitCopy; locale: string }
   const [count, setCount] = useState(0);
   const [consent, setConsent] = useState(false);
   const err = (key: string | undefined) => key ? copy.errors[key] ?? key : undefined;
+  const onStoryStart = useSubmissionStart(locale);
 
   if (state.status === "success") {
     return (
@@ -42,7 +44,7 @@ export function StoryForm({ copy, locale }: { copy: SubmitCopy; locale: string }
           id="story" name="story" rows={14} required minLength={STORY_MIN} maxLength={STORY_MAX}
           placeholder={copy.form.storyPlaceholder} aria-invalid={!!state.errors?.story}
           aria-describedby={state.errors?.story ? "story-help story-error" : "story-help"}
-          className={styles.storyTextarea} onChange={(event) => setCount(event.target.value.trim().length)}
+          className={styles.storyTextarea} onChange={(event) => { onStoryStart(); setCount(event.target.value.trim().length); }}
         />
         <div className={styles.storyMeta}>
           {state.errors?.story ? <p id="story-error" className={styles.fieldError}>{err(state.errors.story)}</p> : <span />}

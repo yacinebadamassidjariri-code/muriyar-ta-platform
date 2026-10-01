@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import styles from "./insights.module.css";
 
 export const revalidate = 300;
@@ -124,12 +125,14 @@ export default async function InsightsPage({ params }: { params: Promise<{ local
             <h2 id="insights-cta" className={styles.ctaTitle}>{t("ctaTitle")}</h2>
             <p className={styles.ctaBody}>{t("ctaBody")}</p>
             <div className={styles.ctaActions}>
-              <Link href="/contact" className={styles.ctaPrimary}>
+              <TrackedLink href="/contact" className={styles.ctaPrimary}
+                eventType="partner_cta_click" entityType="cta" entityId="insights_contact">
                 {t("ctaContact")}
-              </Link>
-              <Link href="/partner" className={styles.ctaSecondary}>
+              </TrackedLink>
+              <TrackedLink href="/partner" className={styles.ctaSecondary}
+                eventType="partner_cta_click" entityType="cta" entityId="insights_partner">
                 {t("ctaPartner")}
-              </Link>
+              </TrackedLink>
             </div>
           </div>
         </div>

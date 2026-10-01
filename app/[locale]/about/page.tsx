@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from "next/image";
 import { Link } from "@/lib/i18n/navigation";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import styles from "./about.module.css";
 
 export const revalidate = 300;
@@ -166,9 +167,10 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
               <Link href="/submit" className={styles.ctaPrimary}>
                 {t("ctaShareStory")}
               </Link>
-              <Link href="/partner" className={styles.ctaSecondary}>
+              <TrackedLink href="/partner" className={styles.ctaSecondary}
+                eventType="partner_cta_click" entityType="cta" entityId="about_page">
                 {t("ctaPartnerWithUs")}
-              </Link>
+              </TrackedLink>
             </div>
           </div>
         </div>

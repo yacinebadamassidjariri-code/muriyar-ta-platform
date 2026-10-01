@@ -1,7 +1,7 @@
-import { ExternalLink, MapPin, Mail, Phone, Languages, ShieldCheck, Star } from "lucide-react";
+import { MapPin, Mail, Phone, Languages, ShieldCheck, Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { ResourceWebsiteLink } from "@/components/resources/resource-website-link";
 import type { Resource } from "@/lib/data/resources";
 
 export type ResourceCardLabels = {
@@ -124,16 +124,11 @@ export function ResourceCard({
 
       {resource.website_url ? (
         <div className="mt-auto pt-3">
-          <Button asChild variant="secondary" size="sm">
-  <a
-    href={resource.website_url}
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <ExternalLink className="h-4 w-4" aria-hidden="true" />
-    {labels.visitWebsite}
-  </a>
-</Button>
+          <ResourceWebsiteLink
+            href={resource.website_url}
+            resourceName={resource.name}
+            label={labels.visitWebsite}
+          />
         </div>
       ) : null}
     </Card>
