@@ -729,7 +729,12 @@
     "backToList": "Back to stories",
     "authoredBy": "Shared by {author}",
     "notFoundTitle": "Story not found",
-    "notFoundBody": "This story may have been removed or is not yet published."
+    "notFoundBody": "This story may have been removed or is not yet published.",
+    "heroEyebrow": "Their words",
+    "heroTitleLine1": "Stories from",
+    "heroTitleLine2": "her life",
+    "readStory": "Read her story",
+    "readStoryArrow": "Read her story →"
   },
   "resources": {
     "listTitle": "Resources",

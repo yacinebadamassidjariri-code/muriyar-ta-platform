@@ -290,11 +290,31 @@
       "title": "Une voix peut aller loin.",
       "subtitle": "Une histoire partagée ici ne s'arrête pas à la publication. Elle peut aider une autre fille à se sentir moins seule — et aider la société à comprendre ce que les filles vivent vraiment.",
       "steps": [
-        {"num": "1", "title": "Votre voix", "body": "Vous partagez votre expérience avec vos propres mots"},
-        {"num": "2", "title": "Son histoire", "body": "Examinée, éditée avec soin, publiée avec votre consentement"},
-        {"num": "3", "title": "Conversation", "body": "Podcasts et discussions communautaires avec de vraies voix"},
-        {"num": "4", "title": "Thèmes partagés", "body": "Tendances de nombreuses voix, anonymisées et agrégées"},
-        {"num": "5", "title": "Plaidoyer & Recherche", "body": "Des preuves qui peuvent façonner les politiques et la compréhension"}
+        {
+          "num": "1",
+          "title": "Votre voix",
+          "body": "Vous partagez votre expérience avec vos propres mots"
+        },
+        {
+          "num": "2",
+          "title": "Son histoire",
+          "body": "Examinée, éditée avec soin, publiée avec votre consentement"
+        },
+        {
+          "num": "3",
+          "title": "Conversation",
+          "body": "Podcasts et discussions communautaires avec de vraies voix"
+        },
+        {
+          "num": "4",
+          "title": "Thèmes partagés",
+          "body": "Tendances de nombreuses voix, anonymisées et agrégées"
+        },
+        {
+          "num": "5",
+          "title": "Plaidoyer & Recherche",
+          "body": "Des preuves qui peuvent façonner les politiques et la compréhension"
+        }
       ]
     },
     "podcast": {
@@ -709,7 +729,12 @@
     "backToList": "Retour aux récits",
     "authoredBy": "Partagé par {author}",
     "notFoundTitle": "Récit introuvable",
-    "notFoundBody": "Ce récit a peut-être été retiré ou n'est pas encore publié."
+    "notFoundBody": "Ce récit a peut-être été retiré ou n'est pas encore publié.",
+    "heroEyebrow": "Leurs mots",
+    "heroTitleLine1": "Récits de",
+    "heroTitleLine2": "sa vie",
+    "readStory": "Lire son récit",
+    "readStoryArrow": "Lire son récit →"
   },
   "resources": {
     "listTitle": "Ressources",

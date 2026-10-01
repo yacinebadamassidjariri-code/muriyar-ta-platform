@@ -601,7 +601,12 @@
     "backToList": "Back to stories",
     "authoredBy": "Shared by {author}",
     "notFoundTitle": "Story not found",
-    "notFoundBody": "This story may have been removed or is not yet published."
+    "notFoundBody": "This story may have been removed or is not yet published.",
+    "heroEyebrow": "Kalmominsu",
+    "heroTitleLine1": "Labarai daga",
+    "heroTitleLine2": "rayuwarta",
+    "readStory": "Karanta labarinta",
+    "readStoryArrow": "Karanta labarinta →"
   },
   "resources": {
     "listTitle": "Resources",
@@ -728,11 +733,31 @@
       "title": "Murya ɗaya na iya tafiya mai nisa.",
       "subtitle": "Labari da aka raba nan bai tsaya da bugawa ba. Zai iya taimaka wa wata yarinya ta ji kaɗaici — kuma taimakawa al'umma su fahimci abin da 'yan mata suke rayuwa da gaske.",
       "steps": [
-        {"num": "1", "title": "Muryarki", "body": "Ki raba kwarewanki da kalmominki"},
-        {"num": "2", "title": "Labarinta", "body": "An bincika, an gyara da kulawa, an buga da yardarki"},
-        {"num": "3", "title": "Tattaunawa", "body": "Fayafai da tattaunawar al'umma da muryoyi na gaske"},
-        {"num": "4", "title": "Batutuwa da aka raba", "body": "Salon muryoyi da yawa, an cire sunayen kuma an tattara"},
-        {"num": "5", "title": "Kira da Bincike", "body": "Shaidar da za ta iya tsara manufofi da fahimta"}
+        {
+          "num": "1",
+          "title": "Muryarki",
+          "body": "Ki raba kwarewanki da kalmominki"
+        },
+        {
+          "num": "2",
+          "title": "Labarinta",
+          "body": "An bincika, an gyara da kulawa, an buga da yardarki"
+        },
+        {
+          "num": "3",
+          "title": "Tattaunawa",
+          "body": "Fayafai da tattaunawar al'umma da muryoyi na gaske"
+        },
+        {
+          "num": "4",
+          "title": "Batutuwa da aka raba",
+          "body": "Salon muryoyi da yawa, an cire sunayen kuma an tattara"
+        },
+        {
+          "num": "5",
+          "title": "Kira da Bincike",
+          "body": "Shaidar da za ta iya tsara manufofi da fahimta"
+        }
       ]
     },
     "podcast": {
