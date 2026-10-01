@@ -436,7 +436,7 @@ export async function FullHome({ locale }: { locale: Locale }) {
             </h2>
             <p className={styles.insightsBody}>{t("insights.body")}</p>
             <p className={styles.insightsNote}>{t("insights.dataNote")}</p>
-            <Link className={styles.textLink} href="/partner">
+            <Link className={styles.textLink} href="/insights">
               {t("insights.ctaPartner")}
               <ArrowRight aria-hidden="true" />
             </Link>

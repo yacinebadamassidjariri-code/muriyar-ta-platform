@@ -9,6 +9,7 @@ export const mainNav = [
   { key: "stories", href: "/stories" },
   { key: "podcast", href: "/podcast" },
   { key: "resources", href: "/resources" },
+  { key: "insights", href: "/insights" },
   { key: "about", href: "/about" },
 ] as const;
 
@@ -30,6 +31,7 @@ export const footerNav = {
   ],
   organization: [
     { key: "about", href: "/about" },
+    { key: "insights", href: "/insights" },
     { key: "partner", href: "/partner", footerKey: true },
     { key: "contact", href: "/contact" },
   ],
