@@ -388,13 +388,10 @@
 .localTag {
   display: inline-block;
   margin: 0 0 0.45rem;
-  border: 1px solid rgb(184 81 46 / 0.3);
-  border-radius: 999px;
-  padding: 0.2rem 0.7rem;
   color: var(--terra);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
