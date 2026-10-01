@@ -901,6 +901,10 @@
   border-bottom: 1px solid var(--line);
 }
 
+.episodeInfo {
+  min-width: 0;
+}
+
 .episodeNum {
   color: var(--sand);
   font-family: var(--display);
@@ -1089,6 +1093,10 @@
     align-items: center;
     gap: 5rem;
   }
+}
+
+.insightsCopy {
+  min-width: 0;
 }
 
 .insightsBody {
