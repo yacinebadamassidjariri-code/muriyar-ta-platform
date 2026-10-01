@@ -1,27 +1,56 @@
+/* ============================================================
+   Muriyar Ta — Resources & Support page
+   Ivory · Terracotta · Deep indigo · Sand · Charcoal
+   Lora (display) · Source Sans 3 (body)
+   ============================================================ */
+
+/* ── Local aliases ──────────────────────────────────────── */
 .page {
+  --ivory:     var(--mt-ivory);
+  --ivory-d:   var(--mt-ivory-deep);
+  --terra:     var(--mt-terracotta);
+  --terra-h:   var(--mt-terracotta-hover);
+  --terra-l:   var(--mt-terracotta-light);
+  --indigo:    var(--mt-indigo);
+  --indigo-d:  var(--mt-indigo-deep);
+  --sand:      var(--mt-sand);
+  --sand-l:    var(--mt-sand-light);
+  --charcoal:  var(--mt-charcoal);
+  --charcoal-d: var(--mt-charcoal-deep);
+  --muted:     #6B5F52;
+  --faint:     #9A8E82;
+  --on-dark:   #FFF9F0;
+  --on-dark-m: #E2D8CA;
+  --line:      rgb(42 34 24 / 0.12);
+  --line-dark: rgb(255 249 240 / 0.14);
+  --display:   var(--font-display), Georgia, serif;
+
   width: 100%;
-  background: var(--mt-paper-soft);
-  color: var(--mt-ink);
+  background: var(--ivory);
+  color: var(--charcoal);
 }
 
+/* ── Layout shell ────────────────────────────────────────── */
 .shell {
   width: min(100%, var(--mt-content-wide));
   margin-inline: auto;
-  padding: clamp(3.5rem, 7vw, 6rem) var(--mt-gutter) clamp(4.5rem, 8vw, 7rem);
+  padding: clamp(4rem, 7vw, 6.5rem) var(--mt-gutter) clamp(5rem, 9vw, 8rem);
 }
 
+/* ── Hero ────────────────────────────────────────────────── */
 .hero {
-  max-width: 47rem;
+  max-width: 46rem;
+  padding-bottom: clamp(2.5rem, 5vw, 4rem);
+  border-bottom: 1px solid var(--line);
 }
 
-.eyebrow,
-.localTag,
-.recommendedLabel {
+.eyebrow {
+  display: inline-block;
   margin: 0;
-  color: var(--mt-rust);
-  font-size: var(--mt-eyebrow-size);
-  font-weight: 800;
-  letter-spacing: var(--mt-eyebrow-tracking);
+  color: var(--terra);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
 }
 
@@ -31,63 +60,105 @@
 .emptyTitle,
 .crisisTitle,
 .entryTitle {
-  font-family: var(--font-display), Georgia, serif;
-  font-weight: 650;
+  font-family: var(--display);
+  font-weight: 600;
   letter-spacing: -0.025em;
 }
 
 .hero h1 {
-  max-width: 14ch;
-  margin: 0.8rem 0 0;
-  font-size: clamp(3.25rem, 6.5vw, 5.6rem);
+  max-width: 16ch;
+  margin: 0.85rem 0 0;
+  font-size: clamp(3rem, 6vw, 5.2rem);
   line-height: 0.98;
 }
 
 .heroIntro {
-  max-width: 39rem;
-  margin: 1.15rem 0 0;
-  color: var(--mt-text-muted);
-  font-size: clamp(1rem, 1.7vw, 1.12rem);
-  line-height: var(--mt-body-leading);
+  max-width: 38rem;
+  margin: 1.2rem 0 0;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.6vw, 1.1rem);
+  line-height: 1.65;
 }
 
+/* ── Crisis callout ──────────────────────────────────────── */
+/*
+ * Presented as a warm, inviting panel — not a red alert.
+ * Deep indigo background echoes the site's dark sections.
+ * Placed after the hero so it is the first content encountered.
+ */
 .crisisCallout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 1rem 2rem;
+  grid-template-columns: 1fr auto;
+  gap: 1.5rem 3rem;
   align-items: center;
   margin-top: clamp(2.5rem, 5vw, 4rem);
-  border-block: 1px solid var(--mt-divider);
-  border-left: 3px solid var(--mt-rust);
-  padding: 1.25rem 0 1.25rem 1.25rem;
+  border-radius: 4px;
+  background: var(--indigo-d);
+  padding: clamp(1.5rem, 3vw, 2rem) clamp(1.5rem, 3vw, 2.5rem);
+  color: var(--on-dark);
 }
 
 .crisisCallout h2 {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 800;
+  font-family: var(--display);
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--on-dark);
 }
 
 .crisisCallout p {
-  margin: 0.3rem 0 0;
-  color: var(--mt-text-muted);
-  font-size: 0.88rem;
-  line-height: 1.55;
+  margin: 0.45rem 0 0;
+  color: var(--on-dark-m);
+  font-size: 0.9rem;
+  line-height: 1.6;
 }
 
+/* Ghost-button CTA for the dark-background crisis panel */
+.crisisCta {
+  flex-shrink: 0;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1.5px solid rgb(255 249 240 / 0.35);
+  border-radius: 999px;
+  padding: 0.65rem 1.35rem;
+  background: transparent;
+  color: var(--on-dark);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.crisisCta:hover {
+  background: rgb(255 249 240 / 0.1);
+  border-color: rgb(255 249 240 / 0.6);
+}
+
+.crisisCta:focus-visible {
+  outline: 2px solid var(--terra-l);
+  outline-offset: 3px;
+}
+
+/* ── Shared link treatments ──────────────────────────────── */
 .textLink,
 .contactLink,
 .visitLink,
 .showButton,
 .paginationLink,
 .backLink {
-  color: var(--mt-ink);
+  color: var(--charcoal);
   font-size: 0.82rem;
-  font-weight: 750;
+  font-weight: 700;
   text-decoration: underline;
-  text-decoration-color: var(--mt-rust-bright);
+  text-decoration-color: var(--terra-l);
   text-underline-offset: 0.28em;
-  transition: color var(--mt-motion), text-decoration-color var(--mt-motion);
+  transition: color 150ms ease, text-decoration-color 150ms ease;
 }
 
 .textLink:hover,
@@ -96,30 +167,38 @@
 .showButton:hover,
 .paginationLink:hover,
 .backLink:hover {
-  color: var(--mt-rust-hover);
+  color: var(--terra-h);
   text-decoration-color: currentColor;
 }
 
+/* ── Browse controls ─────────────────────────────────────── */
+/*
+ * Two columns: categories left, search right.
+ * Categories read as an editorial navigation, not a tag cloud.
+ * Search sits quietly to the right.
+ */
 .controls {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.65fr);
-  gap: 2rem clamp(3rem, 7vw, 7rem);
-  align-items: end;
-  margin-top: clamp(3rem, 6vw, 5rem);
-  border-top: 1px solid var(--mt-divider);
-  padding-top: 1.75rem;
+  grid-template-columns: minmax(0, 1.4fr) minmax(16rem, 0.6fr);
+  gap: 2rem clamp(3rem, 6vw, 6rem);
+  align-items: start;
+  margin-top: clamp(2.5rem, 5vw, 4.5rem);
 }
 
 .controlLabel {
-  margin: 0 0 0.85rem;
-  font-size: 0.78rem;
-  font-weight: 800;
+  margin: 0 0 1rem;
+  color: var(--terra);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 
+/* Category pills — rounder, more editorial */
 .categoryList {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.55rem 0.65rem;
+  gap: 0.5rem 0.6rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -127,37 +206,42 @@
 
 .categoryLink {
   display: inline-flex;
-  border: 1px solid var(--mt-divider);
-  padding: 0.55rem 0.8rem;
-  color: var(--mt-text-muted);
-  font-size: 0.78rem;
-  font-weight: 700;
+  align-items: center;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
   line-height: 1.2;
   text-decoration: none;
-  transition: border-color var(--mt-motion), color var(--mt-motion), background var(--mt-motion);
+  transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
 }
 
 .categoryLink:hover {
-  border-color: var(--mt-rust);
-  color: var(--mt-ink);
+  border-color: var(--terra);
+  color: var(--charcoal);
+  background: rgb(184 81 46 / 0.05);
 }
 
 .categoryActive {
-  border-color: var(--mt-slate);
-  background: var(--mt-slate);
-  color: var(--mt-paper);
+  border-color: var(--indigo);
+  background: var(--indigo);
+  color: var(--on-dark);
 }
 
 .categoryActive:hover {
-  border-color: var(--mt-slate);
-  color: var(--mt-paper);
+  border-color: var(--indigo-d);
+  background: var(--indigo-d);
+  color: var(--on-dark);
 }
 
+/* Search — editorial underline style, no box */
 .searchForm {
   display: flex;
   align-items: stretch;
   width: 100%;
-  border-bottom: 1px solid var(--mt-ink);
+  border-bottom: 1.5px solid var(--charcoal);
 }
 
 .searchField {
@@ -172,35 +256,45 @@
   left: 0;
   width: 1rem;
   height: 1rem;
-  color: var(--mt-text-faint);
+  color: var(--faint);
   transform: translateY(-50%);
   pointer-events: none;
 }
 
 .searchInput {
   width: 100%;
-  height: 2.8rem;
+  height: 2.75rem;
   border: 0;
   background: transparent;
-  padding: 0 0.7rem 0 1.7rem;
-  color: var(--mt-ink);
+  padding: 0 0.5rem 0 1.75rem;
+  color: var(--charcoal);
   font: inherit;
+  font-size: 0.92rem;
 }
 
 .searchInput::placeholder {
-  color: var(--mt-text-faint);
+  color: var(--faint);
 }
 
 .searchButton {
+  flex-shrink: 0;
   border: 0;
   background: transparent;
-  padding: 0 0 0 1rem;
-  color: var(--mt-ink);
-  font-size: 0.8rem;
+  padding: 0 0 0 0.9rem;
+  color: var(--charcoal);
+  font-size: 0.78rem;
   font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   cursor: pointer;
+  transition: color 150ms ease;
 }
 
+.searchButton:hover {
+  color: var(--terra-h);
+}
+
+/* ── Results / directory areas ───────────────────────────── */
 .directory,
 .results {
   margin-top: clamp(3.5rem, 7vw, 6rem);
@@ -211,49 +305,60 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line);
 }
 
 .choosePrompt {
-  margin: 1.5rem 0 0;
-  color: var(--mt-text-muted);
-  font-size: 0.9rem;
+  margin: clamp(2rem, 4vw, 3.5rem) 0 0;
+  max-width: 30rem;
+  color: var(--muted);
+  font-family: var(--display);
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
 }
 
 .sectionTitle {
   margin: 0;
-  font-size: clamp(2.3rem, 4.5vw, 3.7rem);
-  line-height: 1;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.02;
 }
 
+/* ── Cluster sections ────────────────────────────────────── */
 .cluster {
   margin-top: clamp(2.5rem, 5vw, 4rem);
-  border-top: 1px solid var(--mt-divider);
-  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+  padding-top: clamp(1.5rem, 3vw, 2.5rem);
 }
 
 .clusterHeader {
   display: grid;
-  grid-template-columns: minmax(12rem, 0.7fr) minmax(0, 1.3fr);
-  gap: 1rem clamp(2rem, 6vw, 6rem);
+  grid-template-columns: minmax(12rem, 0.65fr) minmax(0, 1.35fr);
+  gap: 1rem clamp(2.5rem, 6vw, 6rem);
+  align-items: start;
 }
 
 .clusterTitle {
   margin: 0;
-  font-size: clamp(1.75rem, 3vw, 2.45rem);
-  line-height: 1.08;
+  font-size: clamp(1.6rem, 2.8vw, 2.25rem);
+  line-height: 1.1;
 }
 
 .clusterIntro {
   max-width: 42rem;
   margin: 0;
-  color: var(--mt-text-muted);
-  font-size: 0.9rem;
-  line-height: 1.6;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.65;
 }
 
+/* ── Entry groups ────────────────────────────────────────── */
 .entryGroup {
-  margin-top: 1.4rem;
-  border-top: 1px solid var(--mt-divider-soft);
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--line);
 }
 
 .recommendedGroup {
@@ -261,41 +366,58 @@
 }
 
 .recommendedLabel {
-  margin-bottom: 0.65rem;
-  color: var(--mt-text-faint);
+  display: inline-block;
+  margin: 0 0 0.75rem;
+  color: var(--terra);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
 }
 
+/* ── Single resource entry ───────────────────────────────── */
 .entry {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(10rem, auto);
-  gap: 1.25rem clamp(2rem, 5vw, 5rem);
-  padding: 1.65rem 0;
-  border-bottom: 1px solid var(--mt-divider-soft);
+  gap: 1rem clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.localTag {
+  display: inline-block;
+  margin: 0 0 0.45rem;
+  border: 1px solid rgb(184 81 46 / 0.3);
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  color: var(--terra);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .entryTitle {
   margin: 0;
-  font-size: clamp(1.45rem, 2.5vw, 2rem);
-  line-height: 1.12;
-}
-
-.localTag {
-  margin-bottom: 0.4rem;
+  font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+  line-height: 1.15;
 }
 
 .entryDescription {
-  max-width: 47rem;
-  margin: 0.65rem 0 0;
-  color: var(--mt-text-muted);
-  font-size: 0.93rem;
-  line-height: 1.6;
+  max-width: 45rem;
+  margin: 0.6rem 0 0;
+  color: var(--muted);
+  font-size: 0.91rem;
+  line-height: 1.65;
 }
 
 .metadata {
   margin: 0.65rem 0 0;
-  color: var(--mt-text-faint);
+  color: var(--faint);
   font-size: 0.72rem;
   line-height: 1.5;
+  letter-spacing: 0.02em;
 }
 
 .entryActions {
@@ -304,71 +426,80 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 0.55rem;
+  padding-top: 0.25rem;
   text-align: right;
 }
 
 .contactLink {
   max-width: 18rem;
   overflow-wrap: anywhere;
-  color: var(--mt-text-muted);
+  color: var(--muted);
   font-weight: 650;
-  text-decoration-color: var(--mt-divider);
+  text-decoration-color: var(--line);
 }
 
 .visitLink::after,
 .textLink::after {
-  content: " \2197";
-  color: var(--mt-rust);
+  content: "\00A0\2197";
+  color: var(--terra);
 }
 
+/* ── Show more / less button ─────────────────────────────── */
 .showButton {
-  margin-top: 1.2rem;
+  margin-top: 1.25rem;
   border: 0;
   background: transparent;
-  padding: 0 0 0.2rem;
+  padding: 0;
   cursor: pointer;
+  font-family: inherit;
 }
 
+/* ── Pagination ──────────────────────────────────────────── */
 .pagination {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-top: 1.5rem;
-  color: var(--mt-text-faint);
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  color: var(--faint);
   font-size: 0.78rem;
 }
 
 .paginationControls {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .paginationDisabled {
-  color: var(--mt-text-faint);
+  color: var(--faint);
   font-size: 0.82rem;
+  opacity: 0.45;
 }
 
+/* ── Empty state ─────────────────────────────────────────── */
 .empty {
   max-width: 34rem;
-  margin-top: 2rem;
-  border-block: 1px solid var(--mt-divider);
-  padding: 2rem 0;
+  margin-top: 2.5rem;
+  padding: 2.5rem 0;
+  border-block: 1px solid var(--line);
 }
 
 .emptyTitle {
   margin: 0;
-  font-size: 1.85rem;
+  font-size: 1.75rem;
 }
 
 .emptyBody {
-  margin: 0.55rem 0 0;
-  color: var(--mt-text-muted);
-  font-size: 0.9rem;
-  line-height: 1.6;
+  margin: 0.65rem 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.65;
 }
 
+/* ── Crisis detail page ──────────────────────────────────── */
 .crisisShell {
   width: min(100%, calc(var(--mt-reading-width) + (2 * var(--mt-gutter))));
   margin-inline: auto;
@@ -379,14 +510,14 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  color: var(--mt-text-muted);
+  color: var(--muted);
   text-decoration: none;
 }
 
 .crisisHeader {
   max-width: 43rem;
   margin-top: 3rem;
-  border-left: 3px solid var(--mt-rust);
+  border-left: 3px solid var(--terra);
   padding-left: clamp(1rem, 3vw, 1.5rem);
 }
 
@@ -398,16 +529,17 @@
 
 .crisisIntro {
   margin: 1rem 0 0;
-  color: var(--mt-text-muted);
+  color: var(--muted);
   font-size: 1rem;
   line-height: 1.65;
 }
 
 .crisisList {
   margin-top: clamp(2.5rem, 5vw, 4rem);
-  border-top: 1px solid var(--mt-divider);
+  border-top: 1px solid var(--line);
 }
 
+/* ── Focus rings ─────────────────────────────────────────── */
 .categoryLink:focus-visible,
 .searchInput:focus-visible,
 .searchButton:focus-visible,
@@ -417,43 +549,51 @@
 .showButton:focus-visible,
 .paginationLink:focus-visible,
 .backLink:focus-visible {
-  outline: var(--mt-focus-ring);
+  outline: 2px solid var(--terra);
   outline-offset: 3px;
 }
 
-@media (max-width: 48rem) {
-  .shell {
-    padding-top: 3rem;
-  }
-
-  .controls,
-  .clusterHeader,
-  .entry,
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 52rem) {
   .crisisCallout {
     grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .crisisCallout .textLink {
+    align-self: flex-start;
   }
 
   .controls {
-    gap: 1.75rem;
+    grid-template-columns: 1fr;
+    gap: 2rem;
   }
 
-  .resultsHeader {
-    align-items: flex-start;
-    flex-direction: column;
+  .clusterHeader {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  .entry {
+    grid-template-columns: 1fr;
   }
 
   .entryActions {
     align-items: flex-start;
     text-align: left;
+    padding-top: 0;
   }
 
-  .crisisCallout {
-    align-items: start;
+  .resultsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
   }
 }
 
 @media (max-width: 28rem) {
   .searchButton {
     padding-left: 0.65rem;
+    font-size: 0.72rem;
   }
 }
