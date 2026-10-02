@@ -12,10 +12,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 const CHANNELS = [
-  { key: "general",      email: "hello@example.org" },
-  { key: "partnerships", email: "partnerships@example.org" },
-  { key: "media",        email: "media@example.org" },
-  { key: "research",     email: "research@example.org" },
+  { key: "general",      email: "muriyarta@gmail.com" },
+  { key: "partnerships", email: "muriyarta@gmail.com" },
+  { key: "media",        email: "muriyarta@gmail.com" },
+  { key: "research",     email: "muriyarta@gmail.com" },
+] as const;
+
+const SOCIAL = [
+  { key: "instagram", label: "Instagram", href: "https://www.instagram.com/muriyarta" },
+  { key: "facebook",  label: "Facebook",  href: "https://www.facebook.com/61592216060446" },
+  { key: "linkedin",  label: "LinkedIn",  href: "https://www.linkedin.com/company/muriyar-ta/" },
 ] as const;
 
 const FAQ_KEYS = ["anonymity", "response_time", "partner", "research"] as const;
@@ -104,6 +110,26 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
               </details>
             ))}
           </div>
+        </section>
+
+        {/* ── FOLLOW ────────────────────────────────────────────── */}
+        <section className={styles.followSection} aria-labelledby="contact-follow">
+          <p className={styles.eyebrow}>{t("followEyebrow")}</p>
+          <h2 id="contact-follow" className={styles.followTitle}>{t("followTitle")}</h2>
+          <ul className={styles.socialList}>
+            {SOCIAL.map(({ key: _key, label, href }) => (
+              <li key={label}>
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.socialLink}
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
         </section>
 
       </div>

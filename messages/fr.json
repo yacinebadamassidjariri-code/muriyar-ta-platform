@@ -735,7 +735,9 @@
         "a": "Les chercheurs peuvent nous écrire via l'adresse Recherche avec une courte description de leur projet. Chaque demande est examinée avec attention afin de protéger les personnes qui nous confient leur récit."
       }
     },
-    "footerNote": "Muriyar Ta s'engage à protéger la sécurité et la dignité des personnes qui partagent leur récit avec nous. Merci de ne pas inclure d'informations identifiantes concernant des tiers dans votre message."
+    "footerNote": "Muriyar Ta s'engage à protéger la sécurité et la dignité des personnes qui partagent leur récit avec nous. Merci de ne pas inclure d'informations identifiantes concernant des tiers dans votre message.",
+    "followEyebrow": "Suivre Muriyar Ta",
+    "followTitle": "Suivre"
   },
   "nav": {
     "stories": "Récits",

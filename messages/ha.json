@@ -589,7 +589,9 @@
         "a": "Researchers can email us at the Research channel with a short description of their project. We review requests carefully to protect the people who share their stories with us."
       }
     },
-    "footerNote": "Muriyar Ta is committed to protecting the safety and dignity of the people who share their stories with us. Please do not include identifying details about others in your message."
+    "footerNote": "Muriyar Ta is committed to protecting the safety and dignity of the people who share their stories with us. Please do not include identifying details about others in your message.",
+    "followEyebrow": "Bi Muriyar Ta",
+    "followTitle": "Bi mu"
   },
   "nav": {
     "stories": "Stories",
