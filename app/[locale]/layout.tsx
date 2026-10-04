@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Source_Sans_3, Lora } from "next/font/google";
@@ -74,7 +75,9 @@ export default async function LocaleLayout({
       <body className="flex min-h-dvh flex-col bg-surface font-sans text-ink antialiased">
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            <OutreachTracker />
+            <Suspense fallback={null}>
+              <OutreachTracker />
+            </Suspense>
             <PublicRouteChrome>
               <SkipLink />
               <Header />
