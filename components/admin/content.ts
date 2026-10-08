@@ -63,7 +63,10 @@ const en = {
     "Assignment, risk review, editorial preparation, and accountable decisions for anonymous submissions.",
   mfaRequiredTitle: "Additional verification required",
   mfaRequiredBody:
-    "Administrative access requires a verified multi-factor session. Enrollment and recovery controls will be completed in the reviewed MFA follow-up.",
+    "Administrative access requires a verified multi-factor session. Visit the MFA page to enrol or verify.",
+  mfaSetupLink: "Set up two-factor authentication",
+  mfaMissingAdvisory:
+    "Your account does not have a verified authenticator factor. Set up two-factor authentication to protect this panel.",
 };
 
 const fr: typeof en = {
@@ -121,7 +124,10 @@ const fr: typeof en = {
     "Attribution, évaluation du risque, préparation éditoriale et décisions responsables pour les soumissions anonymes.",
   mfaRequiredTitle: "Vérification supplémentaire requise",
   mfaRequiredBody:
-    "L’accès administratif exige une session multifacteur vérifiée. L’inscription et la récupération seront achevées dans le prochain volet MFA examiné.",
+    "L’accès administratif exige une session multifacteur vérifiée. Rendez-vous sur la page MFA pour vous inscrire ou vérifier.",
+  mfaSetupLink: "Configurer l’authentification à deux facteurs",
+  mfaMissingAdvisory:
+    "Votre compte ne dispose pas d’un facteur d’authentification vérifié. Configurez l’authentification à deux facteurs pour protéger ce panneau.",
 };
 
 export type AdminCopy = typeof en;

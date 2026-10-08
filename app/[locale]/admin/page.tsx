@@ -87,7 +87,20 @@ export default async function AdminPage({
         </dl>
       </section>
 
-      {!isAdminMfaEnforcementEnabled() ? (
+      {!mfa.enrolled ? (
+        <aside className="flex gap-3 rounded-lg border border-warning-500/30 bg-warning-50 p-4 text-sm text-warning-700">
+          <ShieldAlert aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0" />
+          <div className="space-y-2">
+            <p>{copy.mfaMissingAdvisory}</p>
+            <Link
+              href="/mfa"
+              className="inline-block font-semibold underline underline-offset-4 hover:text-warning-900"
+            >
+              {copy.mfaSetupLink} →
+            </Link>
+          </div>
+        </aside>
+      ) : !isAdminMfaEnforcementEnabled() ? (
         <aside className="flex gap-3 rounded-lg border border-warning-500/30 bg-warning-50 p-4 text-sm text-warning-700">
           <ShieldAlert aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0" />
           <p>{copy.mfaAdvisory}</p>

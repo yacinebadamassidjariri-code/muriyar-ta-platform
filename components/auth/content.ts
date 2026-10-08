@@ -30,6 +30,27 @@ export type AuthCopy = {
   authErrorTitle: string;
   authErrorBody: string;
   requestNewLink: string;
+  // MFA enrollment
+  mfaEnrollTitle: string;
+  mfaEnrollBody: string;
+  mfaEnrollScanHeading: string;
+  mfaEnrollScanBody: string;
+  mfaEnrollManualHeading: string;
+  mfaEnrollCodeLabel: string;
+  mfaEnrollCodeHelp: string;
+  mfaEnrollSubmit: string;
+  mfaEnrollPending: string;
+  mfaEnrollError: string;
+  mfaEnrollSuccess: string;
+  // MFA verification (already enrolled)
+  mfaVerifyTitle: string;
+  mfaVerifyBody: string;
+  mfaVerifyCodeLabel: string;
+  mfaVerifyCodeHelp: string;
+  mfaVerifySubmit: string;
+  mfaVerifyPending: string;
+  mfaVerifyError: string;
+  mfaVerifySignOut: string;
 };
 
 const en: AuthCopy = {
@@ -70,6 +91,34 @@ const en: AuthCopy = {
   authErrorBody:
     "The invitation or recovery link is invalid or has expired. Request a new link to continue.",
   requestNewLink: "Request a new recovery link",
+  // MFA enrollment
+  mfaEnrollTitle: "Set up two-factor authentication",
+  mfaEnrollBody:
+    "Scan the QR code with an authenticator app — Google Authenticator, Authy, or 1Password — then enter the six-digit code to confirm.",
+  mfaEnrollScanHeading: "Scan this code",
+  mfaEnrollScanBody:
+    "Open your authenticator app, tap the + button, and scan this code.",
+  mfaEnrollManualHeading: "Or enter the key manually",
+  mfaEnrollCodeLabel: "Verification code",
+  mfaEnrollCodeHelp:
+    "Enter the 6-digit code shown in your authenticator app.",
+  mfaEnrollSubmit: "Confirm and enable",
+  mfaEnrollPending: "Verifying",
+  mfaEnrollError:
+    "The code was not accepted. Wait for the timer to refresh and try the new code.",
+  mfaEnrollSuccess:
+    "Two-factor authentication is now active. Sign in again to verify it works.",
+  // MFA verification
+  mfaVerifyTitle: "Enter your authenticator code",
+  mfaVerifyBody:
+    "Open your authenticator app and enter the current six-digit code.",
+  mfaVerifyCodeLabel: "6-digit code",
+  mfaVerifyCodeHelp: "The code changes every 30 seconds.",
+  mfaVerifySubmit: "Verify and continue",
+  mfaVerifyPending: "Verifying",
+  mfaVerifyError:
+    "The code was not accepted. Check your authenticator app and try again.",
+  mfaVerifySignOut: "Sign out",
 };
 
 const fr: AuthCopy = {
@@ -113,6 +162,34 @@ const fr: AuthCopy = {
   authErrorBody:
     "Le lien d’invitation ou de récupération est invalide ou a expiré. Demandez un nouveau lien pour continuer.",
   requestNewLink: "Demander un nouveau lien",
+  // MFA enrollment
+  mfaEnrollTitle: "Configurer l’authentification à deux facteurs",
+  mfaEnrollBody:
+    "Scannez le code QR avec une application d’authentification — Google Authenticator, Authy ou 1Password — puis entrez le code à six chiffres pour confirmer.",
+  mfaEnrollScanHeading: "Scanner ce code",
+  mfaEnrollScanBody:
+    "Ouvrez votre application d’authentification, appuyez sur +, et scannez ce code.",
+  mfaEnrollManualHeading: "Ou entrez la clé manuellement",
+  mfaEnrollCodeLabel: "Code de vérification",
+  mfaEnrollCodeHelp:
+    "Entrez le code à 6 chiffres affiché dans votre application d’authentification.",
+  mfaEnrollSubmit: "Confirmer et activer",
+  mfaEnrollPending: "Vérification",
+  mfaEnrollError:
+    "Le code n’a pas été accepté. Attendez le prochain code et réessayez.",
+  mfaEnrollSuccess:
+    "L’authentification à deux facteurs est maintenant active. Reconnectez-vous pour vérifier.",
+  // MFA verification
+  mfaVerifyTitle: "Entrez votre code d’authentification",
+  mfaVerifyBody:
+    "Ouvrez votre application d’authentification et entrez le code à six chiffres actuel.",
+  mfaVerifyCodeLabel: "Code à 6 chiffres",
+  mfaVerifyCodeHelp: "Le code change toutes les 30 secondes.",
+  mfaVerifySubmit: "Vérifier et continuer",
+  mfaVerifyPending: "Vérification",
+  mfaVerifyError:
+    "Le code n’a pas été accepté. Vérifiez votre application et réessayez.",
+  mfaVerifySignOut: "Se déconnecter",
 };
 
 export function getAuthCopy(locale: string): AuthCopy {
