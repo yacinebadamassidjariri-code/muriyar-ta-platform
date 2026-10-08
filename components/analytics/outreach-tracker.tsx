@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { recordEvent } from "@/lib/actions/record-event";
 
@@ -41,7 +41,7 @@ function extractSlug(params: URLSearchParams): string | null {
   return null;
 }
 
-export function OutreachTracker() {
+function OutreachTrackerInner() {
   const searchParams = useSearchParams();
   const fired = useRef(false);
 
@@ -54,4 +54,18 @@ export function OutreachTracker() {
   }, []); // empty deps: run once on mount, never on re-render or navigation
 
   return null;
+}
+
+/**
+ * Suspense wrapper ensures useSearchParams() never blocks the page render.
+ * The outer <Suspense> in the locale layout is kept as a second layer of
+ * defence, but Next.js requires the boundary to be co-located with the
+ * component that calls useSearchParams().
+ */
+export function OutreachTracker() {
+  return (
+    <Suspense fallback={null}>
+      <OutreachTrackerInner />
+    </Suspense>
+  );
 }
