@@ -35,8 +35,18 @@ export async function submitStory(
   const { ok, errors, data } = validateSubmission(input);
   if (!ok) return { status: "error", errors };
 
+  let supabase;
   try {
-    const supabase = await createClient();
+    supabase = await createClient();
+  } catch (initErr) {
+    // Client construction threw — likely a missing env var.
+    console.error("[submit-story] supabase client init failed", {
+      error: initErr instanceof Error ? initErr.message : String(initErr),
+    });
+    return { status: "error", errors: { form: "submit_failed" } };
+  }
+
+  try {
     const { error } = await supabase.rpc("submit_story", {
       p_body: data.story,
       p_language_code: data.language,
@@ -69,6 +79,14 @@ export async function submitStory(
       if (code === "age_out_of_range") {
         return { status: "error", errors: { age: "age_invalid" } };
       }
+      // Unknown RPC error — log structured details for diagnostics.
+      // No form data, story content, or personal information is logged.
+      console.error("[submit-story] rpc error", {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      });
       return { status: "error", errors: { form: "submit_failed" } };
     }
 
@@ -76,7 +94,13 @@ export async function submitStory(
     void recordEvent("submission_completed", "locale", input.locale);
 
     return { status: "success" };
-  } catch {
+  } catch (err) {
+    // Unexpected exception (network failure, serialisation error, etc.).
+    // No form data, story content, or personal information is logged.
+    console.error("[submit-story] unexpected exception", {
+      error: err instanceof Error ? err.message : String(err),
+      type: err instanceof Error ? err.constructor.name : typeof err,
+    });
     return { status: "error", errors: { form: "submit_failed" } };
   }
 }
