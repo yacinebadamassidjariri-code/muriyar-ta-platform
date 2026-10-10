@@ -3,6 +3,7 @@ import "server-only";
 import { getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getProfile, getUser, type Profile } from "@/lib/auth/session";
+import { getStaffMfaStatus } from "@/lib/auth/mfa-server";
 import type { Permission } from "@/lib/constants/permissions";
 
 export type AdminActionErrorCode =
@@ -53,6 +54,13 @@ export async function authorizeAdminAction(
     !profile.permissions.includes("admin.access") ||
     !profile.permissions.includes(permission)
   ) {
+    return { ok: false, error: "forbidden", requestId, locale };
+  }
+
+  // AAL2 is required for all administrative mutations. This check mirrors the
+  // require_aal2() guard inside each sensitive RPC; both layers must pass.
+  const mfa = await getStaffMfaStatus();
+  if (!mfa.verifiedForSession) {
     return { ok: false, error: "forbidden", requestId, locale };
   }
 
