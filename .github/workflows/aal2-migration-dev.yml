@@ -1,62 +1,42 @@
-name: AAL2 Migration – Development Only
+name: AAL2 Migration – Preflight (Development)
 
 # ── Trigger ──────────────────────────────────────────────────────────────────
-# Manual only.  Never runs automatically on push or schedule.
-# Requires explicit "Run workflow" click in GitHub Actions UI.
+# Read-only preflight: inspects the dev database and reports what the apply
+# workflow will do.  Runs manually before triggering aal2-migration-apply-dev.
+# Never mutates the database.
 on:
   workflow_dispatch:
     inputs:
       confirmed_project_ref:
         description: >
-          Type the dev project ref exactly to confirm target
-          (must match DEV_PROJECT_REF secret — prevents accidental prod runs).
+          Type the dev project ref to confirm target (must match DEV_PROJECT_REF).
         required: true
         type: string
-      dry_run:
-        description: 'Dry run only — show pending migrations without applying'
-        required: false
-        default: 'false'
-        type: choice
-        options: ['false', 'true']
 
-# ── Concurrency ───────────────────────────────────────────────────────────────
-# Only one migration run at a time; never cancel a running migration mid-flight.
 concurrency:
   group: aal2-migration-dev
   cancel-in-progress: false
 
-# ── Permissions ───────────────────────────────────────────────────────────────
 permissions:
-  contents: read   # read repo; nothing else
+  contents: read
 
-# ── Default shell ─────────────────────────────────────────────────────────────
-# bash -o pipefail ensures pipe failures propagate; required for PIPESTATUS
-# and for the psql | tee pattern in run-tests.
 defaults:
   run:
     shell: bash -euo pipefail {0}
 
 jobs:
-  # ── Job 1: Preflight (read-only) ────────────────────────────────────────────
   preflight:
     name: Preflight – verify target and inspect schema
     runs-on: ubuntu-22.04
-    environment: development   # <── requires manual approval if configured
+    environment: development
 
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.DEV_SUPABASE_ACCESS_TOKEN }}
-      # Direct Postgres URL (port 5432, not pooler) used for read-only psql queries.
-      # Format: postgresql://postgres.<project-ref>:<password>@<host>:5432/postgres
       DEV_DB_URL: ${{ secrets.DEV_DB_URL }}
       DEV_PROJECT_REF: ${{ secrets.DEV_PROJECT_REF }}
 
-    outputs:
-      project_verified: ${{ steps.guard.outputs.project_verified }}
-      migration_pending: ${{ steps.pending.outputs.migration_pending }}
-
     steps:
-      # ── 0. Install Supabase CLI ─────────────────────────────────────────────
-      - name: Install Supabase CLI
+      - name: Install Supabase CLI v2.120.0
         run: |
           curl -fsSL \
             "https://github.com/supabase/cli/releases/download/v2.120.0/supabase_linux_amd64.tar.gz" \
@@ -65,64 +45,123 @@ jobs:
           sudo mv /tmp/supabase /usr/local/bin/supabase
           supabase --version
 
-      # ── 1. Checkout ─────────────────────────────────────────────────────────
-      - name: Checkout dev branch
+      - name: Checkout dev/aal2-enforcement
         uses: actions/checkout@v4
         with:
           ref: dev/aal2-enforcement
 
-      # ── 2. Guard: confirm input matches secret ───────────────────────────────
-      - name: Guard – confirm project ref matches secret
-        id: guard
+      # ── Guard 1: input must match secret ────────────────────────────────────
+      - name: Guard – input project ref matches DEV_PROJECT_REF secret
         run: |
           INPUT="${{ github.event.inputs.confirmed_project_ref }}"
-          SECRET="${{ secrets.DEV_PROJECT_REF }}"
-
-          if [ -z "$SECRET" ]; then
-            echo "::error::DEV_PROJECT_REF secret is not set. See workflow README."
+          if [ -z "$DEV_PROJECT_REF" ]; then
+            echo "::error::DEV_PROJECT_REF secret is not set."
             exit 1
           fi
-          if [ "$INPUT" != "$SECRET" ]; then
-            echo "::error::Input project ref '${INPUT}' does not match DEV_PROJECT_REF secret."
-            echo "::error::This workflow targets development only. Aborting."
+          if [ "$INPUT" != "$DEV_PROJECT_REF" ]; then
+            echo "::error::Input '${INPUT}' does not match DEV_PROJECT_REF."
+            echo "::error::This workflow targets development only."
             exit 1
           fi
-          echo "::notice::Project ref confirmed: ${SECRET}"
-          echo "project_verified=true" >> "$GITHUB_OUTPUT"
+          echo "::notice::Input project ref confirmed."
 
-      # ── 3. Cross-check: DEV_DB_URL must embed DEV_PROJECT_REF ───────────────
-      # Extracts the project ref from the DB URL username field
-      # (postgres.<project-ref>) and verifies it matches the secret.
-      # This catches a misconfigured DEV_DB_URL pointing at the wrong project
-      # before any read queries run.
-      - name: Guard – verify DEV_DB_URL project ref matches DEV_PROJECT_REF
+      # ── Guard 2: verify DEV_PROJECT_REF is not production via Management API ──
+      # Uses the Supabase Management API to look up the project by ref ID.
+      # This works regardless of DB URL format (direct port 5432 or pooler 6543)
+      # because it does not parse the connection string.
+      - name: Guard – verify project is not production via Management API
         run: |
-          # URL username is everything between "//" and the first "@"
-          USERINFO=$(echo "$DEV_DB_URL" | sed -E 's|^[^/]+//([^@]+)@.*|\1|')
-          # Username is left of ":", project ref is right of "."
-          USERNAME=$(echo "$USERINFO" | cut -d: -f1)
-          URL_REF=$(echo "$USERNAME" | cut -d. -f2-)
+          # jq is pre-installed on ubuntu-22.04 GitHub runners.
+          PROJECT_NAME=$(curl -fsSL \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            "https://api.supabase.com/v1/projects" \
+            | jq -r --arg ref "$DEV_PROJECT_REF" \
+                '.[] | select(.id == $ref) | .name // empty')
 
-          if [ -z "$URL_REF" ]; then
-            echo "::error::Could not extract project ref from DEV_DB_URL username '${USERNAME}'."
-            echo "::error::Expected format: postgresql://postgres.<project-ref>:<password>@<host>:5432/postgres"
+          if [ -z "$PROJECT_NAME" ]; then
+            echo "::error::DEV_PROJECT_REF '${DEV_PROJECT_REF}' not found in projects for this token."
+            echo "::error::Check DEV_SUPABASE_ACCESS_TOKEN has access to the dev project."
+            exit 1
+          fi
+          echo "::notice::DEV_PROJECT_REF resolves to: ${PROJECT_NAME}"
+
+          LOWER=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]')
+          if echo "$LOWER" | grep -q 'prod'; then
+            echo "::error::Project name '${PROJECT_NAME}' contains 'prod'. Aborting."
             exit 1
           fi
 
-          if [ "$URL_REF" != "$DEV_PROJECT_REF" ]; then
-            echo "::error::DEV_DB_URL contains project ref '${URL_REF}' but DEV_PROJECT_REF is '${DEV_PROJECT_REF}'."
-            echo "::error::These must match. Check your repository secrets."
-            exit 1
-          fi
-          echo "::notice::DEV_DB_URL project ref matches DEV_PROJECT_REF (${DEV_PROJECT_REF})."
+          echo "::notice::Testing psql connectivity to DEV_DB_URL …"
+          psql "$DEV_DB_URL" --no-password -c "SELECT 1 AS connectivity_check;" \
+            || { echo "::error::psql cannot connect to DEV_DB_URL."; exit 1; }
+          echo "::notice::psql connectivity confirmed."
 
-      # ── 4. Preflight queries via psql ───────────────────────────────────────
+      # ── Preflight queries ───────────────────────────────────────────────────
       - name: Preflight – migration ledger
         run: |
-          echo "=== Remote migration history ==="
-          psql "$DEV_DB_URL" -c \
-            "SELECT version, name FROM supabase_migrations.schema_migrations ORDER BY version;" \
-            --no-password
+          echo "=== Applied migrations on remote ==="
+          psql "$DEV_DB_URL" --no-password -c \
+            "SELECT version, name
+             FROM supabase_migrations.schema_migrations
+             ORDER BY version;"
+
+      - name: Preflight – pending migrations (what apply will run)
+        id: pending
+        run: |
+          echo "=== Pending migrations (dry-run) ==="
+          supabase db push \
+            --project-ref "$DEV_PROJECT_REF" \
+            --dry-run \
+            2>&1 | tee /tmp/dry_run.txt || true
+          cat /tmp/dry_run.txt
+
+          if grep -q "20261010000000_aal2_enforcement" /tmp/dry_run.txt; then
+            echo "::notice::AAL2 migration is pending."
+          else
+            echo "::notice::AAL2 migration not found in pending list (may already be applied)."
+          fi
+
+      # ── Guard 3: no unexpected pending migrations ────────────────────────────
+      # Compares local migration files against what the CLI reports as pending.
+      # Any pending migration other than 20261010000000_aal2_enforcement is
+      # unexpected and must be resolved before applying.
+      - name: Guard – no unexpected pending migrations
+        run: |
+          # Get the list of applied migration versions from the remote.
+          APPLIED=$(psql "$DEV_DB_URL" --no-password --tuples-only \
+            -c "SELECT version FROM supabase_migrations.schema_migrations ORDER BY version;" \
+            | tr -d ' ' | grep -E '^[0-9]{14}$')
+
+          # Get the list of local migration versions from the supabase/migrations/ directory.
+          LOCAL=$(ls supabase/migrations/*.sql 2>/dev/null \
+            | xargs -I{} basename {} .sql \
+            | grep -E '^[0-9]{14}_' \
+            | sed 's/_[^_].*//' \
+            | sort)
+
+          echo "=== Applied on remote ==="
+          echo "$APPLIED"
+          echo "=== Local migration files ==="
+          echo "$LOCAL"
+
+          # Find local migrations not yet applied on remote.
+          PENDING=$(comm -23 \
+            <(echo "$LOCAL" | sort) \
+            <(echo "$APPLIED" | sort))
+
+          echo "=== Pending (local but not on remote) ==="
+          echo "${PENDING:-none}"
+
+          # Only our AAL2 migration should be pending.
+          UNEXPECTED=$(echo "$PENDING" | grep -v "^20261010000000$" | grep -E '^[0-9]{14}$' || true)
+
+          if [ -n "$UNEXPECTED" ]; then
+            echo "::error::Unexpected pending migrations found:"
+            echo "$UNEXPECTED"
+            echo "::error::Resolve these before applying the AAL2 migration."
+            exit 1
+          fi
+          echo "::notice::Pending-migration check passed."
 
       - name: Preflight – active user roles
         run: |
@@ -131,24 +170,21 @@ jobs:
             "SELECT r.name, count(*) AS active_users
              FROM public.users u
              JOIN public.user_role_assignments ura ON ura.user_id = u.user_id
-                AND ura.revoked_at IS NULL
+               AND ura.revoked_at IS NULL
              JOIN public.roles r ON r.role_id = ura.role_id
              GROUP BY r.name ORDER BY r.name;"
 
-      - name: Preflight – key RPC existence
+      - name: Preflight – key RPC existence and require_aal2 state
         run: |
-          echo "=== Key RPCs and tables ==="
+          echo "=== Key RPCs ==="
           psql "$DEV_DB_URL" --no-password -c \
             "SELECT
-               to_regprocedure('public.review_get_submission(uuid)')        AS review_get_submission,
-               to_regprocedure('public.story_admin_workspace(uuid)')        AS story_admin_workspace,
+               to_regprocedure('public.review_get_submission(uuid)')            AS review_get_submission,
+               to_regprocedure('public.story_admin_workspace(uuid)')            AS story_admin_workspace,
                to_regprocedure('public.story_admin_bulk(uuid[],text,uuid,text)') AS story_admin_bulk,
-               to_regprocedure('public.require_aal2()')                     AS require_aal2_exists,
-               to_regclass('public.raw_submissions')                        AS raw_submissions;"
+               to_regclass('public.raw_submissions')                            AS raw_submissions;"
 
-      - name: Preflight – check require_aal2 not already present from a prior partial run
-        run: |
-          echo "=== require_aal2 current state (null = not yet applied) ==="
+          echo "=== require_aal2 current state (null rows = not yet applied) ==="
           psql "$DEV_DB_URL" --no-password -c \
             "SELECT p.proname, p.prosecdef AS security_definer,
                     p.prosrc LIKE '%aal2_required%' AS contains_aal2_check
@@ -156,247 +192,6 @@ jobs:
              JOIN pg_namespace n ON n.oid = p.pronamespace
              WHERE n.nspname = 'public' AND p.proname = 'require_aal2';"
 
-      - name: Preflight – diff pending migrations
-        id: pending
+      - name: Preflight summary
         run: |
-          echo "=== Pending migrations (dry-run) ==="
-          supabase db push \
-            --project-ref "$DEV_PROJECT_REF" \
-            --dry-run \
-            2>&1 | tee /tmp/dry_run_output.txt
-
-          # Check specifically for our migration
-          if grep -q "20261010000000_aal2_enforcement" /tmp/dry_run_output.txt; then
-            echo "migration_pending=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::AAL2 migration is pending and will be applied."
-          else
-            echo "migration_pending=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::AAL2 migration already applied or not pending."
-          fi
-
-      - name: Preflight – conflict check (no unexpected pending migrations)
-        run: |
-          PENDING=$(supabase db push \
-            --project-ref "$DEV_PROJECT_REF" \
-            --dry-run 2>&1)
-
-          echo "$PENDING"
-
-          # Any pending migration OTHER than our AAL2 one is unexpected
-          OTHERS=$(echo "$PENDING" | grep -v "20261010000000_aal2_enforcement" \
-            | grep -E "^\s+[0-9]{14}" || true)
-
-          if [ -n "$OTHERS" ]; then
-            echo "::error::Unexpected pending migrations found:"
-            echo "$OTHERS"
-            echo "::error::Resolve these before applying the AAL2 migration."
-            exit 1
-          fi
-          echo "::notice::No unexpected pending migrations. Preflight passed."
-
-  # ── Job 2: Approval gate ────────────────────────────────────────────────────
-  # Pauses here for a required reviewer to approve before apply-migration runs.
-  # Configure Settings → Environments → development-migration-approval →
-  # Required reviewers with at least one reviewer.
-  #
-  # IMPORTANT — GitHub plan requirement:
-  # Environment protection rules (required reviewers) are available on:
-  #   • Any public repository
-  #   • Private repositories on GitHub Team or Enterprise plans
-  # On a private repo with the Free plan the environment is created but the
-  # reviewer gate is silently skipped.  The apply-migration job has an
-  # independent fail-closed guard (see step "Fail closed if approval unavailable")
-  # that detects this and aborts, so the migration cannot be applied without
-  # a real approval regardless of plan.
-  approval-gate:
-    name: Waiting for migration approval
-    needs: preflight
-    if: |
-      needs.preflight.outputs.project_verified == 'true' &&
-      github.event.inputs.dry_run == 'false'
-    runs-on: ubuntu-22.04
-    environment: development-migration-approval   # configure with required reviewers
-
-    outputs:
-      # Emit a token that apply-migration can verify arrived via this job.
-      approval_token: ${{ steps.emit.outputs.approval_token }}
-
-    steps:
-      - name: Approval received – emit token
-        id: emit
-        run: |
-          # A static sentinel is sufficient: apply-migration checks that this
-          # job ran to completion and produced this exact string.
-          echo "approval_token=migration-approved" >> "$GITHUB_OUTPUT"
-          echo "Migration approved. Proceeding to apply."
-          echo "Target project: ${{ secrets.DEV_PROJECT_REF }}"
-
-  # ── Job 3: Apply migration ──────────────────────────────────────────────────
-  apply-migration:
-    name: Apply AAL2 migration to development
-    needs: [preflight, approval-gate]
-    if: |
-      needs.preflight.outputs.project_verified == 'true' &&
-      github.event.inputs.dry_run == 'false'
-    runs-on: ubuntu-22.04
-    environment: development
-
-    env:
-      SUPABASE_ACCESS_TOKEN: ${{ secrets.DEV_SUPABASE_ACCESS_TOKEN }}
-      DEV_PROJECT_REF: ${{ secrets.DEV_PROJECT_REF }}
-      DEV_DB_URL: ${{ secrets.DEV_DB_URL }}
-
-    steps:
-      # ── Fail closed if approval unavailable ─────────────────────────────────
-      # On private Free-plan repos the approval-gate environment reviewer check
-      # is silently skipped.  Verify the approval token actually arrived from
-      # that job.  If the token is absent or wrong, abort before any write.
-      - name: Fail closed – verify approval token
-        env:
-          APPROVAL_TOKEN: ${{ needs.approval-gate.outputs.approval_token }}
-        run: |
-          if [ "$APPROVAL_TOKEN" != "migration-approved" ]; then
-            echo "::error::Approval token missing or invalid ('${APPROVAL_TOKEN}')."
-            echo "::error::The approval-gate job did not complete successfully."
-            echo "::error::On private Free-plan repos, configure the repository as public"
-            echo "::error::or upgrade to GitHub Team to enable required-reviewer protection."
-            exit 1
-          fi
-          echo "::notice::Approval token verified. Proceeding."
-
-      - name: Install Supabase CLI
-        run: |
-          curl -fsSL \
-            "https://github.com/supabase/cli/releases/download/v2.120.0/supabase_linux_amd64.tar.gz" \
-            -o /tmp/supabase.tar.gz
-          tar -xzf /tmp/supabase.tar.gz -C /tmp
-          sudo mv /tmp/supabase /usr/local/bin/supabase
-
-      - name: Checkout dev branch
-        uses: actions/checkout@v4
-        with:
-          ref: dev/aal2-enforcement
-
-      - name: Re-verify project ref before write
-        run: |
-          # Double-check even after approval — belt-and-suspenders.
-          INPUT="${{ github.event.inputs.confirmed_project_ref }}"
-          SECRET="${{ secrets.DEV_PROJECT_REF }}"
-          if [ "$INPUT" != "$SECRET" ]; then
-            echo "::error::Project ref mismatch at apply stage. Aborting."
-            exit 1
-          fi
-
-      - name: Apply migration
-        run: |
-          echo "Applying migration 20261010000000_aal2_enforcement.sql …"
-          supabase db push \
-            --project-ref "$DEV_PROJECT_REF" \
-            --yes
-          echo "::notice::Migration applied."
-
-      - name: Post-apply – verify require_aal2 is present
-        run: |
-          echo "=== Verifying require_aal2() was created ==="
-          RESULT=$(psql "$DEV_DB_URL" --no-password --tuples-only -c \
-            "SELECT proname FROM pg_proc p
-             JOIN pg_namespace n ON n.oid = p.pronamespace
-             WHERE n.nspname = 'public' AND p.proname = 'require_aal2';")
-
-          if echo "$RESULT" | grep -q "require_aal2"; then
-            echo "::notice::require_aal2() confirmed present in public schema."
-          else
-            echo "::error::require_aal2() not found after migration. Check migration output above."
-            exit 1
-          fi
-
-      - name: Post-apply – verify EXECUTE revoke
-        run: |
-          echo "=== Verifying require_aal2 is not executable by authenticated ==="
-          COUNT=$(psql "$DEV_DB_URL" --no-password --tuples-only -c \
-            "SELECT count(*) FROM information_schema.routine_privileges
-             WHERE routine_schema = 'public'
-               AND routine_name = 'require_aal2'
-               AND grantee IN ('PUBLIC','anon','authenticated');" | tr -d ' ')
-
-          if [ "$COUNT" = "0" ]; then
-            echo "::notice::require_aal2 correctly revoked from public/anon/authenticated."
-          else
-            echo "::error::require_aal2 still has EXECUTE grant for unprivileged role(s)."
-            exit 1
-          fi
-
-  # ── Job 4: Run AAL2 tests ───────────────────────────────────────────────────
-  run-tests:
-    name: Run 04_aal2_tests.sql
-    needs: [preflight, apply-migration]
-    runs-on: ubuntu-22.04
-    environment: development
-
-    env:
-      DEV_DB_URL: ${{ secrets.DEV_DB_URL }}
-
-    steps:
-      - name: Checkout dev branch
-        uses: actions/checkout@v4
-        with:
-          ref: dev/aal2-enforcement
-
-      - name: Run AAL2 test suite
-        id: tests
-        run: |
-          echo "=== Running 04_aal2_tests.sql ==="
-          #
-          # psql exit-code note:
-          #   The test script intentionally does NOT use ON_ERROR_STOP so that all
-          #   tests run even when earlier ones fail.  The final DO block raises an
-          #   exception when any test row has result <> 'PASS', which causes psql
-          #   to exit non-zero.
-          #
-          #   The pipe to `tee` would normally swallow that exit code under bash's
-          #   default pipe handling.  `set -o pipefail` (applied via the workflow
-          #   default shell "bash -euo pipefail {0}") makes the pipe exit with the
-          #   first non-zero code in the pipeline, so the psql failure propagates.
-          #
-          #   PIPESTATUS[0] is kept as an explicit belt-and-suspenders fallback.
-          #
-          psql "$DEV_DB_URL" \
-            --no-password \
-            --echo-queries \
-            --file supabase/deploy/04_aal2_tests.sql \
-            2>&1 | tee /tmp/test_output.txt
-
-          # pipefail already propagates the error; capture explicitly for the summary.
-          PSQL_EXIT=${PIPESTATUS[0]}
-          echo "psql exit code: $PSQL_EXIT"
-          exit "$PSQL_EXIT"
-
-      - name: Parse and annotate test results
-        if: always()
-        run: |
-          if [ ! -f /tmp/test_output.txt ]; then
-            echo "No test output found."
-            exit 0
-          fi
-
-          PASS=$(grep -c "| PASS |" /tmp/test_output.txt || true)
-          FAIL=$(grep -c "| FAIL |" /tmp/test_output.txt || true)
-
-          echo "::notice::Tests passed: ${PASS}"
-
-          if [ "$FAIL" -gt 0 ]; then
-            echo "::error::Tests failed: ${FAIL}"
-            grep "| FAIL |" /tmp/test_output.txt | while read -r line; do
-              echo "::error::FAIL: ${line}"
-            done
-          else
-            echo "::notice::All tests passed."
-          fi
-
-      - name: Upload test output
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: aal2-test-output
-          path: /tmp/test_output.txt
-          retention-days: 30
+          echo "::notice::Preflight complete. If all checks above passed, run aal2-migration-apply-dev to apply."

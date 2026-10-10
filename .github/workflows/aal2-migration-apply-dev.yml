@@ -1,0 +1,263 @@
+name: AAL2 Migration – Apply (Development)
+
+# ── Trigger ──────────────────────────────────────────────────────────────────
+# Separate workflow from preflight. Requires explicit manual dispatch with
+# typed confirmation. This is the genuine manual gate: a human must visit
+# GitHub Actions, read the preflight output, and dispatch this workflow by
+# typing the confirmation phrase. It does not rely on GitHub Environment
+# reviewer protection (which is silently skipped on private Free-plan repos).
+#
+# PREREQUISITE: Run aal2-migration-dev (preflight) first and verify output.
+#
+# WHAT THIS DOES:
+#   1. Re-runs all preflight guards (project ref, API cross-check, pending-only check).
+#   2. Applies ONLY migration 20261010000000_aal2_enforcement.sql via supabase db push.
+#   3. Verifies post-apply state (require_aal2 present, EXECUTE revoked).
+#   4. Runs 04_aal2_tests.sql with ON_ERROR_STOP=1 and reports pass/fail counts.
+#   5. Fails the job on any test failure or unexpected SQL error.
+on:
+  workflow_dispatch:
+    inputs:
+      confirmed_project_ref:
+        description: >
+          Type the dev project ref to confirm target (must match DEV_PROJECT_REF).
+        required: true
+        type: string
+      apply_confirmation:
+        description: >
+          Type exactly: apply aal2 migration to development
+          (any other value aborts before touching the database)
+        required: true
+        type: string
+
+concurrency:
+  group: aal2-migration-dev
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+jobs:
+  apply-and-test:
+    name: Apply AAL2 migration and run tests
+    runs-on: ubuntu-22.04
+    environment: development
+
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.DEV_SUPABASE_ACCESS_TOKEN }}
+      DEV_DB_URL: ${{ secrets.DEV_DB_URL }}
+      DEV_PROJECT_REF: ${{ secrets.DEV_PROJECT_REF }}
+
+    steps:
+      # ── Guard 0: explicit human confirmation phrase ──────────────────────────
+      # This is the primary safety gate. The operator must type the exact phrase.
+      # Unlike a GitHub Environment reviewer (silently skipped on Free-plan private
+      # repos), this check runs inside the job and cannot be bypassed without
+      # modifying the workflow itself.
+      - name: Guard – explicit apply confirmation
+        run: |
+          PHRASE="${{ github.event.inputs.apply_confirmation }}"
+          EXPECTED="apply aal2 migration to development"
+          if [ "$PHRASE" != "$EXPECTED" ]; then
+            echo "::error::Apply confirmation did not match."
+            echo "::error::Expected: '${EXPECTED}'"
+            echo "::error::Got:      '${PHRASE}'"
+            echo "::error::Dispatch this workflow again and type the confirmation phrase exactly."
+            exit 1
+          fi
+          echo "::notice::Apply confirmation verified."
+
+      - name: Install Supabase CLI v2.120.0
+        run: |
+          curl -fsSL \
+            "https://github.com/supabase/cli/releases/download/v2.120.0/supabase_linux_amd64.tar.gz" \
+            -o /tmp/supabase.tar.gz
+          tar -xzf /tmp/supabase.tar.gz -C /tmp
+          sudo mv /tmp/supabase /usr/local/bin/supabase
+          supabase --version
+
+      - name: Checkout dev/aal2-enforcement
+        uses: actions/checkout@v4
+        with:
+          ref: dev/aal2-enforcement
+
+      # ── Guard 1: input project ref must match secret ─────────────────────────
+      - name: Guard – input project ref matches DEV_PROJECT_REF secret
+        run: |
+          INPUT="${{ github.event.inputs.confirmed_project_ref }}"
+          if [ -z "$DEV_PROJECT_REF" ]; then
+            echo "::error::DEV_PROJECT_REF secret is not set."
+            exit 1
+          fi
+          if [ "$INPUT" != "$DEV_PROJECT_REF" ]; then
+            echo "::error::Input '${INPUT}' does not match DEV_PROJECT_REF."
+            exit 1
+          fi
+          echo "::notice::Input project ref confirmed."
+
+      # ── Guard 2: API cross-check — DEV_PROJECT_REF is not a prod project ────
+      - name: Guard – verify project is not production via Management API
+        run: |
+          PROJECT_NAME=$(curl -fsSL \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            "https://api.supabase.com/v1/projects" \
+            | jq -r --arg ref "$DEV_PROJECT_REF" \
+                '.[] | select(.id == $ref) | .name // empty')
+
+          if [ -z "$PROJECT_NAME" ]; then
+            echo "::error::DEV_PROJECT_REF '${DEV_PROJECT_REF}' not found via Management API."
+            exit 1
+          fi
+          echo "::notice::Project ref resolves to: ${PROJECT_NAME}"
+
+          LOWER=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]')
+          if echo "$LOWER" | grep -q 'prod'; then
+            echo "::error::Project name '${PROJECT_NAME}' contains 'prod'. Aborting."
+            exit 1
+          fi
+
+      # ── Guard 3: only our migration is pending ───────────────────────────────
+      # Compares local migration files against the remote schema_migrations table.
+      # Aborts if any migration other than 20261010000000_aal2_enforcement is pending.
+      - name: Guard – only AAL2 migration is pending
+        run: |
+          APPLIED=$(psql "$DEV_DB_URL" --no-password --tuples-only \
+            -c "SELECT version FROM supabase_migrations.schema_migrations ORDER BY version;" \
+            | tr -d ' ' | grep -E '^[0-9]{14}$')
+
+          LOCAL=$(ls supabase/migrations/*.sql 2>/dev/null \
+            | xargs -I{} basename {} .sql \
+            | grep -E '^[0-9]{14}_' \
+            | sed 's/_[^_].*//' \
+            | sort)
+
+          PENDING=$(comm -23 \
+            <(echo "$LOCAL" | sort) \
+            <(echo "$APPLIED" | sort))
+
+          echo "Pending migrations: ${PENDING:-none}"
+
+          UNEXPECTED=$(echo "$PENDING" | grep -v "^20261010000000$" | grep -E '^[0-9]{14}$' || true)
+          if [ -n "$UNEXPECTED" ]; then
+            echo "::error::Unexpected pending migrations: ${UNEXPECTED}"
+            echo "::error::Resolve before applying the AAL2 migration."
+            exit 1
+          fi
+
+          if ! echo "$PENDING" | grep -q "^20261010000000$"; then
+            echo "::notice::AAL2 migration (20261010000000) is not in the pending list."
+            echo "::notice::It may already be applied. Check the preflight output."
+            echo "::error::Nothing to apply. If the migration was already applied, this workflow should not be run again."
+            exit 1
+          fi
+          echo "::notice::Exactly one migration is pending: 20261010000000_aal2_enforcement."
+
+      # ── Apply ────────────────────────────────────────────────────────────────
+      - name: Apply migration
+        run: |
+          echo "Applying 20261010000000_aal2_enforcement.sql to ${DEV_PROJECT_REF} …"
+          supabase db push \
+            --project-ref "$DEV_PROJECT_REF" \
+            --yes
+          echo "::notice::supabase db push completed."
+
+      # ── Post-apply verification ──────────────────────────────────────────────
+      - name: Post-apply – verify require_aal2() exists in public schema
+        run: |
+          RESULT=$(psql "$DEV_DB_URL" --no-password --tuples-only -c \
+            "SELECT proname FROM pg_proc p
+             JOIN pg_namespace n ON n.oid = p.pronamespace
+             WHERE n.nspname = 'public' AND p.proname = 'require_aal2';")
+          if echo "$RESULT" | grep -q "require_aal2"; then
+            echo "::notice::require_aal2() confirmed present."
+          else
+            echo "::error::require_aal2() not found after migration."
+            exit 1
+          fi
+
+      - name: Post-apply – verify EXECUTE revoked from unprivileged roles
+        run: |
+          COUNT=$(psql "$DEV_DB_URL" --no-password --tuples-only -c \
+            "SELECT count(*) FROM information_schema.routine_privileges
+             WHERE routine_schema = 'public'
+               AND routine_name = 'require_aal2'
+               AND grantee IN ('PUBLIC','anon','authenticated');" | tr -d ' ')
+          if [ "$COUNT" = "0" ]; then
+            echo "::notice::require_aal2 EXECUTE correctly revoked from public/anon/authenticated."
+          else
+            echo "::error::require_aal2 still has EXECUTE for unprivileged role(s). Count: ${COUNT}"
+            exit 1
+          fi
+
+      # ── Test suite ───────────────────────────────────────────────────────────
+      # ON_ERROR_STOP=1: psql stops immediately on any unexpected SQL error that
+      # surfaces outside the PL/pgSQL EXCEPTION handlers (e.g. fixture insert
+      # failure, bad SET LOCAL, catalog query error). Expected test failures are
+      # caught inside the harness helpers and recorded as RESULT: FAIL rows —
+      # they do not surface to psql level.
+      #
+      # The ROLLBACK at the end of 04_aal2_tests.sql is unconditional: it always
+      # runs, removing fixture data. Pass/fail signalling is done by grepping the
+      # output here rather than by raising inside the transaction, which would
+      # prevent ROLLBACK from running under ON_ERROR_STOP=1.
+      - name: Run AAL2 test suite
+        id: tests
+        run: |
+          echo "=== Running 04_aal2_tests.sql ==="
+          psql "$DEV_DB_URL" \
+            --no-password \
+            --echo-queries \
+            -v ON_ERROR_STOP=1 \
+            --file supabase/deploy/04_aal2_tests.sql \
+            2>&1 | tee /tmp/test_output.txt
+          # pipefail propagates psql exit code through tee.
+          # psql exits non-zero if ON_ERROR_STOP=1 fires on an unexpected error.
+
+      - name: Parse test results and fail on any FAIL
+        if: always()
+        run: |
+          if [ ! -f /tmp/test_output.txt ]; then
+            echo "::error::No test output file found. The test step may not have run."
+            exit 1
+          fi
+
+          # Extract SUITE summary line written by the SQL harness.
+          SUITE=$(grep "^SUITE: " /tmp/test_output.txt | tail -1 || true)
+          if [ -n "$SUITE" ]; then
+            echo "::notice::${SUITE}"
+          else
+            echo "::warning::No SUITE summary line found in output."
+          fi
+
+          # Count and annotate individual FAIL results.
+          FAIL_COUNT=$(grep -c "^RESULT: FAIL" /tmp/test_output.txt || true)
+          PASS_COUNT=$(grep -c "^RESULT: PASS" /tmp/test_output.txt || true)
+
+          echo "::notice::Tests passed: ${PASS_COUNT}"
+
+          if [ "$FAIL_COUNT" -gt 0 ]; then
+            echo "::error::Tests failed: ${FAIL_COUNT}"
+            grep "^RESULT: FAIL" /tmp/test_output.txt | while IFS= read -r line; do
+              echo "::error::${line}"
+            done
+            exit 1
+          fi
+
+          if [ "$PASS_COUNT" -eq 0 ]; then
+            echo "::error::No PASS results found. Test harness may not have run correctly."
+            exit 1
+          fi
+
+          echo "::notice::All ${PASS_COUNT} tests passed."
+
+      - name: Upload test output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aal2-test-output
+          path: /tmp/test_output.txt
+          retention-days: 30
