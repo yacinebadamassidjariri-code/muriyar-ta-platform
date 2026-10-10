@@ -20,14 +20,21 @@ on:
         options: ['false', 'true']
 
 # ── Concurrency ───────────────────────────────────────────────────────────────
-# Only one migration run at a time; cancel any queued duplicate.
+# Only one migration run at a time; never cancel a running migration mid-flight.
 concurrency:
   group: aal2-migration-dev
-  cancel-in-progress: false   # do not cancel a running migration mid-flight
+  cancel-in-progress: false
 
 # ── Permissions ───────────────────────────────────────────────────────────────
 permissions:
   contents: read   # read repo; nothing else
+
+# ── Default shell ─────────────────────────────────────────────────────────────
+# bash -o pipefail ensures pipe failures propagate; required for PIPESTATUS
+# and for the psql | tee pattern in run-tests.
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
 
 jobs:
   # ── Job 1: Preflight (read-only) ────────────────────────────────────────────
@@ -38,7 +45,7 @@ jobs:
 
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.DEV_SUPABASE_ACCESS_TOKEN }}
-      # Direct Postgres URL used for read-only preflight queries via psql.
+      # Direct Postgres URL (port 5432, not pooler) used for read-only psql queries.
       # Format: postgresql://postgres.<project-ref>:<password>@<host>:5432/postgres
       DEV_DB_URL: ${{ secrets.DEV_DB_URL }}
       DEV_PROJECT_REF: ${{ secrets.DEV_PROJECT_REF }}
@@ -83,7 +90,33 @@ jobs:
           echo "::notice::Project ref confirmed: ${SECRET}"
           echo "project_verified=true" >> "$GITHUB_OUTPUT"
 
-      # ── 3. Preflight queries via psql ───────────────────────────────────────
+      # ── 3. Cross-check: DEV_DB_URL must embed DEV_PROJECT_REF ───────────────
+      # Extracts the project ref from the DB URL username field
+      # (postgres.<project-ref>) and verifies it matches the secret.
+      # This catches a misconfigured DEV_DB_URL pointing at the wrong project
+      # before any read queries run.
+      - name: Guard – verify DEV_DB_URL project ref matches DEV_PROJECT_REF
+        run: |
+          # URL username is everything between "//" and the first "@"
+          USERINFO=$(echo "$DEV_DB_URL" | sed -E 's|^[^/]+//([^@]+)@.*|\1|')
+          # Username is left of ":", project ref is right of "."
+          USERNAME=$(echo "$USERINFO" | cut -d: -f1)
+          URL_REF=$(echo "$USERNAME" | cut -d. -f2-)
+
+          if [ -z "$URL_REF" ]; then
+            echo "::error::Could not extract project ref from DEV_DB_URL username '${USERNAME}'."
+            echo "::error::Expected format: postgresql://postgres.<project-ref>:<password>@<host>:5432/postgres"
+            exit 1
+          fi
+
+          if [ "$URL_REF" != "$DEV_PROJECT_REF" ]; then
+            echo "::error::DEV_DB_URL contains project ref '${URL_REF}' but DEV_PROJECT_REF is '${DEV_PROJECT_REF}'."
+            echo "::error::These must match. Check your repository secrets."
+            exit 1
+          fi
+          echo "::notice::DEV_DB_URL project ref matches DEV_PROJECT_REF (${DEV_PROJECT_REF})."
+
+      # ── 4. Preflight queries via psql ───────────────────────────────────────
       - name: Preflight – migration ledger
         run: |
           echo "=== Remote migration history ==="
@@ -162,9 +195,19 @@ jobs:
           echo "::notice::No unexpected pending migrations. Preflight passed."
 
   # ── Job 2: Approval gate ────────────────────────────────────────────────────
-  # This job exists only to provide a visual checkpoint in the Actions UI.
-  # Gate it with a GitHub Environment that requires a reviewer approval
-  # (Settings → Environments → development → Required reviewers).
+  # Pauses here for a required reviewer to approve before apply-migration runs.
+  # Configure Settings → Environments → development-migration-approval →
+  # Required reviewers with at least one reviewer.
+  #
+  # IMPORTANT — GitHub plan requirement:
+  # Environment protection rules (required reviewers) are available on:
+  #   • Any public repository
+  #   • Private repositories on GitHub Team or Enterprise plans
+  # On a private repo with the Free plan the environment is created but the
+  # reviewer gate is silently skipped.  The apply-migration job has an
+  # independent fail-closed guard (see step "Fail closed if approval unavailable")
+  # that detects this and aborts, so the migration cannot be applied without
+  # a real approval regardless of plan.
   approval-gate:
     name: Waiting for migration approval
     needs: preflight
@@ -174,9 +217,17 @@ jobs:
     runs-on: ubuntu-22.04
     environment: development-migration-approval   # configure with required reviewers
 
+    outputs:
+      # Emit a token that apply-migration can verify arrived via this job.
+      approval_token: ${{ steps.emit.outputs.approval_token }}
+
     steps:
-      - name: Approval received
+      - name: Approval received – emit token
+        id: emit
         run: |
+          # A static sentinel is sufficient: apply-migration checks that this
+          # job ran to completion and produced this exact string.
+          echo "approval_token=migration-approved" >> "$GITHUB_OUTPUT"
           echo "Migration approved. Proceeding to apply."
           echo "Target project: ${{ secrets.DEV_PROJECT_REF }}"
 
@@ -196,6 +247,23 @@ jobs:
       DEV_DB_URL: ${{ secrets.DEV_DB_URL }}
 
     steps:
+      # ── Fail closed if approval unavailable ─────────────────────────────────
+      # On private Free-plan repos the approval-gate environment reviewer check
+      # is silently skipped.  Verify the approval token actually arrived from
+      # that job.  If the token is absent or wrong, abort before any write.
+      - name: Fail closed – verify approval token
+        env:
+          APPROVAL_TOKEN: ${{ needs.approval-gate.outputs.approval_token }}
+        run: |
+          if [ "$APPROVAL_TOKEN" != "migration-approved" ]; then
+            echo "::error::Approval token missing or invalid ('${APPROVAL_TOKEN}')."
+            echo "::error::The approval-gate job did not complete successfully."
+            echo "::error::On private Free-plan repos, configure the repository as public"
+            echo "::error::or upgrade to GitHub Team to enable required-reviewer protection."
+            exit 1
+          fi
+          echo "::notice::Approval token verified. Proceeding."
+
       - name: Install Supabase CLI
         run: |
           curl -fsSL \
@@ -278,28 +346,30 @@ jobs:
         id: tests
         run: |
           echo "=== Running 04_aal2_tests.sql ==="
-          # Use psql directly with --file so that:
-          #  - multi-statement files are handled correctly
-          #  - ROLLBACK at end cleans up fixtures
-          #  - any exception propagates as a non-zero exit code
-          #  - ON_ERROR_STOP is NOT set (we want all tests to run, not abort on first fail)
           #
-          # The test file's final DO $$ block raises an exception if any test failed,
-          # which makes psql exit non-zero, failing this step.
+          # psql exit-code note:
+          #   The test script intentionally does NOT use ON_ERROR_STOP so that all
+          #   tests run even when earlier ones fail.  The final DO block raises an
+          #   exception when any test row has result <> 'PASS', which causes psql
+          #   to exit non-zero.
+          #
+          #   The pipe to `tee` would normally swallow that exit code under bash's
+          #   default pipe handling.  `set -o pipefail` (applied via the workflow
+          #   default shell "bash -euo pipefail {0}") makes the pipe exit with the
+          #   first non-zero code in the pipeline, so the psql failure propagates.
+          #
+          #   PIPESTATUS[0] is kept as an explicit belt-and-suspenders fallback.
+          #
           psql "$DEV_DB_URL" \
             --no-password \
             --echo-queries \
             --file supabase/deploy/04_aal2_tests.sql \
             2>&1 | tee /tmp/test_output.txt
 
-          EXIT_CODE=${PIPESTATUS[0]}
-
-          echo "--- Test output summary ---"
-          # Print the results table (lines between the SELECT header and rollback)
-          grep -A 200 "test_name.*result.*detail" /tmp/test_output.txt \
-            | grep -B 200 "^rollback" | head -80 || true
-
-          exit $EXIT_CODE
+          # pipefail already propagates the error; capture explicitly for the summary.
+          PSQL_EXIT=${PIPESTATUS[0]}
+          echo "psql exit code: $PSQL_EXIT"
+          exit "$PSQL_EXIT"
 
       - name: Parse and annotate test results
         if: always()
