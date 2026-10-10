@@ -120,6 +120,56 @@ jobs:
             exit 1
           fi
 
+      # ── Guard 2b: verify DEV_DB_URL connects to DEV_PROJECT_REF ────────────
+      # The API name check above confirms the project ref is valid and non-prod,
+      # but does not prove DEV_DB_URL connects to that same project.
+      # This step calls GET /v1/projects/{ref}/database/migrations to get the
+      # applied migration versions as known to the Management API, then queries
+      # DEV_DB_URL via psql for the same data from supabase_migrations.schema_migrations.
+      # If they match, DEV_DB_URL connects to DEV_PROJECT_REF. A mismatch means
+      # DEV_DB_URL points to a different database.
+      - name: Guard – verify DEV_DB_URL connects to DEV_PROJECT_REF
+        run: |
+          # Get applied migration versions from Management API for this project ref.
+          API_VERSIONS=$(curl -fsSL \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            "https://api.supabase.com/v1/projects/${DEV_PROJECT_REF}/database/migrations" \
+            | jq -r 'if type == "array" then .[].version else error("unexpected response") end' \
+            | sort)
+
+          if [ -z "$API_VERSIONS" ]; then
+            echo "::error::Management API returned no migrations for ${DEV_PROJECT_REF}."
+            echo "::error::The project may be paused, or the access token may lack permission."
+            exit 1
+          fi
+
+          # Get applied migration versions from DEV_DB_URL via psql.
+          DB_VERSIONS=$(psql "$DEV_DB_URL" --no-password --tuples-only \
+            -c "SELECT version FROM supabase_migrations.schema_migrations ORDER BY version;" \
+            | tr -d ' ' | grep -E '^[0-9]{14}$' | sort)
+
+          if [ -z "$DB_VERSIONS" ]; then
+            echo "::error::psql returned no migrations from DEV_DB_URL."
+            echo "::error::Check the connection string and database password."
+            exit 1
+          fi
+
+          echo "API migration count: $(echo "$API_VERSIONS" | wc -l | tr -d ' ')"
+          echo "DB  migration count: $(echo "$DB_VERSIONS"  | wc -l | tr -d ' ')"
+
+          # Compare: every API version must appear in the DB and vice versa.
+          ONLY_IN_API=$(comm -23 <(echo "$API_VERSIONS") <(echo "$DB_VERSIONS") || true)
+          ONLY_IN_DB=$(comm -13  <(echo "$API_VERSIONS") <(echo "$DB_VERSIONS") || true)
+
+          if [ -n "$ONLY_IN_API" ] || [ -n "$ONLY_IN_DB" ]; then
+            echo "::error::Migration history mismatch between API and DEV_DB_URL."
+            [ -n "$ONLY_IN_API" ] && echo "::error::In API but not in DB: ${ONLY_IN_API}"
+            [ -n "$ONLY_IN_DB"  ] && echo "::error::In DB but not in API: ${ONLY_IN_DB}"
+            echo "::error::DEV_DB_URL does not appear to connect to project ${DEV_PROJECT_REF}."
+            exit 1
+          fi
+          echo "::notice::DEV_DB_URL migration history matches API for ${DEV_PROJECT_REF}. Connection verified."
+
       # ── Guard 3: only our migration is pending ───────────────────────────────
       # Compares local migration files against the remote schema_migrations table.
       # Aborts if any migration other than 20261010000000_aal2_enforcement is pending.
@@ -220,39 +270,55 @@ jobs:
       - name: Parse test results and fail on any FAIL
         if: always()
         run: |
+          # Expected number of test rows the SQL harness must emit.
+          # A01-A14 (14) + B01-B09 (9) + C01-C08 (8) + D01 (1)
+          # + D02 (6) + D03 (7) + D04 (2) + D05 (16) = 63
+          EXPECTED_TOTAL=63
+
           if [ ! -f /tmp/test_output.txt ]; then
             echo "::error::No test output file found. The test step may not have run."
             exit 1
           fi
 
-          # Extract SUITE summary line written by the SQL harness.
-          SUITE=$(grep "^SUITE: " /tmp/test_output.txt | tail -1 || true)
-          if [ -n "$SUITE" ]; then
-            echo "::notice::${SUITE}"
-          else
-            echo "::warning::No SUITE summary line found in output."
+          # ── SUITE summary line ─────────────────────────────────────────────
+          # Format: SUITE: pass=N fail=N total=N
+          # Absence or malformation means the harness did not complete — hard fail.
+          SUITE_LINE=$(grep "^SUITE: " /tmp/test_output.txt | tail -1 || true)
+          if [ -z "$SUITE_LINE" ]; then
+            echo "::error::SUITE summary line missing from test output."
+            echo "::error::The SQL harness may not have reached the summary SELECT,"
+            echo "::error::or psql exited early due to an unexpected SQL error."
+            exit 1
+          fi
+          echo "::notice::${SUITE_LINE}"
+
+          # Extract numeric fields; fail if any cannot be parsed.
+          SUITE_PASS=$(echo "$SUITE_LINE"  | grep -oP 'pass=\K[0-9]+'  || true)
+          SUITE_FAIL=$(echo "$SUITE_LINE"  | grep -oP 'fail=\K[0-9]+'  || true)
+          SUITE_TOTAL=$(echo "$SUITE_LINE" | grep -oP 'total=\K[0-9]+' || true)
+
+          if [ -z "$SUITE_PASS" ] || [ -z "$SUITE_FAIL" ] || [ -z "$SUITE_TOTAL" ]; then
+            echo "::error::SUITE line malformed (could not parse pass/fail/total): ${SUITE_LINE}"
+            exit 1
           fi
 
-          # Count and annotate individual FAIL results.
-          FAIL_COUNT=$(grep -c "^RESULT: FAIL" /tmp/test_output.txt || true)
-          PASS_COUNT=$(grep -c "^RESULT: PASS" /tmp/test_output.txt || true)
-
-          echo "::notice::Tests passed: ${PASS_COUNT}"
-
-          if [ "$FAIL_COUNT" -gt 0 ]; then
-            echo "::error::Tests failed: ${FAIL_COUNT}"
+          # ── Require zero failures ──────────────────────────────────────────
+          if [ "$SUITE_FAIL" -ne 0 ]; then
+            echo "::error::${SUITE_FAIL} test(s) failed."
             grep "^RESULT: FAIL" /tmp/test_output.txt | while IFS= read -r line; do
               echo "::error::${line}"
             done
             exit 1
           fi
 
-          if [ "$PASS_COUNT" -eq 0 ]; then
-            echo "::error::No PASS results found. Test harness may not have run correctly."
+          # ── Require expected total ─────────────────────────────────────────
+          if [ "$SUITE_TOTAL" -ne "$EXPECTED_TOTAL" ]; then
+            echo "::error::Expected ${EXPECTED_TOTAL} tests but SUITE reports total=${SUITE_TOTAL}."
+            echo "::error::The harness may have aborted early or skipped tests."
             exit 1
           fi
 
-          echo "::notice::All ${PASS_COUNT} tests passed."
+          echo "::notice::All ${SUITE_PASS} of ${EXPECTED_TOTAL} tests passed."
 
       - name: Upload test output
         if: always()
