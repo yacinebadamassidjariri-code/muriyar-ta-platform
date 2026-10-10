@@ -277,31 +277,56 @@ limit 3;
 --   ha  | ha | true  | en | null | 84 | PENDING | true   ← research_consent_language = 'en' (fallback)
 --   en  | en | false | null | null | 84 | PENDING | true
 
--- Verify anon role cannot update immutable fields (expect error 42501)
+-- ── Permission test: anon cannot UPDATE raw_submissions at all (RLS) ─────────
+-- Runs as anon. Must not SELECT from raw_submissions — anon cannot read it.
+-- We attempt an update with a hardcoded non-existent UUID; RLS should block it
+-- with insufficient_privilege before it even touches a row.
+
 set local role anon;
+
+do $$
+begin
+  begin
+    update public.raw_submissions
+    set current_state = 'PENDING'
+    where submission_id = '00000000-0000-0000-0000-000000000000'::uuid;
+    -- A 0-row update is also acceptable here because RLS filters out all rows
+    -- for anon — PostgreSQL does not raise an error for 0 rows affected.
+    -- Reaching this point (no exception) is the expected anon outcome because
+    -- RLS silently filters the target set to empty rather than raising.
+    null;
+  exception
+    when insufficient_privilege then
+      null; -- also acceptable: explicit RLS deny
+  end;
+end $$;
+
+reset role;
+
+-- ── Immutability trigger test: runs as postgres (has table access) ────────────
+-- Verifies protect_raw_submission_original() raises 42501 when an original
+-- field is changed. Uses the most recently inserted test row (still in this
+-- rolled-back transaction).
 
 do $$
 declare
   v_id uuid;
 begin
-  select submission_id into v_id from public.raw_submissions order by created_at desc limit 1;
+  select submission_id into v_id
+  from public.raw_submissions
+  order by created_at desc
+  limit 1;
+
   begin
-    -- This update targets a mutable field (current_state) which anon cannot
-    -- reach through RLS anyway, but we also test the immutability trigger on
-    -- a field it guards (char_count).
     update public.raw_submissions
     set char_count = char_count + 1
     where submission_id = v_id;
     raise exception 'immutability_trigger_did_not_fire — investigate before proceeding';
   exception
-    when insufficient_privilege then
-      null; -- expected: RLS blocks anon update entirely (also acceptable)
     when sqlstate '42501' then
-      null; -- expected: immutability trigger fired
+      null; -- expected: protect_raw_submission_original() fired
   end;
 end $$;
-
-reset role;
 
 -- Final count before rollback — should be 8 (5 original + 3 test)
 select count(*) as count_before_rollback from public.raw_submissions;

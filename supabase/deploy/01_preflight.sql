@@ -154,10 +154,11 @@ order by grantee, privilege_type;
 -- Expected: the most recent row should be a migration before
 --           20260914143308 (separate_research_consent).
 -- Confirms the four missing migrations are indeed absent.
+-- Note: supabase_migrations.schema_migrations has columns (version, name) only.
 
-select name, executed_at
+select version, name
 from supabase_migrations.schema_migrations
-order by name desc
+order by version desc
 limit 10;
 
 
