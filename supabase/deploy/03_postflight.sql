@@ -248,7 +248,7 @@ select public.submit_story(
   p_country          := null,
   p_region           := null,
   p_research_consent := true,
-  p_age              := 28
+  p_age              := 28::smallint
 );
 
 -- Switch back to postgres role before querying raw_submissions

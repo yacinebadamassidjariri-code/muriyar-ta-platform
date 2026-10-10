@@ -55,7 +55,11 @@ export async function submitStory(
       p_research_consent: data.researchConsent,
       p_country: data.country,
       p_region: data.region,
-      p_age: data.age,
+      // PostgREST serialises JS numbers as JSON integers, which PostgreSQL
+      // cannot unambiguously resolve to smallint during overload resolution
+      // (error 42883). Passing the value as a string lets Postgres cast it
+      // explicitly to smallint. null is passed as-is so the column default applies.
+      p_age: data.age !== null ? String(data.age) : null,
     });
 
     if (error) {
