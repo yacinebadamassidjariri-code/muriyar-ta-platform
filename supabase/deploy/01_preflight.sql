@@ -105,7 +105,7 @@ order by trigger_name;
 -- ── Check 8: Active publication consent version exists ──────────────────────
 -- Expected: 1 row, is_active = true
 
-select consent_version_id, version_label, is_active, effective_from
+select consent_version_id, version_number, is_active, effective_from
 from public.consent_versions
 where is_active = true;
 
