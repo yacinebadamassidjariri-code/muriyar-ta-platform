@@ -234,198 +234,71 @@ SELECT
      ) THEN ' | detail: age_required not in function body — 20261013000000 not applied'
      ELSE '' END AS result;
 
--- B15–B17: Functional age tests — call submit_story() and assert exceptions/results.
--- These tests exercise actual function behavior, not source text.
--- Each test uses SAVEPOINT / ROLLBACK TO SAVEPOINT so no data is written.
---
--- Prerequisites for the DO blocks to reach the age check:
---   1. A supported active language must exist. We use 'en' (always seeded).
---   2. An active consent_version must exist.
---   3. The vault key 'story_body_key' must be present (encryption guard).
--- If prerequisites are absent the function raises before the age check.
--- Each block records PASS/FAIL as a query result using a temp table.
+-- B15: submit_story() must raise age_required when p_age is null.
+-- Catalog check: confirm the function body contains the null check and age_required raise.
+-- Behavioral verification is in supabase/tests/database/test_age_validation.sql.
+SELECT
+  CASE WHEN EXISTS (
+    SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='submit_story'
+      AND p.prosrc LIKE '%p_age is null%'
+      AND p.prosrc LIKE '%age_required%'
+  ) THEN 'PASS' ELSE 'FAIL' END
+  || ' | B15 | submit_story() null-age check present (behavioral: test_age_validation.sql)'
+  || CASE WHEN NOT EXISTS (
+       SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+       WHERE n.nspname='public' AND p.proname='submit_story'
+         AND p.prosrc LIKE '%p_age is null%'
+         AND p.prosrc LIKE '%age_required%'
+     ) THEN ' | detail: null check or age_required not found — 20261013000000 not applied'
+     ELSE '' END AS result;
 
--- Shared setup: create a temp table for test outcomes.
-CREATE TEMPORARY TABLE IF NOT EXISTS _b_age_test_results (
-  check_id  text,
-  outcome   text
-) ON COMMIT DELETE ROWS;
+-- B16: submit_story() must NOT raise age_out_of_range for any age value.
+-- Catalog check: age_out_of_range must be absent from the function body.
+SELECT
+  CASE WHEN NOT EXISTS (
+    SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='submit_story'
+      AND p.prosrc LIKE '%age_out_of_range%'
+  ) THEN 'PASS' ELSE 'FAIL' END
+  || ' | B16 | submit_story() has no age_out_of_range raise — ages 0, 9, 100 not statically rejected'
+  || CASE WHEN EXISTS (
+       SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+       WHERE n.nspname='public' AND p.proname='submit_story'
+         AND p.prosrc LIKE '%age_out_of_range%'
+     ) THEN ' | detail: age_out_of_range still in function body — ages 9 and 100 would be rejected'
+     ELSE '' END AS result;
 
--- B15: missing age (p_age => null) must raise age_required.
-DO $$
-DECLARE
-  v_errcode text;
-  v_sqlerrm text;
-BEGIN
-  SAVEPOINT b15;
-  BEGIN
-    PERFORM public.submit_story(
-      p_body             => repeat('x', 60),
-      p_language_code    => 'en',
-      p_consent          => true,
-      p_consent_language => 'en',
-      p_age              => null
-    );
-    -- If we reach here the function did NOT raise — that is wrong.
-    INSERT INTO _b_age_test_results VALUES (
-      'B15',
-      'FAIL | B15 | submit_story(p_age=>null) → age_required | detail: function did not raise any exception'
-    );
-  EXCEPTION WHEN OTHERS THEN
-    GET STACKED DIAGNOSTICS v_errcode = RETURNED_SQLSTATE, v_sqlerrm = MESSAGE_TEXT;
-    IF v_sqlerrm = 'age_required' THEN
-      INSERT INTO _b_age_test_results VALUES (
-        'B15',
-        'PASS | B15 | submit_story(p_age=>null) raises age_required'
-      );
-    ELSE
-      INSERT INTO _b_age_test_results VALUES (
-        'B15',
-        'FAIL | B15 | submit_story(p_age=>null) → age_required | detail: got ' || v_sqlerrm || ' (sqlstate=' || v_errcode || ')'
-      );
-    END IF;
-  END;
-  ROLLBACK TO SAVEPOINT b15;
-END;
-$$;
+-- B17: raw_submissions.age column has no 10-99 or similar range constraint.
+-- (Duplicate of B04 for the check-ID sequence; B04 is authoritative.)
+SELECT
+  CASE WHEN NOT EXISTS (
+    SELECT 1 FROM information_schema.check_constraints cc
+    JOIN information_schema.constraint_column_usage ccu ON ccu.constraint_name = cc.constraint_name
+    WHERE ccu.table_schema='public' AND ccu.table_name='raw_submissions' AND ccu.column_name='age'
+  ) THEN 'PASS' ELSE 'FAIL' END
+  || ' | B17 | raw_submissions.age has no CHECK constraints — any value accepted at DB level'
+  || CASE WHEN EXISTS (
+       SELECT 1 FROM information_schema.check_constraints cc
+       JOIN information_schema.constraint_column_usage ccu ON ccu.constraint_name = cc.constraint_name
+       WHERE ccu.table_schema='public' AND ccu.table_name='raw_submissions' AND ccu.column_name='age'
+     ) THEN ' | detail: a CHECK constraint on age still exists — run 20261013000000 to remove it'
+     ELSE '' END AS result;
 
--- B16: age 0 must be accepted — non-negative integers including 0 are valid.
-DO $$
-DECLARE
-  v_errcode text;
-  v_sqlerrm text;
-BEGIN
-  SAVEPOINT b16;
-  BEGIN
-    PERFORM public.submit_story(
-      p_body             => repeat('x', 60),
-      p_language_code    => 'en',
-      p_consent          => true,
-      p_consent_language => 'en',
-      p_age              => 0::smallint
-    );
-    -- Success: no exception raised by the age check (may fail later on
-    -- consent_version or encryption — that is acceptable; age check passed).
-    INSERT INTO _b_age_test_results VALUES (
-      'B16',
-      'PASS | B16 | submit_story(p_age=>0) — age accepted (no age_required or age_out_of_range)'
-    );
-  EXCEPTION WHEN OTHERS THEN
-    GET STACKED DIAGNOSTICS v_errcode = RETURNED_SQLSTATE, v_sqlerrm = MESSAGE_TEXT;
-    IF v_sqlerrm IN ('age_required', 'age_out_of_range') THEN
-      INSERT INTO _b_age_test_results VALUES (
-        'B16',
-        'FAIL | B16 | submit_story(p_age=>0) — age 0 rejected | detail: ' || v_sqlerrm
-      );
-    ELSE
-      -- Exception from a later guard (consent, encryption) — age itself passed.
-      INSERT INTO _b_age_test_results VALUES (
-        'B16',
-        'PASS | B16 | submit_story(p_age=>0) — age accepted (later guard raised ' || v_sqlerrm || ')'
-      );
-    END IF;
-  END;
-  ROLLBACK TO SAVEPOINT b16;
-END;
-$$;
-
--- B17a: age 9 must be accepted — no lower-bound restriction.
-DO $$
-DECLARE
-  v_errcode text;
-  v_sqlerrm text;
-BEGIN
-  SAVEPOINT b17a;
-  BEGIN
-    PERFORM public.submit_story(
-      p_body             => repeat('x', 60),
-      p_language_code    => 'en',
-      p_consent          => true,
-      p_consent_language => 'en',
-      p_age              => 9::smallint
-    );
-    INSERT INTO _b_age_test_results VALUES (
-      'B17a',
-      'PASS | B17a | submit_story(p_age=>9) — age 9 accepted'
-    );
-  EXCEPTION WHEN OTHERS THEN
-    GET STACKED DIAGNOSTICS v_errcode = RETURNED_SQLSTATE, v_sqlerrm = MESSAGE_TEXT;
-    IF v_sqlerrm IN ('age_required', 'age_out_of_range') THEN
-      INSERT INTO _b_age_test_results VALUES (
-        'B17a',
-        'FAIL | B17a | submit_story(p_age=>9) — age 9 rejected | detail: ' || v_sqlerrm
-      );
-    ELSE
-      INSERT INTO _b_age_test_results VALUES (
-        'B17a',
-        'PASS | B17a | submit_story(p_age=>9) — age accepted (later guard raised ' || v_sqlerrm || ')'
-      );
-    END IF;
-  END;
-  ROLLBACK TO SAVEPOINT b17a;
-END;
-$$;
-
--- B17b: age 100 must be accepted — no upper-bound restriction.
-DO $$
-DECLARE
-  v_errcode text;
-  v_sqlerrm text;
-BEGIN
-  SAVEPOINT b17b;
-  BEGIN
-    PERFORM public.submit_story(
-      p_body             => repeat('x', 60),
-      p_language_code    => 'en',
-      p_consent          => true,
-      p_consent_language => 'en',
-      p_age              => 100::smallint
-    );
-    INSERT INTO _b_age_test_results VALUES (
-      'B17b',
-      'PASS | B17b | submit_story(p_age=>100) — age 100 accepted'
-    );
-  EXCEPTION WHEN OTHERS THEN
-    GET STACKED DIAGNOSTICS v_errcode = RETURNED_SQLSTATE, v_sqlerrm = MESSAGE_TEXT;
-    IF v_sqlerrm IN ('age_required', 'age_out_of_range') THEN
-      INSERT INTO _b_age_test_results VALUES (
-        'B17b',
-        'FAIL | B17b | submit_story(p_age=>100) — age 100 rejected | detail: ' || v_sqlerrm
-      );
-    ELSE
-      INSERT INTO _b_age_test_results VALUES (
-        'B17b',
-        'PASS | B17b | submit_story(p_age=>100) — age accepted (later guard raised ' || v_sqlerrm || ')'
-      );
-    END IF;
-  END;
-  ROLLBACK TO SAVEPOINT b17b;
-END;
-$$;
-
--- B18: historical NULL-age rows are preserved — database column is nullable.
--- This is a schema-level check only; no existing data is modified.
-DO $$
-DECLARE
-  v_nullable text;
-  v_result   text;
-BEGIN
-  SELECT is_nullable INTO v_nullable
-  FROM information_schema.columns
-  WHERE table_schema='public' AND table_name='raw_submissions' AND column_name='age';
-
-  IF v_nullable = 'YES' THEN
-    v_result := 'PASS | B18 | raw_submissions.age is nullable — historical NULL-age rows preserved';
-  ELSE
-    v_result := 'FAIL | B18 | raw_submissions.age is NOT nullable | detail: existing NULL-age rows may be lost';
-  END IF;
-
-  INSERT INTO _b_age_test_results VALUES ('B18', v_result);
-END;
-$$;
-
--- Emit all test results from the temp table.
-SELECT outcome AS result FROM _b_age_test_results ORDER BY check_id;
+-- B18: raw_submissions.age is nullable — historical NULL-age rows are preserved.
+SELECT
+  CASE WHEN EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='raw_submissions'
+      AND column_name='age' AND is_nullable='YES'
+  ) THEN 'PASS' ELSE 'FAIL' END
+  || ' | B18 | raw_submissions.age is nullable — historical NULL-age rows preserved'
+  || CASE WHEN NOT EXISTS (
+       SELECT 1 FROM information_schema.columns
+       WHERE table_schema='public' AND table_name='raw_submissions'
+         AND column_name='age' AND is_nullable='YES'
+     ) THEN ' | detail: column is NOT NULL — existing rows with null age would be invalid'
+     ELSE '' END AS result;
 
 -- ---------------------------------------------------------------------------
 -- C. MIGRATION 20261001120000
