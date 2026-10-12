@@ -121,69 +121,19 @@ jobs:
           fi
           echo "::notice::Production safety check passed."
 
+      # ── Checkout (needed by Guard 3 and the test run) ────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: feature/dev-reconciliation
+
       # ── Guard 3: bind DEV_DB_URL to DEV_PROJECT_REF ─────────────────────────
       # Confirms DEV_DB_URL connects to DEV_PROJECT_REF, not a different project.
       # Accepts both direct connections and session-pooler connections.
-      # Single-quoted heredoc: shell does NOT expand $VARIABLE — uses os.environ.
+      # Logic lives in supabase/deploy/check_db_url.py (committed in this repo)
+      # to avoid unindented Python inside a YAML block scalar.
       - name: Guard – bind DEV_DB_URL to DEV_PROJECT_REF
-        run: |
-          python3 - <<'PYEOF'
-import sys, json, os
-from urllib.parse import urlparse
-
-url = os.environ["DEV_DB_URL"]
-ref = os.environ["DEV_PROJECT_REF"]
-
-try:
-    p = urlparse(url)
-except Exception as e:
-    print(f"::error::Could not parse DEV_DB_URL: {e}")
-    sys.exit(1)
-
-host     = p.hostname or ""
-username = p.username or ""
-
-print(f"URL host:     {host}")
-print(f"URL username: {username}")
-
-# Direct connection:    host     = db.{ref}.supabase.co
-# Session pooler:       username = postgres.{ref}
-#                       host     = *.pooler.supabase.com
-direct_match = (host == f"db.{ref}.supabase.co")
-pooler_match = (
-    username == f"postgres.{ref}"
-    and host.endswith(".pooler.supabase.com")
-)
-
-if not direct_match and not pooler_match:
-    print(f"::error::DEV_DB_URL does not embed project ref '{ref}'.")
-    print(f"::error::Direct: host must be 'db.{ref}.supabase.co'.")
-    print(f"::error::Pooler: username must be 'postgres.{ref}' and host must end with '.pooler.supabase.com'.")
-    print(f"::error::Got host='{host}', username='{username}'.")
-    sys.exit(1)
-
-if direct_match:
-    print(f"::notice::DEV_DB_URL is a direct connection for project {ref}.")
-else:
-    print(f"::notice::DEV_DB_URL is a session-pooler connection for project {ref} (host={host}).")
-
-with open("/tmp/project_meta.json") as f:
-    meta = json.load(f)
-
-api_db_host = (meta.get("database") or {}).get("host", "")
-if not api_db_host:
-    print("::notice::Management API did not return database.host; skipping API host check.")
-elif direct_match:
-    if api_db_host != host:
-        print(f"::error::API database.host '{api_db_host}' does not match URL host '{host}'.")
-        print(f"::error::DEV_DB_URL may connect to a different project. Aborting.")
-        sys.exit(1)
-    print(f"::notice::API database.host confirmed: {api_db_host}")
-else:
-    print(f"::notice::API database.host={api_db_host} (pooler connection — direct-host check skipped).")
-
-print(f"::notice::DEV_DB_URL confirmed for project {ref}.")
-PYEOF
+        run: python3 supabase/deploy/check_db_url.py
 
       # ── Guard 4: psql connectivity ──────────────────────────────────────────
       - name: Guard – verify psql can connect to DEV_DB_URL
@@ -192,12 +142,6 @@ PYEOF
             -c "SELECT 1 AS connectivity_check;" \
             || { echo "::error::psql cannot connect to DEV_DB_URL."; exit 1; }
           echo "::notice::psql connectivity confirmed."
-
-      # ── Checkout ─────────────────────────────────────────────────────────────
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: feature/dev-reconciliation
 
       # ── Run the test script ─────────────────────────────────────────────────
       # ON_ERROR_STOP=1 causes psql to exit on any SQL error.  An error mid-script
