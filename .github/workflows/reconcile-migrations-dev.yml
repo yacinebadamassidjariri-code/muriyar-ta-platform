@@ -145,6 +145,12 @@ jobs:
             || { echo "::error::psql cannot connect to DEV_DB_URL."; exit 1; }
           echo "::notice::psql connectivity confirmed."
 
+      # ── Checkout (needed by Guard 5 and the migration run) ──────────────────
+      - name: Checkout feature/dev-reconciliation
+        uses: actions/checkout@v4
+        with:
+          ref: feature/dev-reconciliation
+
       # ── Guard 5: bind DEV_DB_URL to DEV_PROJECT_REF ─────────────────────────
       # Compares DEV_PROJECT_REF against the project ref embedded in DEV_DB_URL.
       # Supabase embeds the project ref in every connection URL:
@@ -152,76 +158,11 @@ jobs:
       #   - Session pooler:     username = postgres.{ref}
       # A mismatch means DEV_DB_URL points to a different project.
       #
-      # Additionally extracts the API-reported database host (GET /v1/projects/{ref}
-      # → .database.host) and confirms it matches the host in DEV_DB_URL for direct
-      # connections, as a secondary binding check.
-      #
+      # Logic lives in supabase/deploy/check_db_url.py (committed in this repo)
+      # to avoid unindented Python inside a YAML block scalar.
       # project_meta.json was fetched by Guard 3 above.
       - name: Guard – bind DEV_DB_URL to DEV_PROJECT_REF
-        run: |
-          # Use python3 urllib.parse for robust URL parsing (handles percent-encoded
-          # passwords with '@', IPv6 hosts, missing ports, etc.).
-          # Single-quoted heredoc: shell does NOT expand $VARIABLE — use os.environ.
-          python3 - <<'PYEOF'
-import sys, json, os
-from urllib.parse import urlparse
-
-url = os.environ["DEV_DB_URL"]
-ref = os.environ["DEV_PROJECT_REF"]
-
-try:
-    p = urlparse(url)
-except Exception as e:
-    print(f"::error::Could not parse DEV_DB_URL: {e}")
-    sys.exit(1)
-
-host     = p.hostname or ""
-username = p.username or ""
-
-print(f"URL host:     {host}")
-print(f"URL username: {username}")
-
-# Direct connection:    host     = db.{ref}.supabase.co
-# Session pooler:       username = postgres.{ref}
-#                       host     = *.pooler.supabase.com
-direct_match = (host == f"db.{ref}.supabase.co")
-pooler_match = (
-    username == f"postgres.{ref}"
-    and host.endswith(".pooler.supabase.com")
-)
-
-if not direct_match and not pooler_match:
-    print(f"::error::DEV_DB_URL does not embed project ref '{ref}'.")
-    print(f"::error::Direct: host must be 'db.{ref}.supabase.co'.")
-    print(f"::error::Pooler: username must be 'postgres.{ref}' and host must end with '.pooler.supabase.com'.")
-    print(f"::error::Got host='{host}', username='{username}'.")
-    sys.exit(1)
-
-if direct_match:
-    print(f"::notice::DEV_DB_URL is a direct connection for project {ref}.")
-else:
-    print(f"::notice::DEV_DB_URL is a session-pooler connection for project {ref} (host={host}).")
-
-# Secondary check for direct connections: compare API-reported db host.
-with open("/tmp/project_meta.json") as f:
-    meta = json.load(f)
-
-api_db_host = (meta.get("database") or {}).get("host", "")
-if not api_db_host:
-    # Some paused or initialising projects may omit this field.
-    print("::notice::Management API did not return database.host; skipping API host check.")
-elif direct_match:
-    if api_db_host != host:
-        print(f"::error::API database.host '{api_db_host}' does not match URL host '{host}'.")
-        print(f"::error::DEV_DB_URL may connect to a different project. Aborting.")
-        sys.exit(1)
-    print(f"::notice::API database.host confirmed: {api_db_host}")
-else:
-    # For pooler connections the API host is the direct DB host, not the pooler host.
-    print(f"::notice::API database.host={api_db_host} (pooler connection — direct-host check skipped).")
-
-print(f"::notice::DEV_DB_URL confirmed for project {ref}.")
-PYEOF
+        run: python3 supabase/deploy/check_db_url.py
 
       # ── Install Supabase CLI ─────────────────────────────────────────────────
       - name: Install Supabase CLI v2.120.0
@@ -232,12 +173,6 @@ PYEOF
           tar -xzf /tmp/supabase.tar.gz -C /tmp
           sudo mv /tmp/supabase /usr/local/bin/supabase
           supabase --version
-
-      # ── Checkout ─────────────────────────────────────────────────────────────
-      - name: Checkout feature/dev-reconciliation
-        uses: actions/checkout@v4
-        with:
-          ref: feature/dev-reconciliation
 
       # ── Pre-flight: verify 20261001000000 effects are already present ────────
       # Checks the three critical DB effects that 20261001000000 should have left.
@@ -339,33 +274,172 @@ PYEOF
           echo "Pending migrations:"
           echo "${PENDING:-  (none)}"
 
-          EXPECTED="20261001120000
-          20261001130000
-          20261013000000"
+          # The three migrations this workflow will apply.
+          EXPECTED_NORM=$(printf '%s\n' \
+            20261001120000 \
+            20261001130000 \
+            20261013000000 \
+            | sort)
 
-          # Normalise whitespace
+          # Migrations present in the feature-branch checkout that are out of
+          # scope for this reconciliation run and must NOT be applied here.
+          # They are acknowledged so the safety check does not treat them as
+          # unknown; they must remain unapplied (not in schema_migrations) on
+          # exit from this workflow.
+          #   20261010000000 — AAL2 enforcement (apply only after MFA enrolment)
+          #   20261010100000–20261010100003 — QA / Ask Muriyar Ta schema
+          OUT_OF_SCOPE_NORM=$(printf '%s\n' \
+            20261010000000 \
+            20261010100000 \
+            20261010100001 \
+            20261010100002 \
+            20261010100003 \
+            | sort)
+
+          # Normalise the pending set (strip whitespace, keep 14-digit versions).
           PENDING_NORM=$(echo "$PENDING" | tr -s ' \t' '\n' | grep -E '^[0-9]{14}$' | sort)
-          EXPECTED_NORM=$(printf '%s\n' 20261001120000 20261001130000 20261013000000 | sort)
 
-          UNEXPECTED=$(comm -23 <(echo "$PENDING_NORM") <(echo "$EXPECTED_NORM") || true)
-          MISSING_EXPECTED=$(comm -13 <(echo "$PENDING_NORM") <(echo "$EXPECTED_NORM") || true)
+          # Anything pending that is neither expected nor acknowledged out-of-scope
+          # is truly unexpected — abort.
+          KNOWN_NORM=$(printf '%s\n' \
+            $(echo "$EXPECTED_NORM") \
+            $(echo "$OUT_OF_SCOPE_NORM") \
+            | sort)
+          TRULY_UNEXPECTED=$(comm -23 \
+            <(echo "$PENDING_NORM") \
+            <(echo "$KNOWN_NORM") || true)
 
-          if [ -n "$UNEXPECTED" ]; then
-            echo "::error::Unexpected pending migration(s): ${UNEXPECTED}"
-            echo "::error::Resolve unexpected pending migrations before proceeding."
+          if [ -n "$TRULY_UNEXPECTED" ]; then
+            echo "::error::Truly unexpected pending migration(s): ${TRULY_UNEXPECTED}"
+            echo "::error::These are not in the approved or acknowledged sets."
+            echo "::error::Resolve before proceeding."
             exit 1
           fi
+
+          # Out-of-scope migrations should not be applied — confirm none slipped
+          # into the applied set already (warn only; they pre-date this run).
+          OUT_OF_SCOPE_APPLIED=$(comm -12 \
+            <(echo "$OUT_OF_SCOPE_NORM") \
+            <(echo "$APPLIED" | sort) || true)
+          if [ -n "$OUT_OF_SCOPE_APPLIED" ]; then
+            echo "::notice::Out-of-scope migration(s) already applied (recorded before this run): ${OUT_OF_SCOPE_APPLIED}"
+          fi
+
+          # Confirm our three expected migrations are pending (not yet applied).
+          MISSING_EXPECTED=$(comm -13 \
+            <(echo "$PENDING_NORM") \
+            <(echo "$EXPECTED_NORM") || true)
           if [ -n "$MISSING_EXPECTED" ]; then
             echo "::error::Expected pending migration(s) not found: ${MISSING_EXPECTED}"
             echo "::error::They may already be applied or be absent from the checkout."
             exit 1
           fi
+
           echo "::notice::Pending set confirmed: 20261001120000, 20261001130000, 20261013000000."
+          echo "::notice::Out-of-scope migrations (AAL2, QA) are present but will NOT be applied."
 
       # ── Step 3: apply pending migrations ────────────────────────────────────
+      # supabase db push requires local files for every version already in the
+      # remote ledger ("Remote migration versions not found in local migrations
+      # directory").  The isolated directory therefore contains:
+      #   • one .sql file per version currently in schema_migrations (applied set)
+      #   • the three approved pending migration files
+      #
+      # The out-of-scope AAL2 (20261010000000) and QA (20261010100000–100003)
+      # files are NEVER copied in.  If any of those versions appear in the
+      # remote ledger this step aborts — they must not be applied.
+      #
+      # Layout of /tmp/supabase-push-isolated/:
+      #   config.toml      — minimal config (project_id, db.major_version)
+      #   migrations/
+      #     <applied versions, one file each, copied from checkout>
+      #     20261001120000_analytics_events_v2.sql          (pending — approved)
+      #     20261001130000_analytics_record_event_tighten.sql (pending — approved)
+      #     20261013000000_age_required_and_constraint.sql  (pending — approved)
       - name: Apply – supabase db push (20261001120000, 20261001130000, 20261013000000)
         run: |
-          echo "Applying pending migrations to ${DEV_PROJECT_REF} …"
+          echo "Building isolated migrations directory …"
+
+          ISOLATED=/tmp/supabase-push-isolated
+          MIGRATION_SRC="$GITHUB_WORKSPACE/supabase/migrations"
+          rm -rf "$ISOLATED"
+          mkdir -p "$ISOLATED/migrations"
+
+          # Minimal config.toml.  Written with printf — no heredoc in YAML block scalar.
+          printf 'project_id = "muriyar-ta-dev-isolated"\n\n[db]\nmajor_version = 17\n' \
+            > "$ISOLATED/config.toml"
+
+          # Versions that must NOT appear in the isolated directory (ever).
+          OUT_OF_SCOPE="20261010000000 20261010100000 20261010100001 20261010100002 20261010100003"
+
+          # ── 3a. Copy one file per already-applied version ──────────────────────
+          APPLIED_VERSIONS=$(psql "$DEV_DB_URL" --no-password --tuples-only \
+            -c "SELECT version FROM supabase_migrations.schema_migrations ORDER BY version;" \
+            | tr -d ' ' | grep -E '^[0-9]{14}$')
+
+          APPLIED_COUNT=0
+          for VER in $APPLIED_VERSIONS; do
+            # Abort if an out-of-scope version is already in the ledger.
+            for OOS in $OUT_OF_SCOPE; do
+              if [ "$VER" = "$OOS" ]; then
+                echo "::error::Out-of-scope migration $VER is recorded in schema_migrations."
+                echo "::error::This workflow must not run while an out-of-scope migration is applied."
+                exit 1
+              fi
+            done
+
+            # Find the matching file in the checkout (version prefix match).
+            # Use find rather than ls glob: find exits 0 when nothing matches,
+            # whereas ls exits 2, which propagates through $(...) under pipefail.
+            FILE=$(find "$MIGRATION_SRC" -maxdepth 1 -name "${VER}_*.sql" | head -1)
+            if [ -z "$FILE" ]; then
+              echo "::error::Applied version $VER has no matching file in supabase/migrations/."
+              echo "::error::The checkout is missing a file the remote ledger expects."
+              exit 1
+            fi
+            BASENAME=$(basename "$FILE")
+            cp "$FILE" "$ISOLATED/migrations/$BASENAME"
+            echo "  Applied:  $BASENAME"
+            APPLIED_COUNT=$((APPLIED_COUNT + 1))
+          done
+          echo "  Copied $APPLIED_COUNT applied-version file(s)."
+
+          # ── 3b. Copy the three approved pending migration files ────────────────
+          APPROVED=(
+            "20261001120000_analytics_events_v2.sql"
+            "20261001130000_analytics_record_event_tighten.sql"
+            "20261013000000_age_required_and_constraint.sql"
+          )
+          for f in "${APPROVED[@]}"; do
+            if [ ! -f "$MIGRATION_SRC/$f" ]; then
+              echo "::error::Approved pending migration missing from checkout: $f"
+              exit 1
+            fi
+            cp "$MIGRATION_SRC/$f" "$ISOLATED/migrations/$f"
+            echo "  Pending:  $f"
+          done
+
+          # ── 3c. Safety: confirm no out-of-scope file is present ────────────────
+          # find exits 0 on no match; ls exits 2, which breaks pipefail.
+          for OOS in $OUT_OF_SCOPE; do
+            if [ -n "$(find "$ISOLATED/migrations" -maxdepth 1 -name "${OOS}_*.sql")" ]; then
+              echo "::error::Out-of-scope file for $OOS found in isolated dir — aborting."
+              exit 1
+            fi
+          done
+
+          # ── 3d. Confirm total file count ────────────────────────────────────────
+          EXPECTED_COUNT=$((APPLIED_COUNT + 3))
+          ACTUAL_COUNT=$(ls "$ISOLATED/migrations/" | wc -l)
+          if [ "$ACTUAL_COUNT" -ne "$EXPECTED_COUNT" ]; then
+            echo "::error::Isolated dir has $ACTUAL_COUNT file(s); expected $EXPECTED_COUNT ($APPLIED_COUNT applied + 3 pending)."
+            exit 1
+          fi
+          echo "::notice::Isolated directory: $APPLIED_COUNT applied + 3 pending = $ACTUAL_COUNT files. AAL2 and QA files are absent."
+
+          echo ""
+          echo "Applying migrations to ${DEV_PROJECT_REF} …"
+
           # Percent-encode DEV_DB_URL so --db-url receives a valid RFC-3986 URL.
           ENCODED_DB_URL=$(python3 -c "
           from urllib.parse import urlparse, quote, urlunparse
@@ -377,6 +451,8 @@ PYEOF
           ))
           print(encoded, end='')
           ")
+
+          cd "$ISOLATED"
           supabase db push \
             --db-url "$ENCODED_DB_URL" \
             --yes
