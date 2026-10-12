@@ -115,9 +115,15 @@ comment on function public.record_event is
 
 create or replace function public.build_daily_metric_snapshots()
 returns void language plpgsql security definer set search_path = public as $$
-declare d date := current_date;
+declare
+  d    date := current_date;        -- today: snapshot_date for cumulative counts
+  d_ev date := current_date - 1;    -- yesterday: the complete day whose events we count
+                                    -- The cron job fires at 00:30 UTC. At that time
+                                    -- current_date has only 30 minutes of data; we want
+                                    -- the previous complete UTC day for event_count rows.
 begin
   -- ── Existing snapshots (unchanged) ──────────────────────────────────────
+  -- These are point-in-time cumulative counts; snapshot_date = today is correct.
   insert into public.daily_metric_snapshots(snapshot_date, metric_key, dimension, value)
   values
     (d, 'submissions_total', '_all', (select count(*) from public.raw_submissions)),
@@ -140,28 +146,30 @@ begin
   from public.raw_submissions group by current_state
   on conflict (snapshot_date, metric_key, dimension) do update set value = excluded.value;
 
-  -- ── Analytics event counts (today only, rolling 24 h window) ────────────
-  -- Counts each event type that occurred today (UTC date).
+  -- ── Analytics event counts — previous complete UTC day ──────────────────
+  -- snapshot_date = d_ev (yesterday) so the row reflects the complete day.
+  -- The window is [d_ev 00:00, d_ev+1 00:00) = all of yesterday UTC.
+  -- Using d here would record only the first 30 minutes of today (bug: cron fires at 00:30).
   insert into public.daily_metric_snapshots(snapshot_date, metric_key, dimension, value)
   select
-    d,
+    d_ev,
     'event_count',
     'type=' || event_type::text,
     count(*)
   from public.analytics_events
-  where occurred_at >= d and occurred_at < d + interval '1 day'
+  where occurred_at >= d_ev and occurred_at < d_ev + interval '1 day'
   group by event_type
   on conflict (snapshot_date, metric_key, dimension) do update set value = excluded.value;
 
   -- Submission events broken down by locale (entity_id when entity_type='locale')
   insert into public.daily_metric_snapshots(snapshot_date, metric_key, dimension, value)
   select
-    d,
+    d_ev,
     'event_count',
     'type=submission_completed,locale=' || coalesce(entity_id, 'unknown'),
     count(*)
   from public.analytics_events
-  where occurred_at >= d and occurred_at < d + interval '1 day'
+  where occurred_at >= d_ev and occurred_at < d_ev + interval '1 day'
     and event_type = 'submission_completed'
     and entity_type = 'locale'
   group by entity_id
@@ -170,12 +178,12 @@ begin
   -- Outreach channel attribution (entity_id = channel slug)
   insert into public.daily_metric_snapshots(snapshot_date, metric_key, dimension, value)
   select
-    d,
+    d_ev,
     'event_count',
     'type=outreach_visit,channel=' || coalesce(entity_id, 'unknown'),
     count(*)
   from public.analytics_events
-  where occurred_at >= d and occurred_at < d + interval '1 day'
+  where occurred_at >= d_ev and occurred_at < d_ev + interval '1 day'
     and event_type = 'outreach_visit'
     and entity_type = 'channel'
   group by entity_id

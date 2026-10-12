@@ -12,7 +12,7 @@ export type SubmissionInput = {
   story: string;
   country?: string;
   region?: string;
-  age?: string; // raw string from FormData; parsed to number or null
+  age?: string; // raw string from FormData; parsed to number
   consent: boolean;
   researchConsent: boolean;
   locale?: string;
@@ -25,6 +25,10 @@ export type SubmissionField =
   | "region"
   | "age"
   | "consent";
+
+// Age is required for new submissions.
+// No minimum or maximum age may determine submission eligibility.
+// Existing submissions with NULL age are preserved (database allows NULL for historical rows).
 export type SubmissionErrors = Partial<Record<SubmissionField, string>>;
 
 /**
@@ -39,7 +43,7 @@ export function validateSubmission(input: SubmissionInput): {
     story: string;
     country: string | null;
     region: string | null;
-    age: number | null;
+    age: number;
     consent: boolean;
     researchConsent: boolean;
   };
@@ -49,10 +53,14 @@ export function validateSubmission(input: SubmissionInput): {
   const country = (input.country ?? "").trim() || null;
   const region = (input.region ?? "").trim() || null;
 
-  // Age: optional. Empty string → null. Non-numeric or out of range → error.
+  // Age: required for new submissions. Empty string → error.
+  // No minimum or maximum age may determine submission eligibility —
+  // AGE_MIN/AGE_MAX are range bounds only, not eligibility gates.
   const rawAge = (input.age ?? "").trim();
-  let age: number | null = null;
-  if (rawAge !== "") {
+  let age = 0; // placeholder; replaced below or errors.age is set
+  if (rawAge === "") {
+    errors.age = "age_required";
+  } else {
     const parsed = Number(rawAge);
     if (!Number.isInteger(parsed) || parsed < AGE_MIN || parsed > AGE_MAX) {
       errors.age = "age_invalid";
@@ -85,7 +93,7 @@ export function validateSubmission(input: SubmissionInput): {
       story,
       country,
       region,
-      age,
+      age,                        // always a number; errors.age set if absent/invalid
       consent: input.consent,
       researchConsent: input.researchConsent,
     },
