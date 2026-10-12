@@ -48,6 +48,37 @@ jobs:
       DEV_PROJECT_REF: ${{ secrets.DEV_PROJECT_REF }}
 
     steps:
+      # ── Guard 0: secrets presence check ─────────────────────────────────────
+      # Fails immediately with a clear message if any required secret is missing
+      # or empty. Does NOT print secret values — checks only whether they are set.
+      # A 401 from the Management API almost always means DEV_SUPABASE_ACCESS_TOKEN
+      # is blank; this step catches that before any network call is made.
+      - name: Guard – verify required secrets are present
+        run: |
+          MISSING=""
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
+            MISSING="${MISSING} DEV_SUPABASE_ACCESS_TOKEN"
+          fi
+          if [ -z "$DEV_DB_URL" ]; then
+            MISSING="${MISSING} DEV_DB_URL"
+          fi
+          if [ -z "$DEV_PROJECT_REF" ]; then
+            MISSING="${MISSING} DEV_PROJECT_REF"
+          fi
+          if [ -n "$MISSING" ]; then
+            echo "::error::Required secrets are missing or empty:${MISSING}"
+            echo "::error::Add these secrets to the 'development' GitHub Environment:"
+            echo "::error::  Settings → Environments → development → Environment secrets"
+            echo "::error::DEV_SUPABASE_ACCESS_TOKEN: a Supabase personal access token"
+            echo "::error::  (account → Access tokens at app.supabase.com)"
+            echo "::error::DEV_DB_URL: the direct connection string for the dev project"
+            echo "::error::  (project → Settings → Database → Connection string → URI)"
+            echo "::error::DEV_PROJECT_REF: the project ref shown in the project URL"
+            echo "::error::  (e.g. abcdefghijklmnop from app.supabase.com/project/abcdefghijklmnop)"
+            exit 1
+          fi
+          echo "::notice::All required secrets are present."
+
       - name: Install Supabase CLI v2.120.0
         run: |
           curl -fsSL \
