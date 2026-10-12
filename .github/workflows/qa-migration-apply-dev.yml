@@ -215,11 +215,6 @@ jobs:
           echo "Pending migrations: ${PENDING:-none}"
 
           # These are the only four Q&A migrations this workflow applies.
-          QA_VERSIONS="20261010100000
-20261010100001
-20261010100002
-20261010100003"
-
           UNEXPECTED=$(echo "$PENDING" | grep -vE '^(20261010100[0-9]{3})?$' | grep -E '^[0-9]{14}$' || true)
           if [ -n "$UNEXPECTED" ]; then
             echo "::error::Unexpected non-Q&A migrations are pending: ${UNEXPECTED}"

@@ -173,11 +173,6 @@ jobs:
           echo "${PENDING:-  (none)}"
 
           # Warn if any non-Q&A migrations are pending.
-          QA_VERSIONS="20261010100000
-20261010100001
-20261010100002
-20261010100003"
-
           NON_QA=$(echo "$PENDING" | grep -vE '^(20261010100[0-9]{3})?$' | grep -E '^[0-9]{14}$' || true)
           if [ -n "$NON_QA" ]; then
             echo "::warning::Non-Q&A migrations are pending: ${NON_QA}"
