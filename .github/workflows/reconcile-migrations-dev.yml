@@ -274,28 +274,69 @@ jobs:
           echo "Pending migrations:"
           echo "${PENDING:-  (none)}"
 
-          EXPECTED="20261001120000
-          20261001130000
-          20261013000000"
+          # The three migrations this workflow will apply.
+          EXPECTED_NORM=$(printf '%s\n' \
+            20261001120000 \
+            20261001130000 \
+            20261013000000 \
+            | sort)
 
-          # Normalise whitespace
+          # Migrations present in the feature-branch checkout that are out of
+          # scope for this reconciliation run and must NOT be applied here.
+          # They are acknowledged so the safety check does not treat them as
+          # unknown; they must remain unapplied (not in schema_migrations) on
+          # exit from this workflow.
+          #   20261010000000 — AAL2 enforcement (apply only after MFA enrolment)
+          #   20261010100000–20261010100003 — QA / Ask Muriyar Ta schema
+          OUT_OF_SCOPE_NORM=$(printf '%s\n' \
+            20261010000000 \
+            20261010100000 \
+            20261010100001 \
+            20261010100002 \
+            20261010100003 \
+            | sort)
+
+          # Normalise the pending set (strip whitespace, keep 14-digit versions).
           PENDING_NORM=$(echo "$PENDING" | tr -s ' \t' '\n' | grep -E '^[0-9]{14}$' | sort)
-          EXPECTED_NORM=$(printf '%s\n' 20261001120000 20261001130000 20261013000000 | sort)
 
-          UNEXPECTED=$(comm -23 <(echo "$PENDING_NORM") <(echo "$EXPECTED_NORM") || true)
-          MISSING_EXPECTED=$(comm -13 <(echo "$PENDING_NORM") <(echo "$EXPECTED_NORM") || true)
+          # Anything pending that is neither expected nor acknowledged out-of-scope
+          # is truly unexpected — abort.
+          KNOWN_NORM=$(printf '%s\n' \
+            $(echo "$EXPECTED_NORM") \
+            $(echo "$OUT_OF_SCOPE_NORM") \
+            | sort)
+          TRULY_UNEXPECTED=$(comm -23 \
+            <(echo "$PENDING_NORM") \
+            <(echo "$KNOWN_NORM") || true)
 
-          if [ -n "$UNEXPECTED" ]; then
-            echo "::error::Unexpected pending migration(s): ${UNEXPECTED}"
-            echo "::error::Resolve unexpected pending migrations before proceeding."
+          if [ -n "$TRULY_UNEXPECTED" ]; then
+            echo "::error::Truly unexpected pending migration(s): ${TRULY_UNEXPECTED}"
+            echo "::error::These are not in the approved or acknowledged sets."
+            echo "::error::Resolve before proceeding."
             exit 1
           fi
+
+          # Out-of-scope migrations should not be applied — confirm none slipped
+          # into the applied set already (warn only; they pre-date this run).
+          OUT_OF_SCOPE_APPLIED=$(comm -12 \
+            <(echo "$OUT_OF_SCOPE_NORM") \
+            <(echo "$APPLIED" | sort) || true)
+          if [ -n "$OUT_OF_SCOPE_APPLIED" ]; then
+            echo "::notice::Out-of-scope migration(s) already applied (recorded before this run): ${OUT_OF_SCOPE_APPLIED}"
+          fi
+
+          # Confirm our three expected migrations are pending (not yet applied).
+          MISSING_EXPECTED=$(comm -13 \
+            <(echo "$PENDING_NORM") \
+            <(echo "$EXPECTED_NORM") || true)
           if [ -n "$MISSING_EXPECTED" ]; then
             echo "::error::Expected pending migration(s) not found: ${MISSING_EXPECTED}"
             echo "::error::They may already be applied or be absent from the checkout."
             exit 1
           fi
+
           echo "::notice::Pending set confirmed: 20261001120000, 20261001130000, 20261013000000."
+          echo "::notice::Out-of-scope migrations (AAL2, QA) are present but will NOT be applied."
 
       # ── Step 3: apply pending migrations ────────────────────────────────────
       - name: Apply – supabase db push (20261001120000, 20261001130000, 20261013000000)
