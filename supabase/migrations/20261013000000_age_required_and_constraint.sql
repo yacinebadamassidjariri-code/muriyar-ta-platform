@@ -1,64 +1,68 @@
--- Migration: age field — make required for new submissions, add range constraint
+-- Migration: age field — make required for new submissions
 --
 -- Context:
---   Migration 20261001000000 added age as a nullable smallint WITH a CHECK
---   constraint (age >= 10 and age <= 99).
---   The production deploy script 02_production_migration.sql intentionally
---   omitted the constraint, because at that time age was optional with no
---   eligibility effect.
+--   Migration 20261001000000 added age as a nullable smallint and, on a fresh
+--   database, also added a CHECK constraint (raw_submissions_age_range_chk)
+--   restricting age to 10–99. The production deploy script
+--   02_production_migration.sql intentionally omitted that constraint because
+--   at that time age was optional with no eligibility effect.
 --
 --   Policy change (2026-10-13):
 --     • Age IS required for new submissions.
 --     • No minimum or maximum age may determine submission eligibility.
+--       Ages 9 and 100 are valid. Any positive integer is accepted.
 --     • Existing submissions with NULL age are preserved as-is.
+--       The column remains nullable to avoid touching historical rows.
 --
 --   This migration:
---     1. Adds the range-check constraint that was intentionally deferred.
---        The constraint uses IS NULL OR to preserve existing NULL rows and
---        ensures future submissions supply a value in 10–99. The application
---        layer enforces "required"; the database enforces the range.
+--     1. Removes the 10–99 range constraint if it exists (present on fresh
+--        databases, absent on the manually deployed dev database). This is a
+--        prerequisite so that ages outside 10–99 are not rejected at insert time.
 --     2. Updates submit_story() to raise age_required when p_age is null.
---        This is a DB-level enforcement of the "required" policy. It does NOT
---        gate eligibility on age value; it gates on presence only.
+--        This is the only age-related enforcement: the field must be present.
+--        The function no longer raises age_out_of_range — no age value is
+--        treated as out of range.
 --     3. Records 20261001000000 in schema_migrations (empty statements array)
 --        to tell the CLI that its DDL is already in the database.
 --
 -- DOES NOT:
---   • Reject existing NULL rows (constraint is IS NULL OR, not NOT NULL).
+--   • Add a new range constraint. Any positive integer age is accepted.
 --   • Modify existing submission data.
 --   • Change RLS, encryption keys, or consent records.
 --   • Touch production.
+--
+-- Idempotent on:
+--   - Fresh database: drops the 10–99 constraint that 20261001000000 added.
+--   - Dev database (manually deployed, no constraint): the DROP IF EXISTS is a no-op.
 
 begin;
 
--- ── 1. Add range-check constraint ─────────────────────────────────────────────
+-- ── 1. Remove the 10–99 range constraint if present ──────────────────────────
 --
--- Existing rows with age IS NULL pass the constraint (IS NULL OR branch).
--- Future submissions must supply an integer in [10, 99].
--- The NOT VALID clause skips re-checking existing rows on creation, then
--- VALIDATE CONSTRAINT scans only the existing rows — safe for a live table.
+-- On a fresh database, 20261001000000 created raw_submissions_age_range_chk.
+-- On the manually deployed dev database, 02_production_migration.sql never
+-- added it, so it is absent. ALTER TABLE ... DROP CONSTRAINT IF EXISTS handles
+-- both cases without error.
+--
+-- Removing it is required: without this step, ages such as 9 or 100 would be
+-- rejected at the database level even though the policy accepts them.
 
 alter table public.raw_submissions
-  add constraint raw_submissions_age_range_chk
-    check (age is null or (age >= 10 and age <= 99))
-    not valid;
-
-alter table public.raw_submissions
-  validate constraint raw_submissions_age_range_chk;
+  drop constraint if exists raw_submissions_age_range_chk;
 
 -- Update the column comment to reflect the new policy.
 comment on column public.raw_submissions.age is
   'Self-reported age at time of submission. Required for new submissions. '
   'Nullable to preserve existing rows that predate the requirement. '
-  'Range 10–99 enforced; never date of birth. '
+  'No range restriction — any positive integer is accepted. '
   'Age does not determine submission eligibility.';
 
 -- ── 2. Update submit_story() to require p_age ─────────────────────────────────
 --
--- The function already validates range (age < 10 or age > 99 → age_out_of_range).
--- Add a null check: p_age is null → raises age_required.
--- This is a CREATE OR REPLACE — the function signature, grants, and trigger
--- attachment are unchanged.
+-- Only change: add a null check (p_age is null → raises age_required).
+-- Remove the age_out_of_range check that was present in 20261001000000 and
+-- would have rejected ages outside 10–99. No age value is out of range;
+-- only absence of age is an error.
 
 create or replace function public.submit_story(
   p_body              text,
@@ -102,12 +106,10 @@ begin
     raise exception 'region_too_long' using errcode = '22001';
   end if;
   -- Age is required for new submissions.
-  -- It does not gate eligibility — a submission with any valid age is accepted.
+  -- It does not gate eligibility — any positive integer is accepted.
+  -- No age_out_of_range check: ages 9, 100, and beyond are all valid.
   if p_age is null then
     raise exception 'age_required' using errcode = '23514';
-  end if;
-  if p_age < 10 or p_age > 99 then
-    raise exception 'age_out_of_range' using errcode = '23514';
   end if;
   if not exists (
     select 1 from public.supported_languages
@@ -198,9 +200,9 @@ end;
 $$;
 
 comment on function public.submit_story is
-  'Anonymous story intake. Age is required (age_required if null, '
-  'age_out_of_range if outside 10–99). Age does not gate eligibility — '
-  'any valid age is accepted. Hard encryption guard — no plaintext fallback. '
+  'Anonymous story intake. Age is required (age_required if null). '
+  'No age range restriction — any positive integer is accepted. '
+  'Hard encryption guard — no plaintext fallback. '
   'research_consent_language falls back to ''en'' for languages without a '
   'translation row (ha, zar). SEC-05, FR-SS-13..17.';
 
@@ -211,9 +213,10 @@ comment on function public.submit_story is
 -- Its DDL is already present. Inserting here with an empty statements array
 -- tells the CLI that the migration has been applied and prevents re-running it.
 --
--- The age range-check constraint (the one intentional deviation from that
--- migration) is added above. After this transaction commits, the database
--- matches what 20261001000000 specifies, plus the policy change in this file.
+-- The age range-check constraint that 20261001000000 added on fresh databases
+-- is removed above (step 1). After this transaction commits, the database
+-- matches the intended state: age column present, nullable, no range restriction,
+-- age required for new submissions only.
 
 insert into supabase_migrations.schema_migrations (version, name, statements)
 values (

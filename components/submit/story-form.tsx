@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { LifeBuoy } from "lucide-react";
 import { submitStory, type SubmitState } from "@/lib/actions/submit-story";
-import { AGE_MIN, AGE_MAX, GEOGRAPHIC_CONTEXT_MAX, STORY_MIN, STORY_MAX } from "@/lib/validation/submission";
+import { GEOGRAPHIC_CONTEXT_MAX, STORY_MIN, STORY_MAX } from "@/lib/validation/submission";
 import { locales, localeLabels } from "@/lib/i18n/routing";
 import type { SubmitCopy } from "@/components/submit/content";
 import { Link } from "@/lib/i18n/navigation";
@@ -72,7 +72,7 @@ export function StoryForm({ copy, locale }: { copy: SubmitCopy; locale: string }
           <p id="age-help" className={styles.fieldHelp}>{copy.form.ageHelp}</p>
           <input
             id="age" name="age" type="number" inputMode="numeric"
-            min={AGE_MIN} max={AGE_MAX} required autoComplete="off"
+            min={1} required autoComplete="off"
             aria-required="true"
             aria-invalid={!!state.errors?.age}
             aria-describedby={state.errors?.age ? "age-help age-error" : "age-help"}

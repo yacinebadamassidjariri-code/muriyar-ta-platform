@@ -78,23 +78,28 @@ SELECT 'FAIL | B03 | raw_submissions.age is nullable | detail: column not found'
 WHERE NOT EXISTS (SELECT 1 FROM information_schema.columns
   WHERE table_schema='public' AND table_name='raw_submissions' AND column_name='age');
 
+-- B04: no age RANGE constraint — policy is required but unrestricted.
+-- Ages 9, 100, and beyond must be accepted. The 10–99 constraint that
+-- 20261001000000 added on fresh databases must have been removed by 20261013000000.
+-- PASS = no check constraint on the age column contains both '10' and '99'.
 SELECT
-  CASE WHEN EXISTS (
+  CASE WHEN NOT EXISTS (
     SELECT 1 FROM information_schema.check_constraints cc
     JOIN information_schema.constraint_column_usage ccu ON ccu.constraint_name = cc.constraint_name
     WHERE ccu.table_schema='public' AND ccu.table_name='raw_submissions' AND ccu.column_name='age'
       AND cc.check_clause LIKE '%10%' AND cc.check_clause LIKE '%99%'
   ) THEN 'PASS' ELSE 'FAIL' END
-  || ' | B04 | age CHECK constraint (10-99) present — required by current policy'
-  || CASE WHEN NOT EXISTS (
+  || ' | B04 | age column has NO 10-99 range constraint — any positive integer accepted'
+  || CASE WHEN EXISTS (
        SELECT 1 FROM information_schema.check_constraints cc
        JOIN information_schema.constraint_column_usage ccu ON ccu.constraint_name = cc.constraint_name
        WHERE ccu.table_schema='public' AND ccu.table_name='raw_submissions' AND ccu.column_name='age'
          AND cc.check_clause LIKE '%10%' AND cc.check_clause LIKE '%99%'
-     ) THEN ' | detail: constraint not found — 20261013000000 not yet applied'
+     ) THEN ' | detail: 10-99 range constraint still present — 20261013000000 not yet applied'
      ELSE '' END AS result;
 
-\echo 'INFO | B04b | Age constraint text'
+-- B04b: full listing of any remaining check constraints on age (should be empty).
+\echo 'INFO | B04b | Any remaining check constraints on raw_submissions.age (should be none)'
 SELECT cc.constraint_name, cc.check_clause
 FROM information_schema.check_constraints cc
 JOIN information_schema.constraint_column_usage ccu ON ccu.constraint_name = cc.constraint_name
@@ -227,6 +232,58 @@ SELECT
        WHERE n.nspname='public' AND p.proname='submit_story'
          AND p.prosrc LIKE '%age_required%'
      ) THEN ' | detail: age_required not in function body — 20261013000000 not applied'
+     ELSE '' END AS result;
+
+-- B15: missing age must fail — submit_story() must check for null p_age.
+-- Verified by confirming the function body contains the null check.
+-- (Read-only proxy for: submit_story(…, p_age => null) → age_required.)
+SELECT
+  CASE WHEN EXISTS (
+    SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='submit_story'
+      AND p.prosrc LIKE '%p_age is null%'
+      AND p.prosrc LIKE '%age_required%'
+  ) THEN 'PASS' ELSE 'FAIL' END
+  || ' | B15 | submit_story(): missing age (null) → age_required — null check present'
+  || CASE WHEN NOT EXISTS (
+       SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+       WHERE n.nspname='public' AND p.proname='submit_story'
+         AND p.prosrc LIKE '%p_age is null%'
+         AND p.prosrc LIKE '%age_required%'
+     ) THEN ' | detail: null check or age_required not found — age not enforced as required'
+     ELSE '' END AS result;
+
+-- B16: age 9 must pass — no 10–99 range check in submit_story().
+-- PASS = the function body does NOT contain an age_out_of_range raise for
+-- values below 10. A function that still has "p_age < 10" would reject age 9.
+SELECT
+  CASE WHEN NOT EXISTS (
+    SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='submit_story'
+      AND p.prosrc LIKE '%age_out_of_range%'
+  ) THEN 'PASS' ELSE 'FAIL' END
+  || ' | B16 | submit_story(): age 9 accepted — age_out_of_range check absent'
+  || CASE WHEN EXISTS (
+       SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+       WHERE n.nspname='public' AND p.proname='submit_story'
+         AND p.prosrc LIKE '%age_out_of_range%'
+     ) THEN ' | detail: age_out_of_range still in function body — ages 9 and 100 would be rejected'
+     ELSE '' END AS result;
+
+-- B17: age 100 must pass — same check as B16 (one check covers both cases).
+-- This is a labelled assertion for clarity; it passes when B16 passes.
+SELECT
+  CASE WHEN NOT EXISTS (
+    SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='submit_story'
+      AND p.prosrc LIKE '%age_out_of_range%'
+  ) THEN 'PASS' ELSE 'FAIL' END
+  || ' | B17 | submit_story(): age 100 accepted — no upper-bound rejection'
+  || CASE WHEN EXISTS (
+       SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+       WHERE n.nspname='public' AND p.proname='submit_story'
+         AND p.prosrc LIKE '%age_out_of_range%'
+     ) THEN ' | detail: age_out_of_range still in function body — age 100 would be rejected'
      ELSE '' END AS result;
 
 -- ---------------------------------------------------------------------------
@@ -419,7 +476,7 @@ SELECT
 \echo ''
 \echo '── E. SUMMARY ──────────────────────────────────────────────'
 \echo ''
-\echo '  20261001000000: checks B01-B14'
+\echo '  20261001000000: checks B01-B17'
 \echo '  20261001120000: checks C01-C15'
 \echo '  20261001130000: checks D01-D03'
 \echo ''

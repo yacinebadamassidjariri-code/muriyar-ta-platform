@@ -49,7 +49,7 @@ const en: SubmitCopy = {
     story_short: "Your story should be at least 50 characters.", story_long: "Your story is too long.",
     country_long: "Country must be 100 characters or fewer.", region_long: "Region, state, or province must be 100 characters or fewer.",
     age_required: "Please enter your age.",
-    age_invalid: "Please enter a valid age between 10 and 99.",
+    age_invalid: "Please enter a valid age.",
     consent_required: "Please confirm consent to continue.", submit_failed: "Something went wrong. Please try again.",
   },
   success: {
@@ -90,7 +90,7 @@ const fr: SubmitCopy = {
     story_short: "Votre récit doit comporter au moins 50 caractères.", story_long: "Votre récit est trop long.",
     country_long: "Le pays doit comporter 100 caractères maximum.", region_long: "La région, l’État ou la province doit comporter 100 caractères maximum.",
     age_required: "Veuillez indiquer votre âge.",
-    age_invalid: "Veuillez indiquer un âge valide entre 10 et 99.",
+    age_invalid: "Veuillez indiquer un âge valide.",
     consent_required: "Veuillez confirmer votre consentement pour continuer.", submit_failed: "Une erreur s'est produite. Veuillez réessayer.",
   },
   success: {
