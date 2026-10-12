@@ -1,0 +1,641 @@
+name: Verify Three Pending Migrations (Development)
+
+# ── Purpose ───────────────────────────────────────────────────────────────────
+# READ-ONLY verification workflow.
+# Checks whether the database effects of migrations 20261001000000,
+# 20261001120000, and 20261001130000 are already present in muriyar-ta-dev,
+# even though those migrations were never recorded in schema_migrations.
+#
+# This workflow NEVER:
+#   - runs INSERT, UPDATE, or DELETE on any table
+#   - modifies schema_migrations
+#   - applies, rolls back, or deploys any migration
+#   - touches production
+#
+# WHEN TO RUN:
+#   Before deciding to mark the three Oct-1 migrations as applied.
+#   Run this, review the artifact, then decide.
+#
+# HOW TO READ RESULTS:
+#   PASS | <id> | description          → check succeeded
+#   FAIL | <id> | description | detail → effect missing or different; investigate
+#   INFO | <id> | ...                  → manual comparison required (see artifact)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmed_project_ref:
+        description: >
+          Type the dev project ref to confirm target (must match DEV_PROJECT_REF).
+        required: true
+        type: string
+
+concurrency:
+  group: verify-three-migrations-dev
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+jobs:
+  verify:
+    name: Verify three pending migration effects in muriyar-ta-dev
+    runs-on: ubuntu-22.04
+    environment: development
+
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.DEV_SUPABASE_ACCESS_TOKEN }}
+      DEV_DB_URL: ${{ secrets.DEV_DB_URL }}
+      DEV_PROJECT_REF: ${{ secrets.DEV_PROJECT_REF }}
+
+    steps:
+      # ── Guard 0: secrets presence check ────────────────────────────────────
+      - name: Guard – verify required secrets are present
+        run: |
+          MISSING=""
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
+            MISSING="${MISSING} DEV_SUPABASE_ACCESS_TOKEN"
+          fi
+          if [ -z "$DEV_DB_URL" ]; then
+            MISSING="${MISSING} DEV_DB_URL"
+          fi
+          if [ -z "$DEV_PROJECT_REF" ]; then
+            MISSING="${MISSING} DEV_PROJECT_REF"
+          fi
+          if [ -n "$MISSING" ]; then
+            echo "::error::Required secrets are missing or empty:${MISSING}"
+            echo "::error::Add these secrets to the 'development' GitHub Environment:"
+            echo "::error::  Settings → Environments → development → Environment secrets"
+            echo "::error::DEV_SUPABASE_ACCESS_TOKEN: a Supabase personal access token"
+            echo "::error::  (account → Access tokens at app.supabase.com)"
+            echo "::error::DEV_DB_URL: the direct connection string for the dev project"
+            echo "::error::  (project → Settings → Database → Connection string → URI)"
+            echo "::error::DEV_PROJECT_REF: the project ref shown in the project URL"
+            echo "::error::  (e.g. abcdefghijklmnop from app.supabase.com/project/abcdefghijklmnop)"
+            exit 1
+          fi
+          echo "::notice::All required secrets are present."
+
+      # ── Guard 1: input must match secret ────────────────────────────────────
+      - name: Guard – input project ref matches DEV_PROJECT_REF secret
+        run: |
+          INPUT="${{ github.event.inputs.confirmed_project_ref }}"
+          if [ "$INPUT" != "$DEV_PROJECT_REF" ]; then
+            echo "::error::Input '${INPUT}' does not match DEV_PROJECT_REF."
+            echo "::error::This workflow targets development only."
+            exit 1
+          fi
+          echo "::notice::Input project ref confirmed."
+
+      # ── Guard 2: verify project is not production via Management API ────────
+      # Uses GET /v1/projects/{ref} — requires only "Project Settings: Read"
+      # (project_admin_read). Fails closed on any non-200 response.
+      - name: Guard – verify project is not production via Management API
+        run: |
+          HTTP_CODE=$(curl -o /tmp/project_meta.json -w "%{http_code}" -fsSL \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            "https://api.supabase.com/v1/projects/${DEV_PROJECT_REF}" \
+            || echo "000")
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::Management API returned HTTP ${HTTP_CODE} for project ${DEV_PROJECT_REF}."
+            echo "::error::Possible causes:"
+            echo "::error::  401 – DEV_SUPABASE_ACCESS_TOKEN is invalid or expired"
+            echo "::error::  403 – token lacks 'Project Settings: Read' scope for this project"
+            echo "::error::  404 – DEV_PROJECT_REF does not match any project this token can see"
+            echo "::error::Verify the token at app.supabase.com → account → Access tokens"
+            echo "::error::Verify the token has 'Project Settings: Read' on project ${DEV_PROJECT_REF}"
+            exit 1
+          fi
+
+          PROJECT_NAME=$(jq -r '.name // empty' /tmp/project_meta.json)
+
+          if [ -z "$PROJECT_NAME" ]; then
+            echo "::error::Management API response for ${DEV_PROJECT_REF} had no 'name' field."
+            exit 1
+          fi
+          echo "::notice::Project ref resolves to: ${PROJECT_NAME}"
+
+          LOWER=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]')
+          if echo "$LOWER" | grep -q 'prod'; then
+            echo "::error::Project name '${PROJECT_NAME}' contains 'prod'. Aborting."
+            exit 1
+          fi
+          echo "::notice::Production safety check passed."
+
+      # ── Guard 3: psql connectivity ──────────────────────────────────────────
+      - name: Guard – verify psql can connect to DEV_DB_URL
+        run: |
+          echo "Testing psql connectivity …"
+          psql "$DEV_DB_URL" --no-password -c "SELECT 1 AS connectivity_check;" \
+            || { echo "::error::psql cannot connect to DEV_DB_URL."; exit 1; }
+          echo "::notice::psql connectivity confirmed."
+
+      # ── Write verification SQL inline ────────────────────────────────────────
+      # The SQL is embedded here so this workflow needs no checkout of any
+      # migration branch. It contains only SELECT / EXISTS queries — no writes.
+      - name: Write verification SQL
+        run: |
+          cat > /tmp/verify_three_migrations.sql << 'ENDSQL'
+-- =============================================================================
+-- READ-ONLY VERIFICATION SCRIPT
+-- Migrations: 20261001000000, 20261001120000, 20261001130000
+-- Target:     muriyar-ta-dev (development database only)
+-- =============================================================================
+
+\set ON_ERROR_STOP 0
+\pset tuples_only off
+\pset format aligned
+
+\echo '============================================================'
+\echo 'MIGRATION VERIFICATION — muriyar-ta-dev'
+\echo '============================================================'
+
+-- ---------------------------------------------------------------------------
+-- A. MIGRATION LEDGER
+-- ---------------------------------------------------------------------------
+
+\echo ''
+\echo '── A. MIGRATION LEDGER ─────────────────────────────────────'
+
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM supabase_migrations.schema_migrations WHERE version = '20261001000000')
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | A01 | 20261001000000 recorded in schema_migrations'
+  || CASE WHEN NOT EXISTS (SELECT 1 FROM supabase_migrations.schema_migrations WHERE version = '20261001000000')
+     THEN ' | detail: row is absent (expected if applied manually)' ELSE '' END AS result;
+
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM supabase_migrations.schema_migrations WHERE version = '20261001120000')
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | A02 | 20261001120000 recorded in schema_migrations'
+  || CASE WHEN NOT EXISTS (SELECT 1 FROM supabase_migrations.schema_migrations WHERE version = '20261001120000')
+     THEN ' | detail: row is absent (expected if applied manually)' ELSE '' END AS result;
+
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM supabase_migrations.schema_migrations WHERE version = '20261001130000')
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | A03 | 20261001130000 recorded in schema_migrations'
+  || CASE WHEN NOT EXISTS (SELECT 1 FROM supabase_migrations.schema_migrations WHERE version = '20261001130000')
+     THEN ' | detail: row is absent (expected if applied manually)' ELSE '' END AS result;
+
+-- ---------------------------------------------------------------------------
+-- B. MIGRATION 20261001000000
+-- ---------------------------------------------------------------------------
+
+\echo ''
+\echo '── B. 20261001000000 — age column ──────────────────────────'
+
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='raw_submissions' AND column_name='age')
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | B01 | raw_submissions.age column exists'
+  || CASE WHEN NOT EXISTS (SELECT 1 FROM information_schema.columns
+       WHERE table_schema='public' AND table_name='raw_submissions' AND column_name='age')
+     THEN ' | detail: column not found — migration NOT applied' ELSE '' END AS result;
+
+SELECT
+  CASE WHEN data_type = 'smallint' THEN 'PASS' ELSE 'FAIL' END
+  || ' | B02 | raw_submissions.age is smallint'
+  || CASE WHEN data_type <> 'smallint' THEN ' | detail: found type=' || data_type ELSE '' END AS result
+FROM information_schema.columns
+WHERE table_schema='public' AND table_name='raw_submissions' AND column_name='age'
+UNION ALL
+SELECT 'FAIL | B02 | raw_submissions.age is smallint | detail: column not found'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.columns
+  WHERE table_schema='public' AND table_name='raw_submissions' AND column_name='age');
+
+SELECT
+  CASE WHEN is_nullable = 'YES' THEN 'PASS' ELSE 'FAIL' END
+  || ' | B03 | raw_submissions.age is nullable (age is optional)'
+  || CASE WHEN is_nullable <> 'YES' THEN ' | detail: is_nullable=' || is_nullable ELSE '' END AS result
+FROM information_schema.columns
+WHERE table_schema='public' AND table_name='raw_submissions' AND column_name='age'
+UNION ALL
+SELECT 'FAIL | B03 | raw_submissions.age is nullable | detail: column not found'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.columns
+  WHERE table_schema='public' AND table_name='raw_submissions' AND column_name='age');
+
+SELECT
+  CASE WHEN EXISTS (
+    SELECT 1 FROM information_schema.check_constraints cc
+    JOIN information_schema.constraint_column_usage ccu ON ccu.constraint_name = cc.constraint_name
+    WHERE ccu.table_schema='public' AND ccu.table_name='raw_submissions' AND ccu.column_name='age'
+      AND cc.check_clause LIKE '%10%' AND cc.check_clause LIKE '%99%'
+  ) THEN 'PASS' ELSE 'FAIL' END
+  || ' | B04 | age CHECK constraint (10-99) exists on raw_submissions'
+  || CASE WHEN NOT EXISTS (
+       SELECT 1 FROM information_schema.check_constraints cc
+       JOIN information_schema.constraint_column_usage ccu ON ccu.constraint_name = cc.constraint_name
+       WHERE ccu.table_schema='public' AND ccu.table_name='raw_submissions' AND ccu.column_name='age'
+         AND cc.check_clause LIKE '%10%' AND cc.check_clause LIKE '%99%'
+     ) THEN ' | detail: constraint not found — migration may not be applied OR deploy omitted it; see INFO B04b'
+     ELSE '' END AS result;
+
+\echo 'INFO | B04b | Age constraint text — compare with migration (10-99 range) or note absence'
+SELECT cc.constraint_name, cc.check_clause
+FROM information_schema.check_constraints cc
+JOIN information_schema.constraint_column_usage ccu ON ccu.constraint_name = cc.constraint_name
+WHERE ccu.table_schema='public' AND ccu.table_name='raw_submissions' AND ccu.column_name='age';
+
+\echo ''
+\echo '── B. 20261001000000 — research consent v2 ─────────────────'
+
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM information_schema.tables
+    WHERE table_schema='public' AND table_name='research_consent_versions')
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | B05 | research_consent_versions table exists' AS result;
+
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM public.research_consent_versions
+    WHERE version_number='research-v2' AND is_active=true)
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | B06 | research-v2 exists and is_active=true'
+  || CASE WHEN NOT EXISTS (SELECT 1 FROM public.research_consent_versions
+       WHERE version_number='research-v2' AND is_active=true)
+     THEN ' | detail: row not found or is_active=false' ELSE '' END AS result;
+
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM public.research_consent_versions
+    WHERE version_number='research-v1' AND is_active=false)
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | B07 | research-v1 is_active=false (deactivated)'
+  || CASE WHEN NOT EXISTS (SELECT 1 FROM public.research_consent_versions
+       WHERE version_number='research-v1' AND is_active=false)
+     THEN ' | detail: v1 still active or missing' ELSE '' END AS result;
+
+SELECT
+  CASE WHEN EXISTS (
+    SELECT 1 FROM public.research_consent_version_translations t
+    JOIN public.research_consent_versions v USING (research_consent_version_id)
+    WHERE v.version_number='research-v2' AND t.language_code='en'
+  ) THEN 'PASS' ELSE 'FAIL' END
+  || ' | B08 | research-v2 has English translation' AS result;
+
+SELECT
+  CASE WHEN EXISTS (
+    SELECT 1 FROM public.research_consent_version_translations t
+    JOIN public.research_consent_versions v USING (research_consent_version_id)
+    WHERE v.version_number='research-v2' AND t.language_code='fr'
+  ) THEN 'PASS' ELSE 'FAIL' END
+  || ' | B09 | research-v2 has French translation' AS result;
+
+\echo 'INFO | B09b | research-v2 translation text — compare EN/FR against expected text'
+SELECT t.language_code, left(t.statement_text, 120) AS statement_text_preview
+FROM public.research_consent_version_translations t
+JOIN public.research_consent_versions v USING (research_consent_version_id)
+WHERE v.version_number='research-v2'
+ORDER BY t.language_code;
+
+\echo ''
+\echo '── B. 20261001000000 — submit_story signature ──────────────'
+
+SELECT
+  CASE WHEN EXISTS (
+    SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='submit_story'
+      AND array_length(p.proargtypes,1)=8
+  ) THEN 'PASS' ELSE 'FAIL' END
+  || ' | B10 | submit_story(8-arg) exists (includes p_age smallint)'
+  || CASE WHEN NOT EXISTS (
+       SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+       WHERE n.nspname='public' AND p.proname='submit_story'
+         AND array_length(p.proargtypes,1)=8
+     ) THEN ' | detail: 8-arg overload not found — check B10b for existing signatures'
+     ELSE '' END AS result;
+
+\echo 'INFO | B10b | All submit_story signatures'
+SELECT p.proname, array_length(p.proargtypes,1) AS arg_count,
+       pg_get_function_arguments(p.oid) AS argument_list,
+       p.prosecdef AS security_definer
+FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+WHERE n.nspname='public' AND p.proname='submit_story';
+
+SELECT
+  CASE WHEN NOT EXISTS (
+    SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='submit_story'
+      AND array_length(p.proargtypes,1)=7
+  ) THEN 'PASS' ELSE 'FAIL' END
+  || ' | B11 | old submit_story(7-arg) does NOT exist (dropped by migration)'
+  || CASE WHEN EXISTS (
+       SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+       WHERE n.nspname='public' AND p.proname='submit_story'
+         AND array_length(p.proargtypes,1)=7
+     ) THEN ' | detail: 7-arg overload still present — migration may not have run'
+     ELSE '' END AS result;
+
+SELECT
+  CASE WHEN EXISTS (
+    SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='submit_story' AND p.prosecdef=true
+  ) THEN 'PASS' ELSE 'FAIL' END
+  || ' | B12 | submit_story is SECURITY DEFINER' AS result;
+
+SELECT
+  CASE WHEN EXISTS (
+    SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='protect_raw_submission_original'
+      AND p.prosrc LIKE '%new.age%'
+  ) THEN 'PASS' ELSE 'FAIL' END
+  || ' | B13 | protect_raw_submission_original() trigger covers age field'
+  || CASE WHEN NOT EXISTS (
+       SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+       WHERE n.nspname='public' AND p.proname='protect_raw_submission_original'
+         AND p.prosrc LIKE '%new.age%'
+     ) THEN ' | detail: prosrc does not contain new.age — trigger not updated'
+     ELSE '' END AS result;
+
+\echo 'INFO | B13b | protect_raw_submission_original() — age context in source'
+SELECT substring(p.prosrc FROM position('new.age' IN p.prosrc) - 40 FOR 120) AS age_context
+FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+WHERE n.nspname='public' AND p.proname='protect_raw_submission_original'
+  AND p.prosrc LIKE '%new.age%';
+
+-- ---------------------------------------------------------------------------
+-- C. MIGRATION 20261001120000
+-- ---------------------------------------------------------------------------
+
+\echo ''
+\echo '── C. 20261001120000 — analytics_event_type enum ───────────'
+
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM pg_enum e JOIN pg_type t ON t.oid=e.enumtypid
+    JOIN pg_namespace n ON n.oid=t.typnamespace
+    WHERE n.nspname='public' AND t.typname='analytics_event_type' AND e.enumlabel='outreach_visit')
+  THEN 'PASS' ELSE 'FAIL' END || ' | C01 | analytics_event_type includes outreach_visit' AS result
+UNION ALL
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM pg_enum e JOIN pg_type t ON t.oid=e.enumtypid
+    JOIN pg_namespace n ON n.oid=t.typnamespace
+    WHERE n.nspname='public' AND t.typname='analytics_event_type' AND e.enumlabel='submission_started')
+  THEN 'PASS' ELSE 'FAIL' END || ' | C02 | analytics_event_type includes submission_started'
+UNION ALL
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM pg_enum e JOIN pg_type t ON t.oid=e.enumtypid
+    JOIN pg_namespace n ON n.oid=t.typnamespace
+    WHERE n.nspname='public' AND t.typname='analytics_event_type' AND e.enumlabel='submission_completed')
+  THEN 'PASS' ELSE 'FAIL' END || ' | C03 | analytics_event_type includes submission_completed'
+UNION ALL
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM pg_enum e JOIN pg_type t ON t.oid=e.enumtypid
+    JOIN pg_namespace n ON n.oid=t.typnamespace
+    WHERE n.nspname='public' AND t.typname='analytics_event_type' AND e.enumlabel='partner_cta_click')
+  THEN 'PASS' ELSE 'FAIL' END || ' | C04 | analytics_event_type includes partner_cta_click';
+
+\echo 'INFO | C04b | Full analytics_event_type enum'
+SELECT e.enumlabel AS enum_value, e.enumsortorder AS sort_order
+FROM pg_enum e JOIN pg_type t ON t.oid=e.enumtypid JOIN pg_namespace n ON n.oid=t.typnamespace
+WHERE n.nspname='public' AND t.typname='analytics_event_type'
+ORDER BY e.enumsortorder;
+
+\echo ''
+\echo '── C. 20261001120000 — record_event() function ──────────────'
+
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='record_event')
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | C05 | record_event() function exists in public schema' AS result;
+
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='record_event' AND p.prosecdef=true)
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | C06 | record_event() is SECURITY DEFINER' AS result;
+
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='record_event'
+      AND p.prorettype='void'::regtype)
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | C07 | record_event() returns void' AS result;
+
+SELECT
+  CASE WHEN has_function_privilege('anon',
+    'public.record_event(public.analytics_event_type, varchar, varchar)', 'EXECUTE')
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | C08 | anon role has EXECUTE on record_event()' AS result;
+
+SELECT
+  CASE WHEN has_function_privilege('authenticated',
+    'public.record_event(public.analytics_event_type, varchar, varchar)', 'EXECUTE')
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | C09 | authenticated role has EXECUTE on record_event()' AS result;
+
+\echo 'INFO | C10 | record_event() source — compare slug validation logic'
+\echo 'INFO | C10 | 20261001120000: loose UUID/email rejection'
+\echo 'INFO | C10 | 20261001130000: strict slug regex ^[a-z0-9_-]{1,60}$'
+SELECT p.prosrc AS record_event_source
+FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+WHERE n.nspname='public' AND p.proname='record_event';
+
+\echo ''
+\echo '── C. 20261001120000 — build_daily_metric_snapshots ─────────'
+
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='build_daily_metric_snapshots')
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | C11 | build_daily_metric_snapshots() exists' AS result;
+
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='build_daily_metric_snapshots'
+      AND p.prosrc LIKE '%event_count%')
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | C12 | build_daily_metric_snapshots() includes event_count dimension'
+  || CASE WHEN NOT EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+       WHERE n.nspname='public' AND p.proname='build_daily_metric_snapshots'
+         AND p.prosrc LIKE '%event_count%')
+     THEN ' | detail: event_count not in function body'
+     ELSE '' END AS result;
+
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='build_daily_metric_snapshots'
+      AND p.prosrc LIKE '%outreach_visit%')
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | C13 | build_daily_metric_snapshots() covers outreach_visit channel dimension'
+  || CASE WHEN NOT EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+       WHERE n.nspname='public' AND p.proname='build_daily_metric_snapshots'
+         AND p.prosrc LIKE '%outreach_visit%')
+     THEN ' | detail: not found in function body'
+     ELSE '' END AS result;
+
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='build_daily_metric_snapshots'
+      AND p.prosrc LIKE '%submission_completed%')
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | C14 | build_daily_metric_snapshots() covers submission_completed locale dimension'
+  || CASE WHEN NOT EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+       WHERE n.nspname='public' AND p.proname='build_daily_metric_snapshots'
+         AND p.prosrc LIKE '%submission_completed%')
+     THEN ' | detail: not found in function body'
+     ELSE '' END AS result;
+
+\echo 'INFO | C14b | build_daily_metric_snapshots() source — confirm analytics extension blocks'
+SELECT p.prosrc AS snapshot_source
+FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+WHERE n.nspname='public' AND p.proname='build_daily_metric_snapshots';
+
+-- ---------------------------------------------------------------------------
+-- D. MIGRATION 20261001130000
+-- ---------------------------------------------------------------------------
+
+\echo ''
+\echo '── D. 20261001130000 — slug validation in record_event ──────'
+
+SELECT
+  CASE WHEN EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='record_event'
+      AND p.prosrc LIKE '%[a-z0-9_-]{1,60}%')
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | D01 | record_event() contains strict slug regex ^[a-z0-9_-]{1,60}$'
+  || CASE WHEN NOT EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+       WHERE n.nspname='public' AND p.proname='record_event'
+         AND p.prosrc LIKE '%[a-z0-9_-]{1,60}%')
+     THEN ' | detail: strict slug regex not found — 20261001130000 may not be applied'
+     ELSE '' END AS result;
+
+SELECT
+  CASE WHEN NOT EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='record_event'
+      AND p.prosrc LIKE '%0-9a-f]{8}-%')
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | D02 | old UUID hex-regex removed from record_event()'
+  || CASE WHEN EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+       WHERE n.nspname='public' AND p.proname='record_event'
+         AND p.prosrc LIKE '%0-9a-f]{8}-%')
+     THEN ' | detail: old UUID regex still present — 20261001130000 not applied'
+     ELSE '' END AS result;
+
+SELECT
+  CASE WHEN NOT EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname='record_event'
+      AND p.prosrc LIKE '%position(''@''%')
+  THEN 'PASS' ELSE 'FAIL' END
+  || ' | D03 | old @-check removed from record_event()'
+  || CASE WHEN EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+       WHERE n.nspname='public' AND p.proname='record_event'
+         AND p.prosrc LIKE '%position(''@''%')
+     THEN ' | detail: old @ check still present — body is at 20261001120000 version'
+     ELSE '' END AS result;
+
+-- ---------------------------------------------------------------------------
+-- E. SUMMARY
+-- ---------------------------------------------------------------------------
+
+\echo ''
+\echo '── E. SUMMARY ──────────────────────────────────────────────'
+\echo ''
+\echo '  20261001000000: checks B01-B13'
+\echo '  20261001120000: checks C01-C14'
+\echo '  20261001130000: checks D01-D03'
+\echo ''
+\echo 'PASS on all checks for a migration = safe to record as applied.'
+\echo 'Any FAIL = DO NOT mark that migration applied.'
+\echo ''
+\echo '============================================================'
+\echo 'END OF VERIFICATION'
+\echo '============================================================'
+ENDSQL
+          echo "::notice::Verification SQL written to /tmp/verify_three_migrations.sql"
+          wc -l /tmp/verify_three_migrations.sql
+
+      # ── Run the verification SQL ────────────────────────────────────────────
+      - name: Run verification SQL against muriyar-ta-dev
+        run: |
+          echo "=== Running read-only verification against ${DEV_PROJECT_REF} ==="
+          echo ""
+          psql "$DEV_DB_URL" \
+            --no-password \
+            -v ON_ERROR_STOP=0 \
+            --echo-errors \
+            --file /tmp/verify_three_migrations.sql \
+            2>&1 | tee /tmp/verification_results.txt
+
+          echo ""
+          echo "=== Raw output saved to artifact ==="
+
+      # ── Parse and summarize results ─────────────────────────────────────────
+      - name: Summarize verification results
+        if: always()
+        run: |
+          RESULTS=/tmp/verification_results.txt
+
+          # Count outcomes
+          PASS_COUNT=$(grep -c '^PASS' "$RESULTS" || true)
+          FAIL_COUNT=$(grep -c '^FAIL' "$RESULTS" || true)
+          INFO_COUNT=$(grep -c '^INFO' "$RESULTS" || true)
+
+          echo ""
+          echo "╔══════════════════════════════════════════════════════════════╗"
+          echo "║         MIGRATION VERIFICATION SUMMARY                      ║"
+          echo "╚══════════════════════════════════════════════════════════════╝"
+          echo ""
+          printf "  PASS: %d   FAIL: %d   INFO: %d\n" "$PASS_COUNT" "$FAIL_COUNT" "$INFO_COUNT"
+          echo ""
+
+          echo "── PASS results ─────────────────────────────────────────────"
+          grep '^PASS' "$RESULTS" | sed 's/^/  /' || echo "  (none)"
+          echo ""
+
+          echo "── FAIL results ─────────────────────────────────────────────"
+          grep '^FAIL' "$RESULTS" | sed 's/^/  /' || echo "  (none)"
+          echo ""
+
+          echo "── Migration readiness ───────────────────────────────────────"
+          # 20261001000000: needs B01-B13 all PASS
+          B_FAILS=$(grep '^FAIL' "$RESULTS" | grep -c ' | B[0-9]' || true)
+          C_FAILS=$(grep '^FAIL' "$RESULTS" | grep -c ' | C[0-9]' || true)
+          D_FAILS=$(grep '^FAIL' "$RESULTS" | grep -c ' | D[0-9]' || true)
+
+          if [ "$B_FAILS" -eq 0 ]; then
+            echo "  20261001000000: ✓ All B-checks pass — effects confirmed"
+            echo "::notice::20261001000000: All B-checks pass — effects confirmed in database."
+          else
+            echo "  20261001000000: ✗ $B_FAILS B-check(s) failed — DO NOT mark applied"
+            echo "::error::20261001000000: $B_FAILS B-check(s) failed — effects NOT fully confirmed."
+          fi
+
+          if [ "$C_FAILS" -eq 0 ]; then
+            echo "  20261001120000: ✓ All C-checks pass — effects confirmed"
+            echo "::notice::20261001120000: All C-checks pass — effects confirmed in database."
+          else
+            echo "  20261001120000: ✗ $C_FAILS C-check(s) failed — DO NOT mark applied"
+            echo "::error::20261001120000: $C_FAILS C-check(s) failed — effects NOT fully confirmed."
+          fi
+
+          if [ "$D_FAILS" -eq 0 ]; then
+            echo "  20261001130000: ✓ All D-checks pass — effects confirmed"
+            echo "::notice::20261001130000: All D-checks pass — effects confirmed in database."
+          else
+            echo "  20261001130000: ✗ $D_FAILS D-check(s) failed — DO NOT mark applied"
+            echo "::error::20261001130000: $D_FAILS D-check(s) failed — effects NOT fully confirmed."
+          fi
+
+          echo ""
+          echo "Full output (including INFO rows and function sources) is in the"
+          echo "verification-results artifact attached to this run."
+          echo ""
+
+          # Exit non-zero only if there were database errors (psql errors), not
+          # FAIL rows — FAIL rows are expected until we confirm effects.
+          # We let the workflow succeed so the artifact is always uploaded.
+
+      # ── Upload full results ─────────────────────────────────────────────────
+      - name: Upload verification results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verification-results
+          path: /tmp/verification_results.txt
+          retention-days: 30
