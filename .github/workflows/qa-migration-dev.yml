@@ -94,16 +94,33 @@ jobs:
           ref: feature/ask-muriyar-ta
 
       # ── Guard 1: API cross-check — DEV_PROJECT_REF is not a prod project ────
+      # Uses GET /v1/projects/{ref} (single-project endpoint) so that a
+      # project-scoped token with "Project Settings: Read" (project_admin_read)
+      # is sufficient.  GET /v1/projects (list all) requires org-wide access
+      # and returns 403 with a fine-grained project-scoped token.
+      # Fail closed: any non-200 response (including 401/403) exits 1.
       - name: Guard – verify project is not production via Management API
         run: |
-          PROJECT_NAME=$(curl -fsSL \
+          HTTP_CODE=$(curl -o /tmp/project_meta.json -w "%{http_code}" -fsSL \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
-            "https://api.supabase.com/v1/projects" \
-            | jq -r --arg ref "$DEV_PROJECT_REF" \
-                '.[] | select(.id == $ref) | .name // empty')
+            "https://api.supabase.com/v1/projects/${DEV_PROJECT_REF}" \
+            || echo "000")
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::Management API returned HTTP ${HTTP_CODE} for project ${DEV_PROJECT_REF}."
+            echo "::error::Possible causes:"
+            echo "::error::  401 – DEV_SUPABASE_ACCESS_TOKEN is invalid or expired"
+            echo "::error::  403 – token lacks 'Project Settings: Read' scope for this project"
+            echo "::error::  404 – DEV_PROJECT_REF does not match any project this token can see"
+            echo "::error::Verify the token at app.supabase.com → account → Access tokens"
+            echo "::error::Verify the token has 'Project Settings: Read' on project ${DEV_PROJECT_REF}"
+            exit 1
+          fi
+
+          PROJECT_NAME=$(jq -r '.name // empty' /tmp/project_meta.json)
 
           if [ -z "$PROJECT_NAME" ]; then
-            echo "::error::DEV_PROJECT_REF '${DEV_PROJECT_REF}' not found via Management API."
+            echo "::error::Management API response for ${DEV_PROJECT_REF} had no 'name' field."
             exit 1
           fi
           echo "::notice::Project ref resolves to: ${PROJECT_NAME}"
