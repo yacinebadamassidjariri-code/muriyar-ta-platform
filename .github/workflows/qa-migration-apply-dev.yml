@@ -1,0 +1,380 @@
+name: Q&A Migration – Apply (Development)
+
+# ── Trigger ──────────────────────────────────────────────────────────────────
+# Separate workflow from preflight. Requires explicit manual dispatch with
+# typed confirmation. This is the genuine manual gate: a human must visit
+# GitHub Actions, review the preflight output, and dispatch this workflow by
+# typing the confirmation phrase. It does not rely on GitHub Environment
+# reviewer protection (which is silently skipped on private Free-plan repos).
+#
+# PREREQUISITE: Run qa-migration-dev (preflight) first and verify output.
+#               The AAL2 migration (20261010000000) must already be applied.
+#
+# WHAT THIS DOES:
+#   1. Re-runs all preflight guards (project ref, API cross-check,
+#      AAL2 presence, pending-only check).
+#   2. Applies ONLY the four Q&A migrations:
+#        20261010100000_qa_schema.sql
+#        20261010100001_qa_rpcs.sql
+#        20261010100002_qa_topic_translations_seed.sql
+#        20261010100003_qa_security_corrections.sql
+#   3. Verifies post-apply state: RPCs present, grants correct.
+#   4. Runs 05_qa_tests.sql with ON_ERROR_STOP=1 and reports pass/fail.
+#   5. Fails the job on any test failure or unexpected SQL error.
+on:
+  workflow_dispatch:
+    inputs:
+      confirmed_project_ref:
+        description: >
+          Type the dev project ref to confirm target (must match DEV_PROJECT_REF).
+        required: true
+        type: string
+      apply_confirmation:
+        description: >
+          Type exactly: apply qa migrations to development
+          (any other value aborts before touching the database)
+        required: true
+        type: string
+
+concurrency:
+  group: qa-migration-apply-dev
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+jobs:
+  apply-and-test:
+    name: Apply Q&A migrations and run tests
+    runs-on: ubuntu-22.04
+    environment: development
+
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.DEV_SUPABASE_ACCESS_TOKEN }}
+      DEV_DB_URL: ${{ secrets.DEV_DB_URL }}
+      DEV_PROJECT_REF: ${{ secrets.DEV_PROJECT_REF }}
+
+    steps:
+      # ── Guard 0: explicit human confirmation phrase ──────────────────────────
+      # This is the primary safety gate. The operator must type the exact phrase.
+      # Unlike a GitHub Environment reviewer (silently skipped on Free-plan private
+      # repos), this check runs inside the job and cannot be bypassed without
+      # modifying the workflow itself.
+      - name: Guard – explicit apply confirmation
+        run: |
+          PHRASE="${{ github.event.inputs.apply_confirmation }}"
+          EXPECTED="apply qa migrations to development"
+          if [ "$PHRASE" != "$EXPECTED" ]; then
+            echo "::error::Apply confirmation did not match."
+            echo "::error::Expected: '${EXPECTED}'"
+            echo "::error::Got:      '${PHRASE}'"
+            echo "::error::Dispatch this workflow again and type the confirmation phrase exactly."
+            exit 1
+          fi
+          echo "::notice::Apply confirmation verified."
+
+      - name: Install Supabase CLI v2.120.0
+        run: |
+          curl -fsSL \
+            "https://github.com/supabase/cli/releases/download/v2.120.0/supabase_linux_amd64.tar.gz" \
+            -o /tmp/supabase.tar.gz
+          tar -xzf /tmp/supabase.tar.gz -C /tmp
+          sudo mv /tmp/supabase /usr/local/bin/supabase
+          supabase --version
+
+      - name: Checkout feature/ask-muriyar-ta
+        uses: actions/checkout@v4
+        with:
+          ref: feature/ask-muriyar-ta
+
+      # ── Guard 1: input project ref must match secret ─────────────────────────
+      - name: Guard – input project ref matches DEV_PROJECT_REF secret
+        run: |
+          INPUT="${{ github.event.inputs.confirmed_project_ref }}"
+          if [ -z "$DEV_PROJECT_REF" ]; then
+            echo "::error::DEV_PROJECT_REF secret is not set."
+            exit 1
+          fi
+          if [ "$INPUT" != "$DEV_PROJECT_REF" ]; then
+            echo "::error::Input '${INPUT}' does not match DEV_PROJECT_REF."
+            exit 1
+          fi
+          echo "::notice::Input project ref confirmed."
+
+      # ── Guard 2: API cross-check — DEV_PROJECT_REF is not a prod project ────
+      - name: Guard – verify project is not production via Management API
+        run: |
+          PROJECT_NAME=$(curl -fsSL \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            "https://api.supabase.com/v1/projects" \
+            | jq -r --arg ref "$DEV_PROJECT_REF" \
+                '.[] | select(.id == $ref) | .name // empty')
+
+          if [ -z "$PROJECT_NAME" ]; then
+            echo "::error::DEV_PROJECT_REF '${DEV_PROJECT_REF}' not found via Management API."
+            exit 1
+          fi
+          echo "::notice::Project ref resolves to: ${PROJECT_NAME}"
+
+          LOWER=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]')
+          if echo "$LOWER" | grep -q 'prod'; then
+            echo "::error::Project name '${PROJECT_NAME}' contains 'prod'. Aborting."
+            exit 1
+          fi
+
+      # ── Guard 2b: verify DEV_DB_URL connects to DEV_PROJECT_REF ────────────
+      - name: Guard – verify DEV_DB_URL connects to DEV_PROJECT_REF
+        run: |
+          API_VERSIONS=$(curl -fsSL \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            "https://api.supabase.com/v1/projects/${DEV_PROJECT_REF}/database/migrations" \
+            | jq -r 'if type == "array" then .[].version else error("unexpected response") end' \
+            | sort)
+
+          if [ -z "$API_VERSIONS" ]; then
+            echo "::error::Management API returned no migrations for ${DEV_PROJECT_REF}."
+            echo "::error::The project may be paused, or the access token may lack permission."
+            exit 1
+          fi
+
+          DB_VERSIONS=$(psql "$DEV_DB_URL" --no-password --tuples-only \
+            -c "SELECT version FROM supabase_migrations.schema_migrations ORDER BY version;" \
+            | tr -d ' ' | grep -E '^[0-9]{14}$' | sort)
+
+          if [ -z "$DB_VERSIONS" ]; then
+            echo "::error::psql returned no migrations from DEV_DB_URL."
+            echo "::error::Check the connection string and database password."
+            exit 1
+          fi
+
+          echo "API migration count: $(echo "$API_VERSIONS" | wc -l | tr -d ' ')"
+          echo "DB  migration count: $(echo "$DB_VERSIONS"  | wc -l | tr -d ' ')"
+
+          ONLY_IN_API=$(comm -23 <(echo "$API_VERSIONS") <(echo "$DB_VERSIONS") || true)
+          ONLY_IN_DB=$(comm -13  <(echo "$API_VERSIONS") <(echo "$DB_VERSIONS") || true)
+
+          if [ -n "$ONLY_IN_API" ] || [ -n "$ONLY_IN_DB" ]; then
+            echo "::error::Migration history mismatch between API and DEV_DB_URL."
+            [ -n "$ONLY_IN_API" ] && echo "::error::In API but not in DB: ${ONLY_IN_API}"
+            [ -n "$ONLY_IN_DB"  ] && echo "::error::In DB but not in API: ${ONLY_IN_DB}"
+            echo "::error::DEV_DB_URL does not appear to connect to project ${DEV_PROJECT_REF}."
+            exit 1
+          fi
+          echo "::notice::DEV_DB_URL migration history matches API for ${DEV_PROJECT_REF}. Connection verified."
+
+      # ── Guard 3: AAL2 migration must already be applied ──────────────────────
+      - name: Guard – verify AAL2 migration (20261010000000) is applied
+        run: |
+          APPLIED=$(psql "$DEV_DB_URL" --no-password --tuples-only \
+            -c "SELECT version FROM supabase_migrations.schema_migrations
+                WHERE version = '20261010000000';" \
+            | tr -d ' ')
+
+          if [ -z "$APPLIED" ]; then
+            echo "::error::AAL2 migration (20261010000000_aal2_enforcement) is not applied."
+            echo "::error::Run the aal2-migration-apply-dev workflow first."
+            exit 1
+          fi
+
+          FUNC_EXISTS=$(psql "$DEV_DB_URL" --no-password --tuples-only -c \
+            "SELECT proname FROM pg_proc p
+             JOIN pg_namespace n ON n.oid = p.pronamespace
+             WHERE n.nspname = 'public' AND p.proname = 'require_aal2';" \
+            | tr -d ' ')
+
+          if [ -z "$FUNC_EXISTS" ]; then
+            echo "::error::require_aal2() not found — AAL2 migration may have been rolled back."
+            exit 1
+          fi
+
+          echo "::notice::AAL2 prerequisite verified."
+
+      # ── Guard 4: only Q&A migrations are pending ─────────────────────────────
+      # Compares local migration files against the remote schema_migrations table.
+      # Aborts if any migration other than the four Q&A ones is pending.
+      - name: Guard – only Q&A migrations are pending
+        run: |
+          APPLIED=$(psql "$DEV_DB_URL" --no-password --tuples-only \
+            -c "SELECT version FROM supabase_migrations.schema_migrations ORDER BY version;" \
+            | tr -d ' ' | grep -E '^[0-9]{14}$')
+
+          LOCAL=$(ls supabase/migrations/*.sql 2>/dev/null \
+            | xargs -I{} basename {} .sql \
+            | grep -E '^[0-9]{14}_' \
+            | sed 's/_[^_].*//' \
+            | sort)
+
+          PENDING=$(comm -23 \
+            <(echo "$LOCAL" | sort) \
+            <(echo "$APPLIED" | sort))
+
+          echo "Pending migrations: ${PENDING:-none}"
+
+          # These are the only four Q&A migrations this workflow applies.
+          QA_VERSIONS="20261010100000
+20261010100001
+20261010100002
+20261010100003"
+
+          UNEXPECTED=$(echo "$PENDING" | grep -vE '^(20261010100[0-9]{3})?$' | grep -E '^[0-9]{14}$' || true)
+          if [ -n "$UNEXPECTED" ]; then
+            echo "::error::Unexpected non-Q&A migrations are pending: ${UNEXPECTED}"
+            echo "::error::Resolve these before applying Q&A migrations."
+            exit 1
+          fi
+
+          QA_PENDING=$(echo "$PENDING" | grep -E '^20261010100[0-9]{3}$' || true)
+          if [ -z "$QA_PENDING" ]; then
+            echo "::error::No Q&A migrations are pending."
+            echo "::error::All four may already be applied. Check the preflight output."
+            exit 1
+          fi
+
+          echo "::notice::Q&A migrations pending: ${QA_PENDING}"
+
+      # ── Apply ────────────────────────────────────────────────────────────────
+      - name: Apply Q&A migrations
+        run: |
+          echo "Applying Q&A migrations to ${DEV_PROJECT_REF} …"
+          supabase db push \
+            --project-ref "$DEV_PROJECT_REF" \
+            --yes
+          echo "::notice::supabase db push completed."
+
+      # ── Post-apply verification ──────────────────────────────────────────────
+      - name: Post-apply – verify Q&A RPCs exist in public schema
+        run: |
+          RPCS="submit_question review_get_question question_set_state question_assign question_save_answer question_publish purge_rejected_questions"
+          MISSING=""
+          for fn in $RPCS; do
+            RESULT=$(psql "$DEV_DB_URL" --no-password --tuples-only -c \
+              "SELECT proname FROM pg_proc p
+               JOIN pg_namespace n ON n.oid = p.pronamespace
+               WHERE n.nspname = 'public' AND p.proname = '${fn}';")
+            if ! echo "$RESULT" | grep -q "$fn"; then
+              MISSING="${MISSING} ${fn}"
+            fi
+          done
+
+          if [ -n "$MISSING" ]; then
+            echo "::error::RPCs not found after migration:${MISSING}"
+            exit 1
+          fi
+          echo "::notice::All Q&A RPCs confirmed present."
+
+      - name: Post-apply – verify submit_question EXECUTE granted to anon
+        run: |
+          COUNT=$(psql "$DEV_DB_URL" --no-password --tuples-only -c \
+            "SELECT count(*) FROM information_schema.routine_privileges
+             WHERE routine_schema = 'public'
+               AND routine_name = 'submit_question'
+               AND grantee = 'anon'
+               AND privilege_type = 'EXECUTE';" | tr -d ' ')
+          if [ "$COUNT" = "0" ]; then
+            echo "::error::submit_question EXECUTE not granted to anon."
+            exit 1
+          fi
+          echo "::notice::submit_question anon EXECUTE confirmed."
+
+      - name: Post-apply – verify review_get_question EXECUTE granted to authenticated
+        run: |
+          COUNT=$(psql "$DEV_DB_URL" --no-password --tuples-only -c \
+            "SELECT count(*) FROM information_schema.routine_privileges
+             WHERE routine_schema = 'public'
+               AND routine_name = 'review_get_question'
+               AND grantee = 'authenticated'
+               AND privilege_type = 'EXECUTE';" | tr -d ' ')
+          if [ "$COUNT" = "0" ]; then
+            echo "::error::review_get_question EXECUTE not granted to authenticated."
+            exit 1
+          fi
+          echo "::notice::review_get_question authenticated EXECUTE confirmed."
+
+      - name: Post-apply – verify qa_states lookup table present with all states
+        run: |
+          COUNT=$(psql "$DEV_DB_URL" --no-password --tuples-only -c \
+            "SELECT count(*) FROM public.qa_states;" | tr -d ' ')
+          if [ "$COUNT" -lt "7" ]; then
+            echo "::error::qa_states has ${COUNT} rows; expected at least 7."
+            exit 1
+          fi
+          echo "::notice::qa_states has ${COUNT} state rows."
+
+      # ── Test suite ───────────────────────────────────────────────────────────
+      # ON_ERROR_STOP=1: psql stops on any unexpected SQL error outside PL/pgSQL
+      # EXCEPTION handlers. Expected test failures are caught inside helpers and
+      # recorded as RESULT: FAIL rows — they do not surface to psql level.
+      # ROLLBACK is unconditional in 05_qa_tests.sql (fixture cleanup).
+      - name: Run Q&A test suite
+        id: tests
+        run: |
+          echo "=== Running 05_qa_tests.sql ==="
+          psql "$DEV_DB_URL" \
+            --no-password \
+            --echo-queries \
+            -v ON_ERROR_STOP=1 \
+            --file supabase/deploy/05_qa_tests.sql \
+            2>&1 | tee /tmp/qa_test_output.txt
+          # pipefail propagates psql exit code through tee.
+
+      - name: Parse test results and fail on any FAIL
+        if: always()
+        run: |
+          # Expected total: 63 tests.
+          # A01-A03 (3) + B01-B08 (8) + C01-C03 (3) + D01-D08 (8) +
+          # E01-E09 (9) + F01-F07 (7) + G01-G18 (18) + H01-H07 (7) = 63
+          EXPECTED_TOTAL=63
+
+          if [ ! -f /tmp/qa_test_output.txt ]; then
+            echo "::error::No test output file found. The test step may not have run."
+            exit 1
+          fi
+
+          # ── SUITE summary line ─────────────────────────────────────────────
+          SUITE_LINE=$(grep "^SUITE: " /tmp/qa_test_output.txt | tail -1 || true)
+          if [ -z "$SUITE_LINE" ]; then
+            echo "::error::SUITE summary line missing from test output."
+            echo "::error::The SQL harness may not have reached the summary SELECT,"
+            echo "::error::or psql exited early due to an unexpected SQL error."
+            exit 1
+          fi
+          echo "::notice::${SUITE_LINE}"
+
+          SUITE_PASS=$(echo "$SUITE_LINE"  | grep -oP 'pass=\K[0-9]+'  || true)
+          SUITE_FAIL=$(echo "$SUITE_LINE"  | grep -oP 'fail=\K[0-9]+'  || true)
+          SUITE_TOTAL=$(echo "$SUITE_LINE" | grep -oP 'total=\K[0-9]+' || true)
+
+          if [ -z "$SUITE_PASS" ] || [ -z "$SUITE_FAIL" ] || [ -z "$SUITE_TOTAL" ]; then
+            echo "::error::SUITE line malformed (could not parse pass/fail/total): ${SUITE_LINE}"
+            exit 1
+          fi
+
+          # ── Require zero failures ──────────────────────────────────────────
+          if [ "$SUITE_FAIL" -ne 0 ]; then
+            echo "::error::${SUITE_FAIL} test(s) failed."
+            grep "^RESULT: FAIL" /tmp/qa_test_output.txt | while IFS= read -r line; do
+              echo "::error::${line}"
+            done
+            exit 1
+          fi
+
+          # ── Require expected total ─────────────────────────────────────────
+          if [ "$SUITE_TOTAL" -ne "$EXPECTED_TOTAL" ]; then
+            echo "::error::Expected ${EXPECTED_TOTAL} tests but SUITE reports total=${SUITE_TOTAL}."
+            echo "::error::The harness may have aborted early or skipped tests."
+            exit 1
+          fi
+
+          echo "::notice::All ${SUITE_PASS} of ${EXPECTED_TOTAL} tests passed."
+
+      - name: Upload test output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-test-output
+          path: /tmp/qa_test_output.txt
+          retention-days: 30
