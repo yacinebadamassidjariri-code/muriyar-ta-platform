@@ -339,9 +339,59 @@ jobs:
           echo "::notice::Out-of-scope migrations (AAL2, QA) are present but will NOT be applied."
 
       # ── Step 3: apply pending migrations ────────────────────────────────────
+      # Uses an isolated temp working directory containing ONLY the three
+      # approved migration files.  The out-of-scope AAL2 and QA files from
+      # the feature-branch checkout are never present in this directory, so
+      # `supabase db push` cannot reach them regardless of guard logic.
+      #
+      # Layout of /tmp/supabase-push-isolated/:
+      #   config.toml        — minimal config (project_id, db.major_version)
+      #   migrations/
+      #     20261001120000_analytics_events_v2.sql
+      #     20261001130000_analytics_record_event_tighten.sql
+      #     20261013000000_age_required_and_constraint.sql
+      #
+      # No other migration files are copied in.
       - name: Apply – supabase db push (20261001120000, 20261001130000, 20261013000000)
         run: |
-          echo "Applying pending migrations to ${DEV_PROJECT_REF} …"
+          echo "Building isolated migrations directory …"
+
+          ISOLATED=/tmp/supabase-push-isolated
+          rm -rf "$ISOLATED"
+          mkdir -p "$ISOLATED/migrations"
+
+          # Minimal config.toml — only fields db push needs.
+          # Written with printf to avoid a heredoc inside a YAML block scalar.
+          printf 'project_id = "muriyar-ta-dev-isolated"\n\n[db]\nmajor_version = 17\n' \
+            > "$ISOLATED/config.toml"
+
+          # Copy ONLY the three approved migration files.
+          APPROVED=(
+            "20261001120000_analytics_events_v2.sql"
+            "20261001130000_analytics_record_event_tighten.sql"
+            "20261013000000_age_required_and_constraint.sql"
+          )
+          MIGRATION_SRC="$GITHUB_WORKSPACE/supabase/migrations"
+          for f in "${APPROVED[@]}"; do
+            if [ ! -f "$MIGRATION_SRC/$f" ]; then
+              echo "::error::Approved migration file missing from checkout: $f"
+              exit 1
+            fi
+            cp "$MIGRATION_SRC/$f" "$ISOLATED/migrations/$f"
+            echo "  Copied: $f"
+          done
+
+          # Confirm no other files are present.
+          COUNT=$(ls "$ISOLATED/migrations/" | wc -l)
+          if [ "$COUNT" -ne 3 ]; then
+            echo "::error::Isolated migrations dir has ${COUNT} file(s); expected exactly 3."
+            exit 1
+          fi
+          echo "::notice::Isolated directory contains exactly 3 migration files — AAL2 and QA files are absent."
+
+          echo ""
+          echo "Applying migrations to ${DEV_PROJECT_REF} …"
+
           # Percent-encode DEV_DB_URL so --db-url receives a valid RFC-3986 URL.
           ENCODED_DB_URL=$(python3 -c "
           from urllib.parse import urlparse, quote, urlunparse
@@ -353,6 +403,8 @@ jobs:
           ))
           print(encoded, end='')
           ")
+
+          cd "$ISOLATED"
           supabase db push \
             --db-url "$ENCODED_DB_URL" \
             --yes
