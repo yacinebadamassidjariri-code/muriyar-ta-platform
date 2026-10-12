@@ -4,12 +4,6 @@ export const STORY_MIN = 50;
 export const STORY_MAX = 20000;
 export const GEOGRAPHIC_CONTEXT_MAX = 100;
 
-// These are kept for any future display use but are NOT eligibility gates.
-// Age validation only checks presence (required) and that the value is a
-// positive integer. Any age that can be entered as a positive whole number
-// is accepted — 9, 100, and beyond all pass.
-export const AGE_MIN = 1;
-export const AGE_MAX = 120;
 
 export type SubmissionInput = {
   language: string;
@@ -59,15 +53,15 @@ export function validateSubmission(input: SubmissionInput): {
 
   // Age: required for new submissions. Empty string → age_required error.
   // No minimum or maximum age may determine submission eligibility.
-  // Any positive integer is accepted — ages 9, 100, and beyond all pass.
-  // age_invalid is returned only when the value is not a valid integer.
+  // Any non-negative integer is accepted — 0, 9, 100, and beyond all pass.
+  // age_invalid is returned only when the value is not a valid non-negative integer.
   const rawAge = (input.age ?? "").trim();
   let age = 0; // placeholder; replaced below or errors.age is set
   if (rawAge === "") {
     errors.age = "age_required";
   } else {
     const parsed = Number(rawAge);
-    if (!Number.isInteger(parsed) || parsed < 1) {
+    if (!Number.isInteger(parsed) || parsed < 0) {
       errors.age = "age_invalid";
     } else {
       age = parsed;

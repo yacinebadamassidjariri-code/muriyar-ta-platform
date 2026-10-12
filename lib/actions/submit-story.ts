@@ -84,7 +84,7 @@ export async function submitStory(
       if (code === "age_required") {
         return { status: "error", errors: { age: "age_required" } };
       }
-      // age_out_of_range is no longer raised: any positive integer is accepted.
+      // age_out_of_range is no longer raised: any non-negative integer (including 0) is accepted.
       // Unknown RPC error — log structured details for diagnostics.
       // No form data, story content, or personal information is logged.
       console.error("[submit-story] rpc error", {

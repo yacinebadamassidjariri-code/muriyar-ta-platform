@@ -106,8 +106,8 @@ begin
     raise exception 'region_too_long' using errcode = '22001';
   end if;
   -- Age is required for new submissions.
-  -- It does not gate eligibility — any positive integer is accepted.
-  -- No age_out_of_range check: ages 9, 100, and beyond are all valid.
+  -- It does not gate eligibility — any non-negative integer (including 0) is accepted.
+  -- No age_out_of_range check: ages 0, 9, 100, and beyond are all valid.
   if p_age is null then
     raise exception 'age_required' using errcode = '23514';
   end if;
@@ -201,7 +201,7 @@ $$;
 
 comment on function public.submit_story is
   'Anonymous story intake. Age is required (age_required if null). '
-  'No age range restriction — any positive integer is accepted. '
+  'No age range restriction — any non-negative integer (including 0) is accepted. '
   'Hard encryption guard — no plaintext fallback. '
   'research_consent_language falls back to ''en'' for languages without a '
   'translation row (ha, zar). SEC-05, FR-SS-13..17.';

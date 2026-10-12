@@ -127,36 +127,61 @@ jobs:
           fi
           echo "::notice::Production safety check passed."
 
-          # ── Bind DEV_DB_URL to DEV_PROJECT_REF by hostname ───────────────────
+          # ── Bind DEV_DB_URL to DEV_PROJECT_REF ───────────────────────────────
           # The API already returned project_meta.json for DEV_PROJECT_REF above.
-          # Extract the database host from the API response (field: db_host) and
-          # compare it to the host embedded in DEV_DB_URL. A mismatch means
-          # DEV_DB_URL points to a different project, and we abort.
-          # This is stronger than migration-history matching.
-          API_DB_HOST=$(jq -r '.db_host // empty' /tmp/project_meta.json)
-          if [ -z "$API_DB_HOST" ]; then
-            echo "::error::Management API response for ${DEV_PROJECT_REF} had no 'db_host' field."
-            echo "::error::The project may be paused, initialising, or the token may lack scope."
-            exit 1
-          fi
-          echo "API db_host: ${API_DB_HOST}"
+          # Verify DEV_PROJECT_REF is embedded in DEV_DB_URL:
+          #   - Direct connection:  host = db.{ref}.supabase.co
+          #   - Session pooler:     username = postgres.{ref}
+          # Also cross-check API-reported .database.host for direct connections.
+          python3 - <<'PYEOF'
+          import sys, json
+          from urllib.parse import urlparse
 
-          URL_HOST=$(echo "$DEV_DB_URL" \
-            | sed 's|^[^@]*@||'        \
-            | sed 's|:[0-9]*/.*$||')
-          if [ -z "$URL_HOST" ]; then
-            echo "::error::Could not extract host from DEV_DB_URL. Check the URL format."
-            exit 1
-          fi
-          echo "URL host:    ${URL_HOST}"
+          url = "$DEV_DB_URL"
+          ref = "$DEV_PROJECT_REF"
 
-          if [ "$API_DB_HOST" != "$URL_HOST" ]; then
-            echo "::error::DEV_DB_URL host '${URL_HOST}' does not match"
-            echo "::error::the Management API db_host '${API_DB_HOST}' for project ${DEV_PROJECT_REF}."
-            echo "::error::DEV_DB_URL connects to a different project. Aborting."
-            exit 1
-          fi
-          echo "::notice::DEV_DB_URL hostname confirmed for project ${DEV_PROJECT_REF}."
+          try:
+              p = urlparse(url)
+          except Exception as e:
+              print(f"::error::Could not parse DEV_DB_URL: {e}")
+              sys.exit(1)
+
+          host = p.hostname or ""
+          username = p.username or ""
+
+          print(f"URL host:     {host}")
+          print(f"URL username: {username}")
+
+          direct_match = (host == f"db.{ref}.supabase.co")
+          pooler_match = (username == f"postgres.{ref}")
+
+          if not direct_match and not pooler_match:
+              print(f"::error::DEV_DB_URL does not embed project ref '{ref}'.")
+              print(f"::error::Direct host must be 'db.{ref}.supabase.co'; pooler username must be 'postgres.{ref}'.")
+              print(f"::error::Got host='{host}', username='{username}'.")
+              sys.exit(1)
+
+          if direct_match:
+              print(f"::notice::DEV_DB_URL is a direct connection for project {ref}.")
+          else:
+              print(f"::notice::DEV_DB_URL is a session-pooler connection for project {ref}.")
+
+          with open("/tmp/project_meta.json") as f:
+              meta = json.load(f)
+
+          api_db_host = (meta.get("database") or {}).get("host", "")
+          if not api_db_host:
+              print("::notice::Management API did not return database.host; skipping API host check.")
+          elif direct_match:
+              if api_db_host != host:
+                  print(f"::error::API database.host '{api_db_host}' does not match URL host '{host}'. Aborting.")
+                  sys.exit(1)
+              print(f"::notice::API database.host confirmed: {api_db_host}")
+          else:
+              print(f"::notice::API database.host={api_db_host} (pooler connection — host check skipped).")
+
+          print(f"::notice::DEV_DB_URL confirmed for project {ref}.")
+          PYEOF
 
       # ── Guard 3: psql connectivity ──────────────────────────────────────────
       - name: Guard – verify psql can connect to DEV_DB_URL
@@ -185,7 +210,7 @@ jobs:
             --no-password \
             -v ON_ERROR_STOP=0 \
             --echo-errors \
-            --file /tmp/verify_three_migrations.sql \
+            --file supabase/deploy/verify_three_migrations.sql \
             2>&1 | tee /tmp/verification_results.txt
 
           echo ""
@@ -219,8 +244,8 @@ jobs:
           echo ""
 
           echo "── Migration readiness ───────────────────────────────────────"
-          # 20261001000000: needs B01-B17 all PASS
-          # Use [0-9][0-9]* to match both single- and two-digit check IDs.
+          # 20261001000000: needs B01-B18 all PASS (includes functional DO-block tests B15-B18)
+          # Pattern ' | B[0-9]' matches B01..B18, B17a, B17b.
           B_FAILS=$(grep '^FAIL' "$RESULTS" | grep -cE ' \| B[0-9]' || true)
           C_FAILS=$(grep '^FAIL' "$RESULTS" | grep -cE ' \| C[0-9]' || true)
           D_FAILS=$(grep '^FAIL' "$RESULTS" | grep -cE ' \| D[0-9]' || true)

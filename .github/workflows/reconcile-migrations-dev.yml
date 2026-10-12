@@ -145,46 +145,77 @@ jobs:
             || { echo "::error::psql cannot connect to DEV_DB_URL."; exit 1; }
           echo "::notice::psql connectivity confirmed."
 
-      # ── Guard 5: bind DEV_DB_URL to DEV_PROJECT_REF by hostname ────────────
-      # Extracts the database hostname from the Supabase Management API response
-      # for DEV_PROJECT_REF (field: db_host) and compares it against the host
-      # embedded in DEV_DB_URL. Two different projects cannot share a hostname,
-      # so a match is proof that DEV_DB_URL connects to DEV_PROJECT_REF.
+      # ── Guard 5: bind DEV_DB_URL to DEV_PROJECT_REF ─────────────────────────
+      # Compares DEV_PROJECT_REF against the project ref embedded in DEV_DB_URL.
+      # Supabase embeds the project ref in every connection URL:
+      #   - Direct connection:  host = db.{ref}.supabase.co
+      #   - Session pooler:     username = postgres.{ref}
+      # A mismatch means DEV_DB_URL points to a different project.
       #
-      # This is stronger than migration-history matching (which could be identical
-      # across databases that have the same migrations applied in the same order).
+      # Additionally extracts the API-reported database host (GET /v1/projects/{ref}
+      # → .database.host) and confirms it matches the host in DEV_DB_URL for direct
+      # connections, as a secondary binding check.
       #
-      # The project_meta.json was already fetched by Guard 3 above.
-      - name: Guard – bind DEV_DB_URL to DEV_PROJECT_REF by hostname
+      # project_meta.json was fetched by Guard 3 above.
+      - name: Guard – bind DEV_DB_URL to DEV_PROJECT_REF
         run: |
-          # Extract the database host reported by the Management API.
-          API_DB_HOST=$(jq -r '.db_host // empty' /tmp/project_meta.json)
-          if [ -z "$API_DB_HOST" ]; then
-            echo "::error::Management API response for ${DEV_PROJECT_REF} had no 'db_host' field."
-            echo "::error::The project may be paused, initialising, or the token may lack scope."
-            exit 1
-          fi
-          echo "API db_host: ${API_DB_HOST}"
+          # Use python3 urllib.parse for robust URL parsing (handles percent-encoded
+          # passwords with '@', IPv6 hosts, missing ports, etc.).
+          python3 - <<'PYEOF'
+          import sys, json
+          from urllib.parse import urlparse, unquote
 
-          # Extract the host from DEV_DB_URL.
-          # DEV_DB_URL form: postgresql://[user]:[password]@[host]:[port]/[dbname]
-          # Remove the scheme prefix and everything after the last ':PORT/DBNAME'.
-          URL_HOST=$(echo "$DEV_DB_URL" \
-            | sed 's|^[^@]*@||'        \
-            | sed 's|:[0-9]*/.*$||')
-          if [ -z "$URL_HOST" ]; then
-            echo "::error::Could not extract host from DEV_DB_URL. Check the URL format."
-            exit 1
-          fi
-          echo "URL host:    ${URL_HOST}"
+          url = "$DEV_DB_URL"
+          ref = "$DEV_PROJECT_REF"
 
-          if [ "$API_DB_HOST" != "$URL_HOST" ]; then
-            echo "::error::DEV_DB_URL host '${URL_HOST}' does not match"
-            echo "::error::the Management API db_host '${API_DB_HOST}' for project ${DEV_PROJECT_REF}."
-            echo "::error::DEV_DB_URL connects to a different project. Aborting."
-            exit 1
-          fi
-          echo "::notice::DEV_DB_URL hostname confirmed for project ${DEV_PROJECT_REF}."
+          try:
+              p = urlparse(url)
+          except Exception as e:
+              print(f"::error::Could not parse DEV_DB_URL: {e}")
+              sys.exit(1)
+
+          host = p.hostname or ""
+          username = p.username or ""
+
+          print(f"URL host:     {host}")
+          print(f"URL username: {username}")
+
+          # Direct connection: db.{ref}.supabase.co
+          direct_match = (host == f"db.{ref}.supabase.co")
+          # Session pooler (shared): username is postgres.{ref}
+          pooler_match = (username == f"postgres.{ref}")
+
+          if not direct_match and not pooler_match:
+              print(f"::error::DEV_DB_URL does not embed project ref '{ref}'.")
+              print(f"::error::Direct connection host must be 'db.{ref}.supabase.co'.")
+              print(f"::error::Session pooler username must be 'postgres.{ref}'.")
+              print(f"::error::Got host='{host}', username='{username}'.")
+              sys.exit(1)
+
+          if direct_match:
+              print(f"::notice::DEV_DB_URL is a direct connection for project {ref}.")
+          else:
+              print(f"::notice::DEV_DB_URL is a session-pooler connection for project {ref}.")
+
+          # Secondary check for direct connections: compare API-reported db host.
+          with open("/tmp/project_meta.json") as f:
+              meta = json.load(f)
+
+          api_db_host = (meta.get("database") or {}).get("host", "")
+          if not api_db_host:
+              # Some paused or initialising projects may omit this field.
+              print("::notice::Management API did not return database.host; skipping API host check.")
+          elif direct_match:
+              if api_db_host != host:
+                  print(f"::error::API database.host '{api_db_host}' does not match URL host '{host}'.")
+                  print(f"::error::DEV_DB_URL may connect to a different project. Aborting.")
+                  sys.exit(1)
+              print(f"::notice::API database.host confirmed: {api_db_host}")
+          else:
+              print(f"::notice::API database.host={api_db_host} (pooler connection — host check skipped).")
+
+          print(f"::notice::DEV_DB_URL confirmed for project {ref}.")
+          PYEOF
 
       # ── Install Supabase CLI ─────────────────────────────────────────────────
       - name: Install Supabase CLI v2.120.0
@@ -252,6 +283,10 @@ jobs:
       # `supabase migration repair` is the supported command for this:
       #   --status applied  inserts the row into schema_migrations.
       # This tells the CLI "this migration's DDL is already in the database."
+      #
+      # --db-url requires a percent-encoded URL; python3 urllib.parse.quote
+      # encodes any special characters in the password that would otherwise
+      # break URL parsing inside the CLI.
       - name: Repair – record 20261001000000 as applied
         run: |
           if psql "$DEV_DB_URL" --no-password --tuples-only \
@@ -260,8 +295,19 @@ jobs:
              | grep -q 1; then
             echo "::notice::20261001000000 already recorded in schema_migrations — skipping repair."
           else
+            # Percent-encode DEV_DB_URL so --db-url receives a valid RFC-3986 URL.
+            ENCODED_DB_URL=$(python3 -c "
+          from urllib.parse import urlparse, quote, urlunparse
+          import os, sys
+          raw = os.environ['DEV_DB_URL']
+          p = urlparse(raw)
+          encoded = urlunparse(p._replace(
+            netloc=f'{quote(p.username or \"\", safe=\"\")}:{quote(p.password or \"\", safe=\"\")}@{p.hostname}:{p.port}'
+          ))
+          print(encoded, end='')
+          ")
             supabase migration repair \
-              --project-ref "$DEV_PROJECT_REF" \
+              --db-url "$ENCODED_DB_URL" \
               --status applied \
               20261001000000
             echo "::notice::20261001000000 recorded as applied."
@@ -314,8 +360,19 @@ jobs:
       - name: Apply – supabase db push (20261001120000, 20261001130000, 20261013000000)
         run: |
           echo "Applying pending migrations to ${DEV_PROJECT_REF} …"
+          # Percent-encode DEV_DB_URL so --db-url receives a valid RFC-3986 URL.
+          ENCODED_DB_URL=$(python3 -c "
+          from urllib.parse import urlparse, quote, urlunparse
+          import os
+          raw = os.environ['DEV_DB_URL']
+          p = urlparse(raw)
+          encoded = urlunparse(p._replace(
+            netloc=f'{quote(p.username or \"\", safe=\"\")}:{quote(p.password or \"\", safe=\"\")}@{p.hostname}:{p.port}'
+          ))
+          print(encoded, end='')
+          ")
           supabase db push \
-            --project-ref "$DEV_PROJECT_REF" \
+            --db-url "$ENCODED_DB_URL" \
             --yes
           echo "::notice::supabase db push completed."
 

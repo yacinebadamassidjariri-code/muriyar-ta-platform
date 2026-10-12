@@ -72,7 +72,7 @@ export function StoryForm({ copy, locale }: { copy: SubmitCopy; locale: string }
           <p id="age-help" className={styles.fieldHelp}>{copy.form.ageHelp}</p>
           <input
             id="age" name="age" type="number" inputMode="numeric"
-            min={1} required autoComplete="off"
+            required autoComplete="off"
             aria-required="true"
             aria-invalid={!!state.errors?.age}
             aria-describedby={state.errors?.age ? "age-help age-error" : "age-help"}
