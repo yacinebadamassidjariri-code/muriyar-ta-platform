@@ -910,7 +910,7 @@
     "privacy": {
       "heading": "How we protect your privacy",
       "anonymous": "Your question is completely anonymous — no account or email required.",
-      "noIp": "We do not store your IP address or any identifying information with your question.",
+      "noIp": "Your question is not linked to your IP address. A short-lived, pseudonymous hash is used only to prevent spam and is deleted within 24 hours.",
       "moderation": "Every question is reviewed by our editorial team before being answered or published.",
       "published": "If published, your question is rewritten to remove any details that could identify you."
     },

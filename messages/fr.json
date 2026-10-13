@@ -910,7 +910,7 @@
     "privacy": {
       "heading": "Comment nous protégeons ta vie privée",
       "anonymous": "Ta question est entièrement anonyme — aucun compte ni adresse e-mail n'est requis.",
-      "noIp": "Nous ne conservons pas ton adresse IP ni aucune information d'identification avec ta question.",
+      "noIp": "Ta question n'est pas liée à ton adresse IP. Un hachage pseudonyme de courte durée est utilisé uniquement pour prévenir le spam et est supprimé dans les 24 heures.",
       "moderation": "Chaque question est examinée par notre équipe éditoriale avant d'être répondue ou publiée.",
       "published": "Si publiée, ta question est réécrite pour supprimer tous les détails pouvant t'identifier."
     },

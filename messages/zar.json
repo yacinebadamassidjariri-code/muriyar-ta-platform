@@ -908,7 +908,7 @@
     "privacy": {
       "heading": "Yadda muke kare sirrinki",
       "anonymous": "Almamiyo gaa biyoo — ay kaa account wala email.",
-      "noIp": "Mana ga ŋa IP adirese wala batu kaŋ ga hin ga sali almamiyo boŋ.",
+      "noIp": "Iri soro boŋ mana maabu IP adirese ra. Iri ga IP hash kayna-kayna si taƴa-taƴa kan goo woo hinna, a ga baa zarma alwati 24 waati.",
       "moderation": "Almami kul Muriyar Ta misiray ga sinji sohõ jaab wala diro.",
       "published": "Cimi a dire, almamiyo ga do reeskrite ka bãa batu kul kaŋ ga hin ga sali i."
     },
@@ -950,7 +950,7 @@
       "askYours": "I ga almami kaŋ kaa zano?",
       "askCtaLabel": "Almami biyoo",
       "topicLabel": "Batu:",
-      "answeredBy": "Jaabante nd",
+      "answeredBy": "Jaabante nda",
       "loadMore": "Dubu way"
     }
   }
