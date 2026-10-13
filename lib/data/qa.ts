@@ -48,7 +48,7 @@ export async function listQaTopics(locale: string): Promise<QaTopic[]> {
     type TopicRow = { topic_id: string; slug: string; sort_order: number };
     type TransRow = { topic_id: string; language_code: string; label: string };
 
-    return topicsRes.data.map((t: TopicRow) => {
+    return (topicsRes.data as TopicRow[]).map((t) => {
       const match =
         (translations as TransRow[]).find(
           (tr) => tr.topic_id === t.topic_id && tr.language_code === locale,
@@ -103,7 +103,7 @@ export async function listPublishedQa(options?: {
 
     const { data, error } = await query;
     if (error || !data) return [];
-    return data;
+    return data as PublishedQa[];
   } catch {
     return [];
   }
