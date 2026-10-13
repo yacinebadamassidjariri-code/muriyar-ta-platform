@@ -373,6 +373,14 @@
       "body": "You don't need to know how to start. You don't need a perfect story. You just need to feel ready.",
       "ctaShare": "Share your story",
       "ctaPartner": "Partner with Muriyar Ta"
+    },
+    "ask": {
+      "eyebrow": "ASK MURIYAR TA",
+      "titleStart": "A place where your questions ",
+      "titleItalic": "will be answered.",
+      "body": "A safe, anonymous space where girls and young women can ask questions, find reliable information, and explore answers to questions others have asked.",
+      "cta": "Browse answered questions",
+      "askCta": "Ask a question"
     }
   },
   "insights": {
@@ -750,7 +758,8 @@
     "contact": "Contact",
     "tagline": "Her voice",
     "menu": "Menu",
-    "close": "Close menu"
+    "close": "Close menu",
+    "ask": "Ask"
   },
   "a11y": {
     "skipToContent": "Skip to main content",
@@ -873,5 +882,78 @@
   "resourcesVisit": "Visit website",
   "minutes": "min",
   "advisoryStrong": "Sensitive content",
-  "advisoryMild": "Mature themes"
+  "advisoryMild": "Mature themes",
+  "ask": {
+    "meta": {
+      "title": "Ask a question",
+      "description": "A safe, anonymous space where girls and young women can ask questions and find reliable answers."
+    },
+    "hero": {
+      "eyebrow": "ASK MURIYAR TA",
+      "title": "A place where your questions will be answered.",
+      "description": "A safe, anonymous space where girls and young women can ask questions, find reliable information, and explore answers to questions others have asked."
+    },
+    "form": {
+      "eyebrow": "YOUR QUESTION",
+      "title": "What would you like to know?",
+      "help": "Ask anything. Your question is anonymous and will be reviewed before it is answered.",
+      "placeholder": "Type your question here…",
+      "charsSuffix": "characters",
+      "topicLabel": "Topic (optional)",
+      "topicDefault": "Choose a topic",
+      "languageLabel": "Language of your question",
+      "consentLabel": "I understand this question will be reviewed by Muriyar Ta staff before receiving an answer, and may be published anonymously.",
+      "consentNote": "Your question is never linked to your identity. We may lightly edit it before publishing to protect your privacy.",
+      "submitButton": "Send question",
+      "submitting": "Sending…"
+    },
+    "privacy": {
+      "heading": "How we protect your privacy",
+      "anonymous": "Your question is completely anonymous — no account or email required.",
+      "noIp": "We do not store your IP address or any identifying information with your question.",
+      "moderation": "Every question is reviewed by our editorial team before being answered or published.",
+      "published": "If published, your question is rewritten to remove any details that could identify you."
+    },
+    "moderation": {
+      "heading": "What happens after you ask",
+      "step1Title": "Review",
+      "step1Body": "Our team reads every question, usually within a few days.",
+      "step2Title": "Answer",
+      "step2Body": "A trained staff member writes a careful, accurate response.",
+      "step3Title": "Publish",
+      "step3Body": "The question and answer appear on the browse page for others to find."
+    },
+    "success": {
+      "eyebrow": "QUESTION RECEIVED",
+      "title": "Thank you for asking.",
+      "body": "Your question has been received anonymously. Our team will review it and write a response. You won't receive a direct reply, but the answer will appear on our browse page.",
+      "browseLink": "Browse answered questions",
+      "askAnother": "Ask another question"
+    },
+    "errors": {
+      "too_short": "Please write at least 50 characters so we can understand your question.",
+      "too_long": "Your question is too long. Please keep it under 800 characters.",
+      "consent_required": "Please confirm you have read and agree to the terms above.",
+      "rate_limited": "You've sent several questions recently. Please wait a little before sending another.",
+      "submit_failed": "Something went wrong. Please try again."
+    },
+    "browse": {
+      "meta": {
+        "title": "Browse answered questions",
+        "description": "Find answers to questions asked by girls and young women, reviewed and answered by Muriyar Ta staff."
+      },
+      "eyebrow": "ANSWERED QUESTIONS",
+      "title": "Questions answered.",
+      "description": "Browse questions asked by girls and young women across our community. Every answer is written by Muriyar Ta staff.",
+      "searchPlaceholder": "Search questions…",
+      "allTopics": "All topics",
+      "noResults": "No answered questions found.",
+      "noResultsForSearch": "No questions match your search. Try different words or clear the filter.",
+      "askYours": "Have a question that isn't here?",
+      "askCtaLabel": "Ask anonymously",
+      "topicLabel": "Topic:",
+      "answeredBy": "Answered by",
+      "loadMore": "Load more"
+    }
+  }
 }

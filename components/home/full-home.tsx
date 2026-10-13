@@ -415,7 +415,33 @@ export async function FullHome({ locale }: { locale: Locale }) {
         </div>
       </section>
 
-      {/* ── 8. INSIGHTS PREVIEW ──────────────────────────────────── */}
+      {/* ── 8. ASK MURIYAR TA ────────────────────────────────────── */}
+      <section className={styles.askSection} aria-labelledby="ask-title">
+        <div className={styles.shell}>
+          <header className={styles.sectionHeader}>
+            <div>
+              <p className={styles.eyebrow}>{t("ask.eyebrow")}</p>
+              <h2 id="ask-title" className={styles.sectionTitle}>
+                {t("ask.titleStart")}
+                <em>{t("ask.titleItalic")}</em>
+              </h2>
+              <p className={styles.askBody}>{t("ask.body")}</p>
+            </div>
+          </header>
+          <div className={styles.askActions}>
+            <Link className={styles.primaryAction} href="/ask">
+              {t("ask.askCta")}
+              <ArrowRight aria-hidden="true" />
+            </Link>
+            <Link className={styles.textLink} href="/ask/browse">
+              {t("ask.cta")}
+              <ArrowRight aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 9. INSIGHTS PREVIEW ──────────────────────────────────── */}
       <section className={styles.insights} aria-labelledby="insights-title">
         <div className={styles.insightsInner}>
           <div className={styles.insightsCopy}>
@@ -456,7 +482,7 @@ export async function FullHome({ locale }: { locale: Locale }) {
         </div>
       </section>
 
-      {/* ── 9. FINAL CTA ─────────────────────────────────────────── */}
+      {/* ── 10. FINAL CTA ────────────────────────────────────────── */}
       <section className={styles.finalCta} aria-labelledby="final-cta-title">
         <Image
           src="/editorial/writing-bw.jpg"

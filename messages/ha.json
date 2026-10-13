@@ -604,7 +604,8 @@
     "contact": "Contact",
     "tagline": "Her voice",
     "menu": "Menu",
-    "close": "Close menu"
+    "close": "Close menu",
+    "ask": "Tambayi"
   },
   "a11y": {
     "skipToContent": "Skip to main content",
@@ -870,6 +871,87 @@
       "body": "Ba kwa buƙatar sanin yadda ake farawa. Ba kwa buƙatar labari mai kamala. Kawai kuna buƙatar jin a shirye.",
       "ctaShare": "Raba labarinki",
       "ctaPartner": "Zama abokin tarayya"
+    },
+    "ask": {
+      "eyebrow": "TAMBAYI MURIYAR TA",
+      "titleStart": "Wuri da za a ",
+      "titleItalic": "amsa tambayoyinki.",
+      "body": "Wuri mai aminci da sirri inda 'yan mata da matasa mata za su iya yi tambayoyi, samun bayanai masu inganci, da binciken amsoshi ga tambayoyin da wasu suka yi.",
+      "cta": "Duba tambayoyin da aka amsa",
+      "askCta": "Yi tambaya"
+    }
+  },
+  "ask": {
+    "meta": {
+      "title": "Yi tambaya",
+      "description": "Wuri mai aminci da sirri inda 'yan mata da matasa mata za su iya yi tambayoyi da samun amsoshi masu aminci."
+    },
+    "hero": {
+      "eyebrow": "TAMBAYI MURIYAR TA",
+      "title": "Wuri da za a amsa tambayoyinki.",
+      "description": "Wuri mai aminci da sirri inda 'yan mata da matasa mata za su iya yi tambayoyi, samun bayanai masu inganci, da binciken amsoshi ga tambayoyin da wasu suka yi."
+    },
+    "form": {
+      "eyebrow": "TAMBAYARKI",
+      "title": "Me kake so ki sani?",
+      "help": "Yi kowane tambaya. Tambayarki tana sirri kuma za a duba ta kafin a ba da amsa.",
+      "placeholder": "Rubuta tambayarki a nan…",
+      "charsSuffix": "haruffa",
+      "topicLabel": "Batu (na zaɓi)",
+      "topicDefault": "Zaɓi batu",
+      "languageLabel": "Harshen tambayarki",
+      "consentLabel": "Na fahimci cewa wannan tambayar za ta zama tare da ma'aikatan Muriyar Ta kafin a ba da amsa, kuma ana iya buga ta a asirce.",
+      "consentNote": "Tambayarki ba ta da alaƙa da asalinki. Za mu iya sake rubuta ta kaɗan kafin buga ta don kare sirrinki.",
+      "submitButton": "Aika tambaya",
+      "submitting": "Ana aika…"
+    },
+    "privacy": {
+      "heading": "Yadda muke kare sirrinki",
+      "anonymous": "Tambayarki tana cikakken sirri — babu buƙatar asusun ko imel.",
+      "noIp": "Ba mu adana adireshin IP ɗinki ko wata bayanan gano kai tare da tambayarki.",
+      "moderation": "Kowace tambaya ana duba ta ta ƙungiyar edita kafin a ba da amsa ko buga ta.",
+      "published": "Idan aka buga, tambayarki za a sake rubuta ta don cire duk bayanan da za su iya gano ki."
+    },
+    "moderation": {
+      "heading": "Abin da ke faruwa bayan tambayarki",
+      "step1Title": "Duba",
+      "step1Body": "Ƙungiyarmu tana karanta kowace tambaya, yawanci a cikin 'yan kwanaki.",
+      "step2Title": "Amsa",
+      "step2Body": "Ma'aikaci mai horo yana rubuta amsa mai kyau da daidaito.",
+      "step3Title": "Buga",
+      "step3Body": "Tambayar da amsa suna bayyana a shafin bincike don wasu su samu."
+    },
+    "success": {
+      "eyebrow": "AN KARƁI TAMBAYAR",
+      "title": "Na gode da tambayarki.",
+      "body": "An karɓi tambayarki a asirce. Ƙungiyarmu za ta duba ta kuma ta rubuta amsa. Ba za ki karɓi amsa kai tsaye ba, amma amsar za ta bayyana a shafin bincike.",
+      "browseLink": "Duba tambayoyin da aka amsa",
+      "askAnother": "Yi wata tambaya"
+    },
+    "errors": {
+      "too_short": "Don Allah rubuta aƙalla haruffa 50 don mu fahimci tambayarki.",
+      "too_long": "Tambayarki ta yi tsayi. Don Allah iyakance ta zuwa haruffa 800.",
+      "consent_required": "Don Allah tabbatar da cewa ka karanta kuma ka yarda da sharuɗɗa da ke sama.",
+      "rate_limited": "Kun aika da tambayoyi da yawa kwanan nan. Don Allah jira kaɗan kafin aika wani.",
+      "submit_failed": "Wani abu ya ɓaci. Don Allah sake gwadawa."
+    },
+    "browse": {
+      "meta": {
+        "title": "Duba tambayoyin da aka amsa",
+        "description": "Sami amsoshi ga tambayoyin da 'yan mata da matasa mata suka yi, wanda ma'aikatan Muriyar Ta suka duba da amsa."
+      },
+      "eyebrow": "TAMBAYOYIN DA AKA AMSA",
+      "title": "Tambayoyi da aka amsa.",
+      "description": "Duba tambayoyin da 'yan mata da matasa mata daga al'ummarmu suka yi. Kowane amsa ma'aikatan Muriyar Ta ne suka rubuta.",
+      "searchPlaceholder": "Bincika tambayoyi…",
+      "allTopics": "Duk batutuka",
+      "noResults": "Ba a samu tambayoyin da aka amsa ba.",
+      "noResultsForSearch": "Babu tambayoyi da suka dace da bincikenki. Gwada kalmomi daban ko share tacewa.",
+      "askYours": "Kina da tambayar da ba a nan?",
+      "askCtaLabel": "Yi tambaya a asirce",
+      "topicLabel": "Batu:",
+      "answeredBy": "An amsa ta",
+      "loadMore": "Loda ƙari"
     }
   }
 }

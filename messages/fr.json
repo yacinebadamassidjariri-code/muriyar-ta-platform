@@ -373,6 +373,14 @@
       "body": "Vous n'avez pas besoin de savoir comment commencer. Vous n'avez pas besoin d'une histoire parfaite. Vous avez juste besoin de vous sentir prête.",
       "ctaShare": "Partager mon histoire",
       "ctaPartner": "Devenir partenaire"
+    },
+    "ask": {
+      "eyebrow": "DEMANDE À MURIYAR TA",
+      "titleStart": "Un endroit où vos questions ",
+      "titleItalic": "trouveront réponse.",
+      "body": "Un espace sûr et anonyme où les filles et les jeunes femmes peuvent poser des questions, trouver des informations fiables et explorer les réponses aux questions d'autres.",
+      "cta": "Parcourir les questions répondues",
+      "askCta": "Poser une question"
     }
   },
   "insights": {
@@ -750,7 +758,8 @@
     "contact": "Contact",
     "tagline": "Sa voix",
     "menu": "Menu",
-    "close": "Fermer le menu"
+    "close": "Fermer le menu",
+    "ask": "Demander"
   },
   "a11y": {
     "skipToContent": "Aller au contenu principal",
@@ -873,5 +882,78 @@
   "resourcesVisit": "Visiter le site",
   "minutes": "min",
   "advisoryStrong": "Contenu sensible",
-  "advisoryMild": "Sujets adultes"
+  "advisoryMild": "Sujets adultes",
+  "ask": {
+    "meta": {
+      "title": "Poser une question",
+      "description": "Un espace sûr et anonyme où les filles et les jeunes femmes peuvent poser des questions et trouver des réponses fiables."
+    },
+    "hero": {
+      "eyebrow": "DEMANDE À MURIYAR TA",
+      "title": "Un endroit où vos questions trouveront réponse.",
+      "description": "Un espace sûr et anonyme où les filles et les jeunes femmes peuvent poser des questions, trouver des informations fiables et découvrir les réponses aux questions d'autres."
+    },
+    "form": {
+      "eyebrow": "TA QUESTION",
+      "title": "Qu'est-ce que tu aimerais savoir ?",
+      "help": "Pose n'importe quelle question. Ta question est anonyme et sera examinée avant de recevoir une réponse.",
+      "placeholder": "Écris ta question ici…",
+      "charsSuffix": "caractères",
+      "topicLabel": "Sujet (optionnel)",
+      "topicDefault": "Choisir un sujet",
+      "languageLabel": "Langue de ta question",
+      "consentLabel": "Je comprends que cette question sera examinée par l'équipe de Muriyar Ta avant de recevoir une réponse, et pourrait être publiée de façon anonyme.",
+      "consentNote": "Ta question n'est jamais liée à ton identité. Nous pourrions la reformuler légèrement avant de la publier pour protéger ta vie privée.",
+      "submitButton": "Envoyer la question",
+      "submitting": "Envoi en cours…"
+    },
+    "privacy": {
+      "heading": "Comment nous protégeons ta vie privée",
+      "anonymous": "Ta question est entièrement anonyme — aucun compte ni adresse e-mail n'est requis.",
+      "noIp": "Nous ne conservons pas ton adresse IP ni aucune information d'identification avec ta question.",
+      "moderation": "Chaque question est examinée par notre équipe éditoriale avant d'être répondue ou publiée.",
+      "published": "Si publiée, ta question est réécrite pour supprimer tous les détails pouvant t'identifier."
+    },
+    "moderation": {
+      "heading": "Ce qui se passe après ta question",
+      "step1Title": "Examen",
+      "step1Body": "Notre équipe lit chaque question, généralement en quelques jours.",
+      "step2Title": "Réponse",
+      "step2Body": "Un membre formé de notre équipe rédige une réponse soignée et précise.",
+      "step3Title": "Publication",
+      "step3Body": "La question et la réponse apparaissent sur la page de navigation pour que d'autres les trouvent."
+    },
+    "success": {
+      "eyebrow": "QUESTION REÇUE",
+      "title": "Merci d'avoir posé ta question.",
+      "body": "Ta question a été reçue anonymement. Notre équipe l'examinera et rédigera une réponse. Tu ne recevras pas de réponse directe, mais la réponse apparaîtra sur notre page de navigation.",
+      "browseLink": "Parcourir les questions répondues",
+      "askAnother": "Poser une autre question"
+    },
+    "errors": {
+      "too_short": "Merci d'écrire au moins 50 caractères pour que nous puissions comprendre ta question.",
+      "too_long": "Ta question est trop longue. Merci de la limiter à 800 caractères.",
+      "consent_required": "Merci de confirmer que tu as lu et accepté les conditions ci-dessus.",
+      "rate_limited": "Tu as envoyé plusieurs questions récemment. Merci d'attendre un peu avant d'en envoyer une autre.",
+      "submit_failed": "Une erreur s'est produite. Merci de réessayer."
+    },
+    "browse": {
+      "meta": {
+        "title": "Parcourir les questions répondues",
+        "description": "Trouvez des réponses aux questions posées par des filles et des jeunes femmes, examinées et répondues par l'équipe de Muriyar Ta."
+      },
+      "eyebrow": "QUESTIONS RÉPONDUES",
+      "title": "Des questions auxquelles on répond.",
+      "description": "Parcourez les questions posées par des filles et des jeunes femmes de notre communauté. Chaque réponse est rédigée par le personnel de Muriyar Ta.",
+      "searchPlaceholder": "Rechercher des questions…",
+      "allTopics": "Tous les sujets",
+      "noResults": "Aucune question répondue trouvée.",
+      "noResultsForSearch": "Aucune question ne correspond à ta recherche. Essaie d'autres mots ou efface le filtre.",
+      "askYours": "Tu as une question qui n'est pas ici ?",
+      "askCtaLabel": "Poser anonymement",
+      "topicLabel": "Sujet :",
+      "answeredBy": "Répondu par",
+      "loadMore": "Charger plus"
+    }
+  }
 }
