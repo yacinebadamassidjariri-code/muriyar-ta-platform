@@ -43,7 +43,7 @@ export const footerNav = {
   ],
 } as const;
 
-export type AdminNavKey = "overview" | "moderation" | "podcast" | "resources";
+export type AdminNavKey = "overview" | "moderation" | "questions" | "podcast" | "resources";
 
 // Phase 1 exposes only routes that exist. The shell filters this list against
 // the caller's capabilities; database/RPC checks remain authoritative.
@@ -57,6 +57,11 @@ export const adminNav: {
     href: "/admin/moderation",
     key: "moderation",
     permission: "submission.queue.read",
+  },
+  {
+    href: "/admin/questions",
+    key: "questions",
+    permission: "question.queue.read",
   },
   { href: "/admin/podcasts", key: "podcast", permission: "podcast.edit" },
   { href: "/admin/resources", key: "resources", permission: "resource.edit" },
