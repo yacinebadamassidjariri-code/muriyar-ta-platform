@@ -21,11 +21,11 @@ function refreshQuestion(rawQuestionId: string) {
   }
 }
 
-function dbError(message?: string) {
+function dbError(message?: string): string {
   return ["forbidden", "not_found", "invalid_input", "invalid_transition", "already"].includes(
     message ?? ""
   )
-    ? message!
+    ? (message as string)
     : "request_failed";
 }
 
