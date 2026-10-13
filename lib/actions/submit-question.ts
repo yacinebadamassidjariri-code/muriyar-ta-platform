@@ -69,7 +69,7 @@ export async function submitQuestion(
       if (code === "consent_required") {
         return { status: "error", errors: { consent: "consent_required" } };
       }
-      if (code === "rate_limited") {
+      if (code === "rate_limited" || code === "rate_limit_exceeded") {
         return { status: "error", errors: { form: "rate_limited" } };
       }
       console.error("[submit-question] rpc error", {
