@@ -1,0 +1,559 @@
+name: Reconcile Pending Migrations (Development)
+
+# ── Purpose ───────────────────────────────────────────────────────────────────
+# Reconciles the three Oct-1 migrations (20261001000000, 20261001120000,
+# 20261001130000) against muriyar-ta-dev, then applies 20261013000000.
+#
+# Step-by-step:
+#   1. Guards: secrets, project-ref match, API project name ≠ prod,
+#      DB-URL-to-project-ref binding by hostname (API db_host vs URL host).
+#   2. Verify the database already has the effects of 20261001000000
+#      (schema check — no DDL run). Abort if effects are missing.
+#   3. Record 20261001000000 in schema_migrations using
+#      `supabase migration repair --status applied`. This is the supported
+#      command; it inserts the ledger row without re-running the SQL.
+#   4. Apply migrations 20261001120000, 20261001130000, and 20261013000000
+#      via `supabase db push` in a single run. The CLI applies pending
+#      migrations in version order.
+#   5. Post-apply spot-check: verify key effects in the database.
+#   6. Upload a results artifact.
+#
+# This workflow NEVER:
+#   - touches production
+#   - re-runs 20261001000000 DDL against the already-modified database
+#   - drops, truncates, or modifies existing rows in data tables
+#   - changes RLS, encryption keys, or consent records
+#
+# PREREQUISITE:
+#   Run the Verify Three Pending Migrations workflow first and confirm
+#   all B-checks pass (B04 will still fail before this run — that is expected
+#   and will be fixed by 20261013000000).
+#
+# HOW TO TRIGGER:
+#   GitHub → Actions → Reconcile Pending Migrations (Development)
+#   → Run workflow → fill in both inputs → Run workflow.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmed_project_ref:
+        description: >
+          Type the dev project ref to confirm target (must match DEV_PROJECT_REF).
+        required: true
+        type: string
+      apply_confirmation:
+        description: >
+          Type exactly: reconcile migrations to development
+          (any other value aborts before touching the database)
+        required: true
+        type: string
+
+concurrency:
+  group: reconcile-migrations-dev
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+jobs:
+  reconcile:
+    name: Reconcile Oct-1 migrations and apply analytics + age changes
+    runs-on: ubuntu-22.04
+    environment: development
+
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.DEV_SUPABASE_ACCESS_TOKEN }}
+      DEV_DB_URL: ${{ secrets.DEV_DB_URL }}
+      DEV_PROJECT_REF: ${{ secrets.DEV_PROJECT_REF }}
+
+    steps:
+      # ── Guard 0: explicit human confirmation phrase ──────────────────────────
+      - name: Guard – explicit apply confirmation
+        run: |
+          PHRASE="${{ github.event.inputs.apply_confirmation }}"
+          EXPECTED="reconcile migrations to development"
+          if [ "$PHRASE" != "$EXPECTED" ]; then
+            echo "::error::Apply confirmation did not match."
+            echo "::error::Expected: '${EXPECTED}'"
+            echo "::error::Got:      '${PHRASE}'"
+            exit 1
+          fi
+          echo "::notice::Apply confirmation verified."
+
+      # ── Guard 1: secrets presence check ─────────────────────────────────────
+      - name: Guard – verify required secrets are present
+        run: |
+          MISSING=""
+          [ -z "$SUPABASE_ACCESS_TOKEN" ] && MISSING="${MISSING} DEV_SUPABASE_ACCESS_TOKEN"
+          [ -z "$DEV_DB_URL"            ] && MISSING="${MISSING} DEV_DB_URL"
+          [ -z "$DEV_PROJECT_REF"       ] && MISSING="${MISSING} DEV_PROJECT_REF"
+          if [ -n "$MISSING" ]; then
+            echo "::error::Required secrets are missing or empty:${MISSING}"
+            exit 1
+          fi
+          echo "::notice::All required secrets are present."
+
+      # ── Guard 2: input must match secret ────────────────────────────────────
+      - name: Guard – input project ref matches DEV_PROJECT_REF secret
+        run: |
+          INPUT="${{ github.event.inputs.confirmed_project_ref }}"
+          if [ "$INPUT" != "$DEV_PROJECT_REF" ]; then
+            echo "::error::Input '${INPUT}' does not match DEV_PROJECT_REF."
+            echo "::error::This workflow targets development only."
+            exit 1
+          fi
+          echo "::notice::Input project ref confirmed."
+
+      # ── Guard 3: API project name must not contain 'prod' ───────────────────
+      # Uses GET /v1/projects/{ref} — requires only project_admin_read scope.
+      # Fails closed on any non-200 response.
+      - name: Guard – verify project is not production via Management API
+        run: |
+          HTTP_CODE=$(curl -o /tmp/project_meta.json -w "%{http_code}" -fsSL \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            "https://api.supabase.com/v1/projects/${DEV_PROJECT_REF}" \
+            || echo "000")
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::Management API returned HTTP ${HTTP_CODE} for project ${DEV_PROJECT_REF}."
+            exit 1
+          fi
+
+          PROJECT_NAME=$(jq -r '.name // empty' /tmp/project_meta.json)
+          if [ -z "$PROJECT_NAME" ]; then
+            echo "::error::Management API response had no 'name' field."
+            exit 1
+          fi
+          echo "::notice::Project ref resolves to: ${PROJECT_NAME}"
+
+          LOWER=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]')
+          if echo "$LOWER" | grep -q 'prod'; then
+            echo "::error::Project name '${PROJECT_NAME}' contains 'prod'. Aborting."
+            exit 1
+          fi
+          echo "::notice::Production name check passed."
+
+      # ── Guard 4: psql connectivity ──────────────────────────────────────────
+      - name: Guard – verify psql can connect to DEV_DB_URL
+        run: |
+          psql "$DEV_DB_URL" --no-password \
+            -c "SELECT 1 AS connectivity_check;" \
+            || { echo "::error::psql cannot connect to DEV_DB_URL."; exit 1; }
+          echo "::notice::psql connectivity confirmed."
+
+      # ── Checkout (needed by Guard 5 and the migration run) ──────────────────
+      - name: Checkout feature/dev-reconciliation
+        uses: actions/checkout@v4
+        with:
+          ref: feature/dev-reconciliation
+
+      # ── Guard 5: bind DEV_DB_URL to DEV_PROJECT_REF ─────────────────────────
+      # Compares DEV_PROJECT_REF against the project ref embedded in DEV_DB_URL.
+      # Supabase embeds the project ref in every connection URL:
+      #   - Direct connection:  host = db.{ref}.supabase.co
+      #   - Session pooler:     username = postgres.{ref}
+      # A mismatch means DEV_DB_URL points to a different project.
+      #
+      # Logic lives in supabase/deploy/check_db_url.py (committed in this repo)
+      # to avoid unindented Python inside a YAML block scalar.
+      # project_meta.json was fetched by Guard 3 above.
+      - name: Guard – bind DEV_DB_URL to DEV_PROJECT_REF
+        run: python3 supabase/deploy/check_db_url.py
+
+      # ── Install Supabase CLI ─────────────────────────────────────────────────
+      - name: Install Supabase CLI v2.120.0
+        run: |
+          curl -fsSL \
+            "https://github.com/supabase/cli/releases/download/v2.120.0/supabase_linux_amd64.tar.gz" \
+            -o /tmp/supabase.tar.gz
+          tar -xzf /tmp/supabase.tar.gz -C /tmp
+          sudo mv /tmp/supabase /usr/local/bin/supabase
+          supabase --version
+
+      # ── Pre-flight: verify 20261001000000 effects are already present ────────
+      # Checks the three critical DB effects that 20261001000000 should have left.
+      # If any are absent, the migration was not applied and we must not proceed.
+      - name: Pre-flight – verify 20261001000000 effects are present
+        run: |
+          ERRORS=0
+
+          check() {
+            local label="$1"; local sql="$2"
+            local result
+            result=$(psql "$DEV_DB_URL" --no-password --tuples-only -c "$sql" | tr -d ' ')
+            if [ "$result" = "t" ]; then
+              echo "::notice::OK  ${label}"
+            else
+              echo "::error::MISSING ${label}"
+              ERRORS=$((ERRORS + 1))
+            fi
+          }
+
+          check "raw_submissions.age column exists" \
+            "SELECT EXISTS(SELECT 1 FROM information_schema.columns
+               WHERE table_schema='public' AND table_name='raw_submissions'
+                 AND column_name='age');"
+
+          check "research_consent_versions table exists" \
+            "SELECT EXISTS(SELECT 1 FROM information_schema.tables
+               WHERE table_schema='public' AND table_name='research_consent_versions');"
+
+          check "submit_story 8-arg overload exists" \
+            "SELECT EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+               WHERE n.nspname='public' AND p.proname='submit_story'
+                 AND array_length(p.proargtypes,1)=8);"
+
+          check "research-v2 is active" \
+            "SELECT EXISTS(SELECT 1 FROM public.research_consent_versions
+               WHERE version_number='research-v2' AND is_active);"
+
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "::error::${ERRORS} pre-flight check(s) failed."
+            echo "::error::The effects of 20261001000000 are not present in the database."
+            echo "::error::Do not proceed — review 02_production_migration.sql and re-run it first."
+            exit 1
+          fi
+          echo "::notice::All pre-flight checks passed. 20261001000000 effects confirmed."
+
+      # ── Step 1: repair migration history for 20261001000000 ─────────────────
+      # Records 20261001000000 as applied without re-running its SQL.
+      # `supabase migration repair` is the supported command for this:
+      #   --status applied  inserts the row into schema_migrations.
+      # This tells the CLI "this migration's DDL is already in the database."
+      #
+      # --db-url requires a percent-encoded URL; python3 urllib.parse.quote
+      # encodes any special characters in the password that would otherwise
+      # break URL parsing inside the CLI.
+      - name: Repair – record 20261001000000 as applied
+        run: |
+          if psql "$DEV_DB_URL" --no-password --tuples-only \
+               -c "SELECT 1 FROM supabase_migrations.schema_migrations
+                    WHERE version='20261001000000';" \
+             | grep -q 1; then
+            echo "::notice::20261001000000 already recorded in schema_migrations — skipping repair."
+          else
+            # Percent-encode DEV_DB_URL so --db-url receives a valid RFC-3986 URL.
+            ENCODED_DB_URL=$(python3 -c "
+          from urllib.parse import urlparse, quote, urlunparse
+          import os, sys
+          raw = os.environ['DEV_DB_URL']
+          p = urlparse(raw)
+          encoded = urlunparse(p._replace(
+            netloc=f'{quote(p.username or \"\", safe=\"\")}:{quote(p.password or \"\", safe=\"\")}@{p.hostname}:{p.port}'
+          ))
+          print(encoded, end='')
+          ")
+            supabase migration repair \
+              --db-url "$ENCODED_DB_URL" \
+              --status applied \
+              20261001000000
+            echo "::notice::20261001000000 recorded as applied."
+          fi
+
+      # ── Step 2: confirm pending migrations are exactly what we expect ────────
+      - name: Verify – confirm pending migrations before applying
+        run: |
+          APPLIED=$(psql "$DEV_DB_URL" --no-password --tuples-only \
+            -c "SELECT version FROM supabase_migrations.schema_migrations ORDER BY version;" \
+            | tr -d ' ' | grep -E '^[0-9]{14}$')
+
+          LOCAL=$(ls supabase/migrations/*.sql 2>/dev/null \
+            | xargs -I{} basename {} .sql \
+            | grep -E '^[0-9]{14}_' \
+            | sed 's/_[^_].*//' \
+            | sort)
+
+          PENDING=$(comm -23 \
+            <(echo "$LOCAL" | sort) \
+            <(echo "$APPLIED" | sort))
+
+          echo "Pending migrations:"
+          echo "${PENDING:-  (none)}"
+
+          # The three migrations this workflow will apply.
+          EXPECTED_NORM=$(printf '%s\n' \
+            20261001120000 \
+            20261001130000 \
+            20261013000000 \
+            | sort)
+
+          # Migrations present in the feature-branch checkout that are out of
+          # scope for this reconciliation run and must NOT be applied here.
+          # They are acknowledged so the safety check does not treat them as
+          # unknown; they must remain unapplied (not in schema_migrations) on
+          # exit from this workflow.
+          #   20261010000000 — AAL2 enforcement (apply only after MFA enrolment)
+          #   20261010100000–20261010100003 — QA / Ask Muriyar Ta schema
+          OUT_OF_SCOPE_NORM=$(printf '%s\n' \
+            20261010000000 \
+            20261010100000 \
+            20261010100001 \
+            20261010100002 \
+            20261010100003 \
+            | sort)
+
+          # Normalise the pending set (strip whitespace, keep 14-digit versions).
+          PENDING_NORM=$(echo "$PENDING" | tr -s ' \t' '\n' | grep -E '^[0-9]{14}$' | sort)
+
+          # Anything pending that is neither expected nor acknowledged out-of-scope
+          # is truly unexpected — abort.
+          KNOWN_NORM=$(printf '%s\n' \
+            $(echo "$EXPECTED_NORM") \
+            $(echo "$OUT_OF_SCOPE_NORM") \
+            | sort)
+          TRULY_UNEXPECTED=$(comm -23 \
+            <(echo "$PENDING_NORM") \
+            <(echo "$KNOWN_NORM") || true)
+
+          if [ -n "$TRULY_UNEXPECTED" ]; then
+            echo "::error::Truly unexpected pending migration(s): ${TRULY_UNEXPECTED}"
+            echo "::error::These are not in the approved or acknowledged sets."
+            echo "::error::Resolve before proceeding."
+            exit 1
+          fi
+
+          # Out-of-scope migrations should not be applied — confirm none slipped
+          # into the applied set already (warn only; they pre-date this run).
+          OUT_OF_SCOPE_APPLIED=$(comm -12 \
+            <(echo "$OUT_OF_SCOPE_NORM") \
+            <(echo "$APPLIED" | sort) || true)
+          if [ -n "$OUT_OF_SCOPE_APPLIED" ]; then
+            echo "::notice::Out-of-scope migration(s) already applied (recorded before this run): ${OUT_OF_SCOPE_APPLIED}"
+          fi
+
+          # Confirm our three expected migrations are pending (not yet applied).
+          MISSING_EXPECTED=$(comm -13 \
+            <(echo "$PENDING_NORM") \
+            <(echo "$EXPECTED_NORM") || true)
+          if [ -n "$MISSING_EXPECTED" ]; then
+            echo "::error::Expected pending migration(s) not found: ${MISSING_EXPECTED}"
+            echo "::error::They may already be applied or be absent from the checkout."
+            exit 1
+          fi
+
+          echo "::notice::Pending set confirmed: 20261001120000, 20261001130000, 20261013000000."
+          echo "::notice::Out-of-scope migrations (AAL2, QA) are present but will NOT be applied."
+
+      # ── Step 3: apply pending migrations ────────────────────────────────────
+      # supabase db push requires local files for every version already in the
+      # remote ledger ("Remote migration versions not found in local migrations
+      # directory").  The isolated directory therefore contains:
+      #   • one .sql file per version currently in schema_migrations (applied set)
+      #   • the three approved pending migration files
+      #
+      # The out-of-scope AAL2 (20261010000000) and QA (20261010100000–100003)
+      # files are NEVER copied in.  If any of those versions appear in the
+      # remote ledger this step aborts — they must not be applied.
+      #
+      # Layout of /tmp/supabase-push-isolated/:
+      #   config.toml      — minimal config (project_id, db.major_version)
+      #   migrations/
+      #     <applied versions, one file each, copied from checkout>
+      #     20261001120000_analytics_events_v2.sql          (pending — approved)
+      #     20261001130000_analytics_record_event_tighten.sql (pending — approved)
+      #     20261013000000_age_required_and_constraint.sql  (pending — approved)
+      - name: Apply – supabase db push (20261001120000, 20261001130000, 20261013000000)
+        run: |
+          echo "Building isolated migrations directory …"
+
+          ISOLATED=/tmp/supabase-push-isolated
+          MIGRATION_SRC="$GITHUB_WORKSPACE/supabase/migrations"
+          rm -rf "$ISOLATED"
+          mkdir -p "$ISOLATED/migrations"
+
+          # Minimal config.toml.  Written with printf — no heredoc in YAML block scalar.
+          printf 'project_id = "muriyar-ta-dev-isolated"\n\n[db]\nmajor_version = 17\n' \
+            > "$ISOLATED/config.toml"
+
+          # Versions that must NOT appear in the isolated directory (ever).
+          OUT_OF_SCOPE="20261010000000 20261010100000 20261010100001 20261010100002 20261010100003"
+
+          # ── 3a. Copy one file per already-applied version ──────────────────────
+          APPLIED_VERSIONS=$(psql "$DEV_DB_URL" --no-password --tuples-only \
+            -c "SELECT version FROM supabase_migrations.schema_migrations ORDER BY version;" \
+            | tr -d ' ' | grep -E '^[0-9]{14}$')
+
+          APPLIED_COUNT=0
+          for VER in $APPLIED_VERSIONS; do
+            # Abort if an out-of-scope version is already in the ledger.
+            for OOS in $OUT_OF_SCOPE; do
+              if [ "$VER" = "$OOS" ]; then
+                echo "::error::Out-of-scope migration $VER is recorded in schema_migrations."
+                echo "::error::This workflow must not run while an out-of-scope migration is applied."
+                exit 1
+              fi
+            done
+
+            # Find the matching file in the checkout (version prefix match).
+            # Use find rather than ls glob: find exits 0 when nothing matches,
+            # whereas ls exits 2, which propagates through $(...) under pipefail.
+            FILE=$(find "$MIGRATION_SRC" -maxdepth 1 -name "${VER}_*.sql" | head -1)
+            if [ -z "$FILE" ]; then
+              echo "::error::Applied version $VER has no matching file in supabase/migrations/."
+              echo "::error::The checkout is missing a file the remote ledger expects."
+              exit 1
+            fi
+            BASENAME=$(basename "$FILE")
+            cp "$FILE" "$ISOLATED/migrations/$BASENAME"
+            echo "  Applied:  $BASENAME"
+            APPLIED_COUNT=$((APPLIED_COUNT + 1))
+          done
+          echo "  Copied $APPLIED_COUNT applied-version file(s)."
+
+          # ── 3b. Copy the three approved pending migration files ────────────────
+          APPROVED=(
+            "20261001120000_analytics_events_v2.sql"
+            "20261001130000_analytics_record_event_tighten.sql"
+            "20261013000000_age_required_and_constraint.sql"
+          )
+          for f in "${APPROVED[@]}"; do
+            if [ ! -f "$MIGRATION_SRC/$f" ]; then
+              echo "::error::Approved pending migration missing from checkout: $f"
+              exit 1
+            fi
+            cp "$MIGRATION_SRC/$f" "$ISOLATED/migrations/$f"
+            echo "  Pending:  $f"
+          done
+
+          # ── 3c. Safety: confirm no out-of-scope file is present ────────────────
+          # find exits 0 on no match; ls exits 2, which breaks pipefail.
+          for OOS in $OUT_OF_SCOPE; do
+            if [ -n "$(find "$ISOLATED/migrations" -maxdepth 1 -name "${OOS}_*.sql")" ]; then
+              echo "::error::Out-of-scope file for $OOS found in isolated dir — aborting."
+              exit 1
+            fi
+          done
+
+          # ── 3d. Confirm total file count ────────────────────────────────────────
+          EXPECTED_COUNT=$((APPLIED_COUNT + 3))
+          ACTUAL_COUNT=$(ls "$ISOLATED/migrations/" | wc -l)
+          if [ "$ACTUAL_COUNT" -ne "$EXPECTED_COUNT" ]; then
+            echo "::error::Isolated dir has $ACTUAL_COUNT file(s); expected $EXPECTED_COUNT ($APPLIED_COUNT applied + 3 pending)."
+            exit 1
+          fi
+          echo "::notice::Isolated directory: $APPLIED_COUNT applied + 3 pending = $ACTUAL_COUNT files. AAL2 and QA files are absent."
+
+          echo ""
+          echo "Applying migrations to ${DEV_PROJECT_REF} …"
+
+          # Percent-encode DEV_DB_URL so --db-url receives a valid RFC-3986 URL.
+          ENCODED_DB_URL=$(python3 -c "
+          from urllib.parse import urlparse, quote, urlunparse
+          import os
+          raw = os.environ['DEV_DB_URL']
+          p = urlparse(raw)
+          encoded = urlunparse(p._replace(
+            netloc=f'{quote(p.username or \"\", safe=\"\")}:{quote(p.password or \"\", safe=\"\")}@{p.hostname}:{p.port}'
+          ))
+          print(encoded, end='')
+          ")
+
+          cd "$ISOLATED"
+          supabase db push \
+            --db-url "$ENCODED_DB_URL" \
+            --yes
+          echo "::notice::supabase db push completed."
+
+      # ── Post-apply spot checks ───────────────────────────────────────────────
+      - name: Post-apply – verify key effects
+        run: |
+          ERRORS=0
+
+          check() {
+            local label="$1"; local sql="$2"
+            local result
+            result=$(psql "$DEV_DB_URL" --no-password --tuples-only -c "$sql" | tr -d ' ')
+            if [ "$result" = "t" ]; then
+              echo "PASS  ${label}"
+            else
+              echo "FAIL  ${label}"
+              ERRORS=$((ERRORS + 1))
+            fi
+          }
+
+          echo "── 20261001000000 / 20261013000000 ──"
+          check "age column has no 10-99 range constraint (any positive integer accepted)" \
+            "SELECT NOT EXISTS(SELECT 1 FROM information_schema.check_constraints cc
+               JOIN information_schema.constraint_column_usage ccu
+                 ON ccu.constraint_name = cc.constraint_name
+               WHERE ccu.table_schema='public' AND ccu.table_name='raw_submissions'
+                 AND ccu.column_name='age'
+                 AND cc.check_clause LIKE '%10%' AND cc.check_clause LIKE '%99%');"
+
+          check "submit_story raises age_required when p_age is null" \
+            "SELECT prosrc LIKE '%age_required%'
+               FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+               WHERE n.nspname='public' AND p.proname='submit_story'
+                 AND array_length(p.proargtypes,1)=8;"
+
+          check "submit_story does NOT raise age_out_of_range (ages 9 and 100 accepted)" \
+            "SELECT NOT EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+               WHERE n.nspname='public' AND p.proname='submit_story'
+                 AND p.prosrc LIKE '%age_out_of_range%');"
+
+          echo "── 20261001120000 ──"
+          check "analytics_event_type includes outreach_visit" \
+            "SELECT EXISTS(SELECT 1 FROM pg_enum e JOIN pg_type t ON t.oid=e.enumtypid
+               JOIN pg_namespace n ON n.oid=t.typnamespace
+               WHERE n.nspname='public' AND t.typname='analytics_event_type'
+                 AND e.enumlabel='outreach_visit');"
+
+          check "record_event() exists and is SECURITY DEFINER" \
+            "SELECT EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+               WHERE n.nspname='public' AND p.proname='record_event' AND p.prosecdef);"
+
+          check "build_daily_metric_snapshots() includes event_count" \
+            "SELECT EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+               WHERE n.nspname='public' AND p.proname='build_daily_metric_snapshots'
+                 AND p.prosrc LIKE '%event_count%');"
+
+          check "build_daily_metric_snapshots() uses d_ev for event windows" \
+            "SELECT EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+               WHERE n.nspname='public' AND p.proname='build_daily_metric_snapshots'
+                 AND p.prosrc LIKE '%d_ev%');"
+
+          echo "── 20261001130000 ──"
+          check "record_event() uses strict slug regex" \
+            "SELECT EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+               WHERE n.nspname='public' AND p.proname='record_event'
+                 AND p.prosrc LIKE '%[a-z0-9_-]{1,60}%');"
+
+          echo "── schema_migrations ledger ──"
+          check "20261001000000 recorded" \
+            "SELECT EXISTS(SELECT 1 FROM supabase_migrations.schema_migrations
+               WHERE version='20261001000000');"
+          check "20261001120000 recorded" \
+            "SELECT EXISTS(SELECT 1 FROM supabase_migrations.schema_migrations
+               WHERE version='20261001120000');"
+          check "20261001130000 recorded" \
+            "SELECT EXISTS(SELECT 1 FROM supabase_migrations.schema_migrations
+               WHERE version='20261001130000');"
+          check "20261013000000 recorded" \
+            "SELECT EXISTS(SELECT 1 FROM supabase_migrations.schema_migrations
+               WHERE version='20261013000000');"
+
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "::error::${ERRORS} post-apply check(s) failed. Review the results artifact."
+            exit 1
+          fi
+          echo "::notice::All post-apply checks passed."
+
+      # ── Collect results ──────────────────────────────────────────────────────
+      - name: Collect schema_migrations ledger state
+        if: always()
+        run: |
+          psql "$DEV_DB_URL" --no-password \
+            -c "SELECT version, name FROM supabase_migrations.schema_migrations ORDER BY version;" \
+            2>&1 | tee /tmp/reconcile_results.txt
+
+      - name: Upload results artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reconcile-results
+          path: /tmp/reconcile_results.txt
+          retention-days: 30

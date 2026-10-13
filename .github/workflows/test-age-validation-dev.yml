@@ -1,0 +1,275 @@
+name: Test Age Validation (Development)
+
+# ── Purpose ───────────────────────────────────────────────────────────────────
+# Runs supabase/tests/database/test_age_validation.sql against muriyar-ta-dev.
+#
+# The test script uses a BEGIN / RAISE NOTICE / ROLLBACK harness:
+#   • RAISE NOTICE sends results to the client before ROLLBACK — never rolled back.
+#   • BEGIN / ROLLBACK removes every raw_submissions row the tests insert.
+#   • If the run is interrupted at any point the server aborts the open
+#     transaction automatically; no rows are left in the database.
+#
+# This workflow NEVER:
+#   • applies, rolls back, or repairs any migration
+#   • modifies schema_migrations
+#   • inserts, updates, or deletes rows outside of the test transaction
+#     (which is always rolled back)
+#   • touches production
+#
+# HOW TO TRIGGER:
+#   GitHub → Actions → Test Age Validation (Development)
+#   → Run workflow → enter dev project ref → Run workflow.
+#
+# HOW TO READ RESULTS:
+#   The "Parse test results" step prints a clean summary:
+#     PASS | <id> | description
+#     FAIL | <id> | description | detail
+#     SKIP | <id> | reason
+#
+#   The full psql output is in the test-output artifact.
+#
+# EXIT CODES:
+#   0 – all checks PASS
+#   1 – one or more FAIL or unexpected SKIP rows, or psql error
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmed_project_ref:
+        description: >
+          Type the dev project ref to confirm target (must match DEV_PROJECT_REF).
+        required: true
+        type: string
+
+concurrency:
+  group: test-age-validation-dev
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+jobs:
+  test:
+    name: Run age-validation functional tests against muriyar-ta-dev
+    runs-on: ubuntu-22.04
+    environment: development
+
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.DEV_SUPABASE_ACCESS_TOKEN }}
+      DEV_DB_URL: ${{ secrets.DEV_DB_URL }}
+      DEV_PROJECT_REF: ${{ secrets.DEV_PROJECT_REF }}
+
+    steps:
+      # ── Guard 0: secrets presence check ────────────────────────────────────
+      - name: Guard – verify required secrets are present
+        run: |
+          MISSING=""
+          [ -z "$SUPABASE_ACCESS_TOKEN" ] && MISSING="${MISSING} DEV_SUPABASE_ACCESS_TOKEN"
+          [ -z "$DEV_DB_URL"            ] && MISSING="${MISSING} DEV_DB_URL"
+          [ -z "$DEV_PROJECT_REF"       ] && MISSING="${MISSING} DEV_PROJECT_REF"
+          if [ -n "$MISSING" ]; then
+            echo "::error::Required secrets are missing or empty:${MISSING}"
+            echo "::error::Add them under Settings → Environments → development → Environment secrets."
+            exit 1
+          fi
+          echo "::notice::All required secrets are present."
+
+      # ── Guard 1: input must match secret ────────────────────────────────────
+      - name: Guard – input project ref matches DEV_PROJECT_REF secret
+        run: |
+          INPUT="${{ github.event.inputs.confirmed_project_ref }}"
+          if [ "$INPUT" != "$DEV_PROJECT_REF" ]; then
+            echo "::error::Input '${INPUT}' does not match DEV_PROJECT_REF."
+            echo "::error::This workflow targets development only."
+            exit 1
+          fi
+          echo "::notice::Input project ref confirmed."
+
+      # ── Guard 2: API confirms project name does not contain 'prod' ──────────
+      # Uses GET /v1/projects/{ref} — requires only project_admin_read scope.
+      # Fails closed on any non-200 response.
+      - name: Guard – verify project is not production via Management API
+        run: |
+          HTTP_CODE=$(curl -o /tmp/project_meta.json -w "%{http_code}" -fsSL \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            "https://api.supabase.com/v1/projects/${DEV_PROJECT_REF}" \
+            || echo "000")
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::Management API returned HTTP ${HTTP_CODE} for project ${DEV_PROJECT_REF}."
+            echo "::error::  401 — token invalid or expired"
+            echo "::error::  403 — token lacks Project Settings: Read on this project"
+            echo "::error::  404 — ref not found by this token"
+            exit 1
+          fi
+
+          PROJECT_NAME=$(jq -r '.name // empty' /tmp/project_meta.json)
+          if [ -z "$PROJECT_NAME" ]; then
+            echo "::error::Management API response had no 'name' field."
+            exit 1
+          fi
+          echo "::notice::Project ref resolves to: ${PROJECT_NAME}"
+
+          LOWER=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]')
+          if echo "$LOWER" | grep -q 'prod'; then
+            echo "::error::Project name '${PROJECT_NAME}' contains 'prod'. Aborting."
+            exit 1
+          fi
+          echo "::notice::Production safety check passed."
+
+      # ── Checkout (needed by Guard 3 and the test run) ────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: feature/dev-reconciliation
+
+      # ── Guard 3: bind DEV_DB_URL to DEV_PROJECT_REF ─────────────────────────
+      # Confirms DEV_DB_URL connects to DEV_PROJECT_REF, not a different project.
+      # Accepts both direct connections and session-pooler connections.
+      # Logic lives in supabase/deploy/check_db_url.py (committed in this repo)
+      # to avoid unindented Python inside a YAML block scalar.
+      - name: Guard – bind DEV_DB_URL to DEV_PROJECT_REF
+        run: python3 supabase/deploy/check_db_url.py
+
+      # ── Guard 4: psql connectivity ──────────────────────────────────────────
+      - name: Guard – verify psql can connect to DEV_DB_URL
+        run: |
+          psql "$DEV_DB_URL" --no-password \
+            -c "SELECT 1 AS connectivity_check;" \
+            || { echo "::error::psql cannot connect to DEV_DB_URL."; exit 1; }
+          echo "::notice::psql connectivity confirmed."
+
+      # ── Run the test script ─────────────────────────────────────────────────
+      # ON_ERROR_STOP=1 causes psql to exit on any SQL error.  An error mid-script
+      # aborts the open transaction automatically on the server side, so no rows
+      # persist even if the runner is killed after psql exits.
+      - name: Run age-validation tests against muriyar-ta-dev
+        run: |
+          echo "=== Running test_age_validation.sql against ${DEV_PROJECT_REF} ==="
+          echo ""
+          psql "$DEV_DB_URL" \
+            --no-password \
+            -v ON_ERROR_STOP=1 \
+            --echo-errors \
+            --file supabase/tests/database/test_age_validation.sql \
+            2>&1 | tee /tmp/test_raw_output.txt
+
+          echo ""
+          echo "=== Raw output saved ==="
+
+      # ── Confirm rollback ────────────────────────────────────────────────────
+      # The test script ends with ROLLBACK.  Verify no test rows were left behind
+      # by checking that raw_submissions has not grown since before the run.
+      # This is a read-only spot-check, not a correctness gate — the ROLLBACK
+      # in the test script is the authoritative safety mechanism.
+      - name: Confirm transaction rolled back
+        if: always()
+        run: |
+          echo "Checking raw_submissions for unexpected test rows …"
+
+          # Count rows submitted within the last 5 minutes.
+          RECENT=$(psql "$DEV_DB_URL" --no-password -tAc \
+            "SELECT COUNT(*) FROM public.raw_submissions
+             WHERE submission_timestamp >= now() - interval '5 minutes';" \
+            2>/dev/null || echo "unknown")
+
+          if [ "$RECENT" = "0" ]; then
+            echo "::notice::Rollback confirmed — no rows inserted in the last 5 minutes."
+          elif [ "$RECENT" = "unknown" ]; then
+            echo "::warning::Could not query raw_submissions to confirm rollback (connection issue?)."
+          else
+            echo "::warning::${RECENT} row(s) in raw_submissions from the last 5 minutes."
+            echo "::warning::This may indicate a real submission that coincided with the test run,"
+            echo "::warning::or that the test transaction was not fully rolled back."
+            echo "::warning::Review the raw output artifact before proceeding."
+          fi
+
+      # ── Parse and summarise results ─────────────────────────────────────────
+      - name: Parse test results
+        if: always()
+        run: |
+          RAW=/tmp/test_raw_output.txt
+
+          # Extract NOTICE lines and strip the psql path prefix.
+          # psql emits: "psql:/path/to/file.sql:N: NOTICE:  PASS | ..."
+          # We want:    "PASS | ..."
+          grep 'NOTICE:' "$RAW" | sed 's/.*NOTICE:  //' > /tmp/test_results.txt || true
+
+          PASS_COUNT=$(grep -c '^PASS' /tmp/test_results.txt || true)
+          FAIL_COUNT=$(grep -c '^FAIL' /tmp/test_results.txt || true)
+          SKIP_COUNT=$(grep -c '^SKIP' /tmp/test_results.txt || true)
+
+          echo ""
+          echo "╔══════════════════════════════════════════════════════════════╗"
+          echo "║         AGE VALIDATION TEST SUMMARY                         ║"
+          echo "╚══════════════════════════════════════════════════════════════╝"
+          echo ""
+          printf "  PASS: %d   FAIL: %d   SKIP: %d\n" "$PASS_COUNT" "$FAIL_COUNT" "$SKIP_COUNT"
+          echo ""
+
+          echo "── PASS ─────────────────────────────────────────────────────"
+          grep '^PASS' /tmp/test_results.txt | sed 's/^/  /' || echo "  (none)"
+          echo ""
+
+          echo "── FAIL ─────────────────────────────────────────────────────"
+          grep '^FAIL' /tmp/test_results.txt | sed 's/^/  /' || echo "  (none)"
+          echo ""
+
+          echo "── SKIP ─────────────────────────────────────────────────────"
+          grep '^SKIP' /tmp/test_results.txt | sed 's/^/  /' || echo "  (none)"
+          echo ""
+
+          # Expected checks: P1 P2 P3 B15 B16 B17a B17b = 7
+          EXPECTED=7
+
+          # ── B04 note ────────────────────────────────────────────────────
+          # The 10–99 age range constraint (raw_submissions_age_range_chk) was
+          # intentionally omitted by the prior manual deployment to muriyar-ta-dev.
+          # Its absence is therefore EXPECTED on the dev database before
+          # 20261013000000 runs, and does NOT indicate the migration is missing.
+          # The B04 catalog check in verify_three_migrations.sql already accounts
+          # for this: it PASSes when the constraint is absent.
+          # test_age_validation.sql does not check for the constraint directly;
+          # it verifies the functional policy (ages 0, 9, 100 accepted) which is
+          # the behaviour that matters regardless of whether the constraint existed.
+
+          if [ "$FAIL_COUNT" -gt 0 ]; then
+            echo "::error::${FAIL_COUNT} test(s) FAILED — see FAIL rows above."
+            echo "::error::Investigate before proceeding with reconciliation."
+            exit 1
+          fi
+
+          # Any SKIP that is not a direct consequence of a prerequisite FAIL
+          # is unexpected.  If all prerequisites passed but B-checks were skipped,
+          # something is wrong with the test harness.
+          PREREQ_FAIL=$(grep -c '^FAIL | P' /tmp/test_results.txt || true)
+          if [ "$SKIP_COUNT" -gt 0 ] && [ "$PREREQ_FAIL" -eq 0 ]; then
+            echo "::error::${SKIP_COUNT} test(s) SKIPPED without a prerequisite failure — unexpected."
+            echo "::error::Review the raw output artifact."
+            exit 1
+          fi
+
+          if [ "$PASS_COUNT" -lt "$EXPECTED" ] && [ "$PREREQ_FAIL" -eq 0 ]; then
+            echo "::warning::Expected ${EXPECTED} checks but only ${PASS_COUNT} PASSed."
+            echo "::warning::Some checks may be missing from the output."
+          fi
+
+          if [ "$FAIL_COUNT" -eq 0 ] && [ "$PREREQ_FAIL" -eq 0 ] && [ "$SKIP_COUNT" -eq 0 ]; then
+            echo "::notice::All ${PASS_COUNT} checks passed."
+            echo "Age-validation tests PASSED — the policy in 20261013000000 is confirmed present."
+          fi
+
+      # ── Upload artifacts ────────────────────────────────────────────────────
+      - name: Upload test output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: age-validation-test-output
+          path: |
+            /tmp/test_raw_output.txt
+            /tmp/test_results.txt
+          retention-days: 30
