@@ -72,7 +72,6 @@ export default async function QuestionReviewPage({
         canDisposition={profile.permissions.includes("question.disposition")}
         canAnswer={profile.permissions.includes("question.answer")}
         canPublish={profile.permissions.includes("question.publish")}
-        locale={locale}
       />
     </div>
   );
