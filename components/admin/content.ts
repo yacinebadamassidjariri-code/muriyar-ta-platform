@@ -19,6 +19,7 @@ const en = {
   nav: {
     overview: "Overview",
     moderation: "Moderation",
+    questions: "Ask Muriyar Ta",
     podcast: "Podcasts",
     resources: "Resources",
   },
@@ -88,6 +89,7 @@ const fr: typeof en = {
   nav: {
     overview: "Vue d’ensemble",
     moderation: "Modération",
+    questions: "Ask Muriyar Ta",
     podcast: "Podcasts",
     resources: "Ressources",
   },

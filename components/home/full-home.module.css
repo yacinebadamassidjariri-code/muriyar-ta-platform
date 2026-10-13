@@ -1074,7 +1074,30 @@
   font-style: italic;
 }
 
-/* ── 8. Insights ─────────────────────────────────────────── */
+/* ── 8. Ask Muriyar Ta ───────────────────────────────────── */
+.askSection {
+  padding-block: var(--section);
+  background: var(--ivory);
+  border-top: 1px solid var(--line);
+}
+
+.askBody {
+  max-width: 44rem;
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.askActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+  margin-top: 2.5rem;
+}
+
+/* ── 9. Insights ─────────────────────────────────────────── */
 .insights {
   padding-block: var(--section);
 }

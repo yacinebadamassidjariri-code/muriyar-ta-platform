@@ -23,6 +23,13 @@ export const PERMISSIONS = [
   "user.manage",
   "role.manage",
   "settings.manage",
+  // Q&A moderation permissions (mirror database RPC permission names)
+  "question.queue.read",
+  "question.raw.read",
+  "question.review",
+  "question.disposition",
+  "question.answer",
+  "question.publish",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];

@@ -23,6 +23,7 @@ create temporary table m47_test(submission_id uuid primary key, kind text not nu
 
 set local role authenticated;
 set local request.jwt.claim.sub='10000000-0000-4000-8000-000000000047';
+set local request.jwt.claims='{"sub":"10000000-0000-4000-8000-000000000047","aal":"aal2","role":"authenticated"}';
 select public.submit_story(
   'This is a fictional and non-sensitive story used only to validate the complete editorial moderation workflow safely.',
   'en',true,'en','Testland','Broad Test Region'
@@ -41,6 +42,7 @@ grant select on m47_test to authenticated;
 
 set local role authenticated;
 set local request.jwt.claim.sub='10000000-0000-4000-8000-000000000047';
+set local request.jwt.claims='{"sub":"10000000-0000-4000-8000-000000000047","aal":"aal2","role":"authenticated"}';
 
 do $$ declare v_counts jsonb; begin
   select jsonb_object_agg(state,total) into v_counts from public.story_admin_dashboard();
@@ -51,6 +53,7 @@ end $$;
 select public.story_admin_assign((select submission_id from m47_test where kind='publish'),'10000000-0000-4000-8000-000000000048');
 
 set local request.jwt.claim.sub='10000000-0000-4000-8000-000000000048';
+set local request.jwt.claims='{"sub":"10000000-0000-4000-8000-000000000048","aal":"aal2","role":"authenticated"}';
 do $$ declare v_workspace jsonb; begin
   v_workspace:=public.story_admin_workspace((select submission_id from m47_test where kind='publish'));
   if v_workspace->'submission'->>'body' not like 'This is a fictional%' then raise exception 'assigned review body failed'; end if;
@@ -67,6 +70,7 @@ do $$ begin
 exception when insufficient_privilege then null; end $$;
 
 set local request.jwt.claim.sub='10000000-0000-4000-8000-000000000047';
+set local request.jwt.claims='{"sub":"10000000-0000-4000-8000-000000000047","aal":"aal2","role":"authenticated"}';
 select public.story_admin_save_draft((select submission_id from m47_test where kind='publish'),jsonb_build_object(
   'title','A Fictional M-47 Story',
   'body','This is the de-identified fictional publication copy. It contains no real person, location, or sensitive event details.',
@@ -89,6 +93,7 @@ end $$;
 
 set local role authenticated;
 set local request.jwt.claim.sub='10000000-0000-4000-8000-000000000047';
+set local request.jwt.claims='{"sub":"10000000-0000-4000-8000-000000000047","aal":"aal2","role":"authenticated"}';
 select public.story_admin_transition((select submission_id from m47_test where kind='publish'),'unpublish',null,null);
 do $$ begin if exists(select 1 from public.published_stories_public where slug='a-fictional-m-47-story') then raise exception 'unpublished story leaked'; end if; end $$;
 select public.story_admin_transition((select submission_id from m47_test where kind='publish'),'archive',null,null);
@@ -117,6 +122,7 @@ end $$;
 
 set local role authenticated;
 set local request.jwt.claim.sub='10000000-0000-4000-8000-000000000049';
+set local request.jwt.claims='{"sub":"10000000-0000-4000-8000-000000000049","aal":"aal2","role":"authenticated"}';
 do $$ begin
   perform public.story_admin_dashboard();
   raise exception 'unauthorized dashboard unexpectedly succeeded';

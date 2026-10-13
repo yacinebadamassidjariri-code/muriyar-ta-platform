@@ -604,7 +604,8 @@
     "contact": "Contact",
     "tagline": "Her voice",
     "menu": "Menu",
-    "close": "Close menu"
+    "close": "Close menu",
+    "ask": "Almami"
   },
   "a11y": {
     "skipToContent": "Skip to main content",
@@ -870,6 +871,87 @@
       "body": "I mana sani waawo. I mana laabo kamala. Zaari i hãa.",
       "ctaShare": "I laabo baa",
       "ctaPartner": "Ortaklık baa"
+    },
+    "ask": {
+      "eyebrow": "ALMAMI MURIYAR TA",
+      "titleStart": "Naŋ do almamey ",
+      "titleItalic": "ga no ciina.",
+      "body": "Naŋ nda saabu boŋ do biyoo kaŋ wangu no wangu wete almami ga no, alhaakirante ciina wa no, nda guna wete almami kaŋ weyboro waato.",
+      "cta": "Guna almamey jaabantey",
+      "askCta": "Almami hay"
+    }
+  },
+  "ask": {
+    "meta": {
+      "title": "Almami hay",
+      "description": "Naŋ nda saabu boŋ do biyoo kaŋ wangu no wangu wete almami ga no, zama alhaakirante ciina."
+    },
+    "hero": {
+      "eyebrow": "ALMAMI MURIYAR TA",
+      "title": "Naŋ do almamey ga no ciina.",
+      "description": "Naŋ nda saabu boŋ do biyoo kaŋ wangu no wangu wete almami ga no, alhaakirante ciina wa no, nda guna wete almami kaŋ weyboro waato."
+    },
+    "form": {
+      "eyebrow": "ALMAMIYO",
+      "title": "Me a ma ga ne i?",
+      "help": "Almami me hinka. Almamiyo biyoo no nda i ga sinji a boŋ sohõ i ga jaab no.",
+      "placeholder": "Hãa almamiyo zano…",
+      "charsSuffix": "alfaabaay",
+      "topicLabel": "Batu (alhaakirante)",
+      "topicDefault": "Ciine batu",
+      "languageLabel": "Almamiyo haamu",
+      "consentLabel": "N faham kaŋ almami-o Muriyar Ta misiray ga sinji a boŋ sohõ ga jaab no, nda ga hin ga diro biyoo boŋ.",
+      "consentNote": "Almamiyo biyoo kaa nda i batu. Hin ga hãa a hinne boŋ ka diro sohõ i ga kisi misirayyo.",
+      "submitButton": "Ciine almami",
+      "submitting": "Ciini hono…"
+    },
+    "privacy": {
+      "heading": "Yadda muke kare sirrinki",
+      "anonymous": "Almamiyo gaa biyoo — ay kaa account wala email.",
+      "noIp": "Iri soro boŋ mana maabu IP adirese ra. Iri ga IP hash kayna-kayna si taƴa-taƴa kan goo woo hinna, a ga baa zarma alwati 24 waati.",
+      "moderation": "Almami kul Muriyar Ta misiray ga sinji sohõ jaab wala diro.",
+      "published": "Cimi a dire, almamiyo ga do reeskrite ka bãa batu kul kaŋ ga hin ga sali i."
+    },
+    "moderation": {
+      "heading": "Me ga bara almamiyo boŋ",
+      "step1Title": "Sinji",
+      "step1Body": "Misirayyo ga karanta almami kul, waati kul hinne laabu.",
+      "step2Title": "Jaab",
+      "step2Body": "Misiray kaŋ a game wo ga hãa jaab alhaakirante nda naŋ.",
+      "step3Title": "Dire",
+      "step3Body": "Almami nda jaab ga foyo doonante boŋ ka weyboro waato bonandi."
+    },
+    "success": {
+      "eyebrow": "ALMAMI FAAMO",
+      "title": "Barika almamiyo boŋ.",
+      "body": "Almamiyo faamo biyoo boŋ. Misirayyo ga sinji a nda hãa jaab. Mana ga jaab i koyne, amma jaabka ga foyo doonante boŋ.",
+      "browseLink": "Guna almamey jaabantey",
+      "askAnother": "Almami way"
+    },
+    "errors": {
+      "too_short": "Hãa alfaabaay 50 hinne ka misirayyo hin ga faham almamiyo.",
+      "too_long": "Almamiyo gaa duna. Hãa a alfaabaay 800 ra.",
+      "consent_required": "Tabbatar kaŋ i karanta nda yarda nda sharadi.",
+      "rate_limited": "I ciini almamey hinne laabu. Koy kay boŋ sohõ i ciine way.",
+      "submit_failed": "Kulu hino bare. Geese way."
+    },
+    "browse": {
+      "meta": {
+        "title": "Guna almamey jaabantey",
+        "description": "Bonandi jaabey almamey kaŋ wangu wangu wete i ya, Muriyar Ta misiray ja jaabantey."
+      },
+      "eyebrow": "ALMAMEY JAABANTEY",
+      "title": "Almamey jaabantey.",
+      "description": "Guna almamey kaŋ wangu wangu wete jemaa-o ra ciini. Jaab kul Muriyar Ta misiray hãa.",
+      "searchPlaceholder": "Bonandi almamey…",
+      "allTopics": "Batey kul",
+      "noResults": "Almamey jaabantey gaa sora.",
+      "noResultsForSearch": "Almamey kaa sora bonandi-o boŋ. Gao laafa waato wala maka tacewa.",
+      "askYours": "I ga almami kaŋ kaa zano?",
+      "askCtaLabel": "Almami biyoo",
+      "topicLabel": "Batu:",
+      "answeredBy": "Jaabante nda",
+      "loadMore": "Dubu way"
     }
   }
 }
