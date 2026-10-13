@@ -389,7 +389,9 @@ jobs:
             done
 
             # Find the matching file in the checkout (version prefix match).
-            FILE=$(ls "$MIGRATION_SRC/${VER}_"*.sql 2>/dev/null | head -1)
+            # Use find rather than ls glob: find exits 0 when nothing matches,
+            # whereas ls exits 2, which propagates through $(...) under pipefail.
+            FILE=$(find "$MIGRATION_SRC" -maxdepth 1 -name "${VER}_*.sql" | head -1)
             if [ -z "$FILE" ]; then
               echo "::error::Applied version $VER has no matching file in supabase/migrations/."
               echo "::error::The checkout is missing a file the remote ledger expects."
@@ -418,8 +420,9 @@ jobs:
           done
 
           # ── 3c. Safety: confirm no out-of-scope file is present ────────────────
+          # find exits 0 on no match; ls exits 2, which breaks pipefail.
           for OOS in $OUT_OF_SCOPE; do
-            if ls "$ISOLATED/migrations/${OOS}_"*.sql 2>/dev/null | grep -q .; then
+            if [ -n "$(find "$ISOLATED/migrations" -maxdepth 1 -name "${OOS}_*.sql")" ]; then
               echo "::error::Out-of-scope file for $OOS found in isolated dir — aborting."
               exit 1
             fi
