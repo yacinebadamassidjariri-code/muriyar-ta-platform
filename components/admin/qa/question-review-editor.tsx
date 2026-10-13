@@ -4,7 +4,6 @@ import { useActionState, useTransition } from "react";
 import type { QaWorkspace } from "@/lib/data/admin/qa";
 import type { QaAdminCopy } from "./content";
 import {
-  assignQuestionAction,
   setQuestionStateAction,
   saveQuestionAnswerAction,
   publishQuestionAction,
@@ -18,7 +17,6 @@ interface Props {
   canDisposition: boolean;
   canAnswer: boolean;
   canPublish: boolean;
-  locale: string;
 }
 
 const INITIAL: QaActionResult = { ok: true };

@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, Eye, ShieldCheck } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import type { Locale } from "@/lib/i18n/routing";
