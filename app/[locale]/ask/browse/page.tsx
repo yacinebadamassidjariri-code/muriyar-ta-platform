@@ -5,7 +5,7 @@ import { listQaTopics, listPublishedQa } from "@/lib/data/qa";
 import { BrowseList } from "@/components/ask/browse-list";
 import styles from "@/components/ask/ask.module.css";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
