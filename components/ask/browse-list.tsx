@@ -78,7 +78,7 @@ export function BrowseList({ items, topics, copy }: Props) {
           </div>
         ) : (
           <ul className={styles.qaListInner} aria-live="polite">
-            {filtered.map((item: PublishedQa) => {
+            {filtered.map((item) => {
               const topicLabel = item.topic_id ? topicMap[item.topic_id] : null;
               return (
                 <li key={item.published_qa_id} className={styles.qaCard}>
