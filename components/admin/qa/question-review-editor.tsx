@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useTransition } from "react";
+import { useActionState, useTransition, type ReactNode } from "react";
 import type { QaWorkspace } from "@/lib/data/admin/qa";
 import type { QaAdminCopy } from "./content";
 import {
@@ -21,7 +21,7 @@ interface Props {
 
 const INITIAL: QaActionResult = { ok: true };
 
-function MetaRow({ label, children }: { label: string; children: unknown }) {
+function MetaRow({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-wrap gap-2 border-b border-line py-2 last:border-0">
       <dt className="w-40 shrink-0 text-sm font-semibold text-ink-soft">{label}</dt>
