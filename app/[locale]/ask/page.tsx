@@ -6,6 +6,8 @@ import { listQaTopics } from "@/lib/data/qa";
 import { QuestionForm } from "@/components/ask/question-form";
 import styles from "@/components/ask/ask.module.css";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
 }: {
