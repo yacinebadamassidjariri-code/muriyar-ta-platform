@@ -94,23 +94,12 @@ export async function getQaDashboard(): Promise<
   DataResult<Record<string, number>>
 > {
   const perm = await hasPermission("question.queue.read");
-  if (!perm) {
-    console.error("[getQaDashboard] forbidden: hasPermission returned false");
-    return { ok: false, error: "forbidden" };
-  }
+  if (!perm) return { ok: false, error: "forbidden" };
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("raw_questions")
     .select("current_state");
-  if (error) {
-    console.error("[getQaDashboard] query failed", {
-      code: error.code,
-      message: error.message,
-      details: error.details,
-      hint: error.hint,
-    });
-    return { ok: false, error: "request_failed" };
-  }
+  if (error) return { ok: false, error: "request_failed" };
   const totals: Record<string, number> = {};
   for (const row of data ?? []) {
     const s = String(row.current_state);
@@ -148,15 +137,7 @@ export async function listQaQueue(options: {
   if (options.language) query = query.eq("language_code", options.language);
 
   const { data, error, count } = await query;
-  if (error) {
-    console.error("[listQaQueue] raw_questions query failed", {
-      code: error.code,
-      message: error.message,
-      details: error.details,
-      hint: error.hint,
-    });
-    return { ok: false, error: "request_failed" };
-  }
+  if (error) return { ok: false, error: "request_failed" };
 
   // Get escalation status from state transitions
   const ids = (data ?? []).map((r) => r.raw_question_id as string);

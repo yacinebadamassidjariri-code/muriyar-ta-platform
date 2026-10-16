@@ -60,8 +60,6 @@ export default async function QaDashboard({
     return (
       <p role="alert" className="rounded-lg border border-danger/30 bg-danger/5 p-4 text-danger">
         {copy.actionFailed}
-        {/* diagnostic — remove after root cause identified */}
-        {" "}[{result.error}]
       </p>
     );
 
