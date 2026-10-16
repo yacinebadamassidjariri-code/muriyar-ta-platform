@@ -72,6 +72,8 @@ export default async function QuestionReviewPage({
         canDisposition={profile.permissions.includes("question.disposition")}
         canAnswer={profile.permissions.includes("question.answer")}
         canPublish={profile.permissions.includes("question.publish")}
+        canEdit={profile.permissions.includes("question.answer")}
+        currentUserId={profile.user_id}
       />
     </div>
   );

@@ -1,34 +1,22 @@
 "use client";
 
-import { useActionState, useTransition, type ReactNode } from "react";
+import { useState, useTransition, useMemo, type ReactNode } from "react";
+import { useRouter } from "@/lib/i18n/navigation";
 import type { QaWorkspace } from "@/lib/data/admin/qa";
 import type { QaAdminCopy } from "./content";
 import {
   setQuestionStateAction,
   saveQuestionAnswerAction,
   publishQuestionAction,
+  unpublishQuestionAction,
+  updatePublishedQuestionAction,
+  saveQuestionDisplayDraftAction,
+  assignQuestionAction,
 } from "@/lib/actions/admin/qa";
-import type { QaActionResult } from "@/lib/actions/admin/qa";
 
-interface Props {
-  workspace: QaWorkspace;
-  copy: QaAdminCopy;
-  canReview: boolean;
-  canDisposition: boolean;
-  canAnswer: boolean;
-  canPublish: boolean;
-}
-
-const INITIAL: QaActionResult = { ok: true };
-
-function MetaRow({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="flex flex-wrap gap-2 border-b border-line py-2 last:border-0">
-      <dt className="w-40 shrink-0 text-sm font-semibold text-ink-soft">{label}</dt>
-      <dd className="flex-1 text-sm text-ink">{children}</dd>
-    </div>
-  );
-}
+// ─────────────────────────────────────────────────────────────────
+// Sub-components
+// ─────────────────────────────────────────────────────────────────
 
 function StateChip({ state, copy }: { state: string; copy: QaAdminCopy }) {
   const map: Record<string, string> = {
@@ -41,12 +29,107 @@ function StateChip({ state, copy }: { state: string; copy: QaAdminCopy }) {
     REJECTED: copy.stateRejected,
     ARCHIVED: copy.stateArchived,
   };
+  const colors: Record<string, string> = {
+    PUBLISHED: "bg-emerald-50 text-emerald-800 border-emerald-200",
+    REJECTED: "bg-red-50 text-red-800 border-red-200",
+    ARCHIVED: "bg-stone-100 text-stone-600 border-stone-200",
+    PENDING: "bg-amber-50 text-amber-800 border-amber-200",
+    ANSWERED: "bg-blue-50 text-blue-800 border-blue-200",
+  };
+  const color =
+    colors[state] ?? "bg-brand-50 text-brand-800 border-brand-200";
   return (
-    <span className="inline-block rounded-full bg-brand-100 px-2.5 py-0.5 text-xs font-semibold text-brand-800">
+    <span
+      className={`inline-block rounded-full border px-2.5 py-0.5 text-xs font-semibold ${color}`}
+    >
       {map[state] ?? state}
     </span>
   );
 }
+
+function MetaRow({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex flex-wrap gap-2 border-b border-line py-2 last:border-0">
+      <dt className="w-36 shrink-0 text-sm font-semibold text-ink-soft">{label}</dt>
+      <dd className="flex-1 text-sm text-ink">{children}</dd>
+    </div>
+  );
+}
+
+function Notice({
+  ok,
+  text,
+}: {
+  ok: boolean;
+  text: string;
+}) {
+  return (
+    <p
+      role={ok ? "status" : "alert"}
+      className={`text-sm ${ok ? "text-emerald-700" : "text-danger"}`}
+    >
+      {text}
+    </p>
+  );
+}
+
+function SectionCard({
+  id,
+  heading,
+  children,
+  className,
+}: {
+  id?: string;
+  heading: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section
+      aria-labelledby={id}
+      className={`rounded-xl border border-line bg-surface p-5 sm:p-6 ${className ?? ""}`}
+    >
+      <h2
+        id={id}
+        className="font-display text-xl font-semibold text-ink"
+      >
+        {heading}
+      </h2>
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Slug auto-suggestion
+// ─────────────────────────────────────────────────────────────────
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_]+/g, "-")
+    .replace(/-{2,}/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 80);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Main editor
+// ─────────────────────────────────────────────────────────────────
+
+interface Props {
+  workspace: QaWorkspace;
+  copy: QaAdminCopy;
+  canReview: boolean;
+  canDisposition: boolean;
+  canAnswer: boolean;
+  canPublish: boolean;
+  canEdit: boolean;
+  currentUserId: string;
+}
+
+type NoticeState = { ok: boolean; text: string } | null;
 
 export function QuestionReviewEditor({
   workspace,
@@ -55,202 +138,737 @@ export function QuestionReviewEditor({
   canDisposition,
   canAnswer,
   canPublish,
+  currentUserId,
 }: Props) {
-  const [answerResult, answerDispatch] = useActionState<QaActionResult, FormData>(
-    async (_prev, fd) => {
-      const text = fd.get("answer_text") as string | null;
-      return saveQuestionAnswerAction(workspace.rawQuestionId, text ?? "");
-    },
-    INITIAL
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+
+  // Local state
+  const [state, setState] = useState(workspace.currentState);
+  const [assigneeId, setAssigneeId] = useState(
+    workspace.assignedModeratorId ?? currentUserId
   );
 
-  const [stateResult, setStateDispatch] = useActionState<QaActionResult, FormData>(
-    async (_prev, fd) => {
-      const newState = fd.get("new_state") as string | null;
-      const reasonCode = fd.get("reason_code") as string | null;
-      return setQuestionStateAction(
-        workspace.rawQuestionId,
-        newState ?? "",
-        reasonCode || null
-      );
-    },
-    INITIAL
+  // Public question draft
+  const [displayDraft, setDisplayDraft] = useState(
+    workspace.questionDisplayDraft ?? ""
+  );
+  const [slug, setSlug] = useState(
+    workspace.publishedContent?.slug ?? ""
   );
 
-  const [publishResult, publishDispatch] = useActionState<QaActionResult, FormData>(
-    async (_prev, _fd) => publishQuestionAction(workspace.rawQuestionId),
-    INITIAL
+  // Answer
+  const [answerText, setAnswerText] = useState("");
+
+  // Edit-published fields
+  const [editDisplay, setEditDisplay] = useState(
+    workspace.publishedContent?.questionDisplay ?? ""
   );
+  const [editAnswer, setEditAnswer] = useState(
+    workspace.publishedContent?.answerText ?? ""
+  );
+  const [editNote, setEditNote] = useState("");
 
-  const [, startTransition] = useTransition();
+  // Unpublish
+  const [unpublishNote, setUnpublishNote] = useState("");
 
-  const isTerminal =
-    workspace.currentState === "PUBLISHED" ||
-    workspace.currentState === "REJECTED" ||
-    workspace.currentState === "ARCHIVED";
+  // Per-section notices
+  const [draftNotice, setDraftNotice] = useState<NoticeState>(null);
+  const [answerNotice, setAnswerNotice] = useState<NoticeState>(null);
+  const [publishNotice, setPublishNotice] = useState<NoticeState>(null);
+  const [unpublishNotice, setUnpublishNotice] = useState<NoticeState>(null);
+  const [editNotice, setEditNotice] = useState<NoticeState>(null);
+  const [stateNotice, setStateNotice] = useState<NoticeState>(null);
+  const [assignNotice, setAssignNotice] = useState<NoticeState>(null);
 
-  const canPublishNow =
-    canPublish &&
-    (workspace.currentState === "ANSWERED" || workspace.currentState === "IN_REVIEW");
+  // Derive derived flags from local state
+  const isTerminal = ["REJECTED", "ARCHIVED"].includes(state);
+  const isPublished = state === "PUBLISHED";
+  const canPublishNow = canPublish && state === "ANSWERED";
 
-  function handlePublish() {
-    if (!confirm(copy.publishConfirm)) return;
-    const fd = new FormData();
-    startTransition(() => publishDispatch(fd));
+  // Slug auto-suggest from draft
+  const suggestedSlug = useMemo(() => slugify(displayDraft), [displayDraft]);
+
+  function handleSlugSuggest() {
+    if (!slug && suggestedSlug) setSlug(suggestedSlug);
   }
 
+  // ── Handlers ───────────────────────────────────────────────────
+
+  function saveDraft() {
+    if (!displayDraft.trim()) {
+      setDraftNotice({ ok: false, text: copy.publicQuestionRequired });
+      return;
+    }
+    setDraftNotice(null);
+    startTransition(async () => {
+      const result = await saveQuestionDisplayDraftAction(
+        workspace.rawQuestionId,
+        displayDraft
+      );
+      setDraftNotice({
+        ok: result.ok,
+        text: result.ok
+          ? copy.publicQuestionSaved
+          : result.error === "forbidden"
+          ? copy.forbidden
+          : copy.actionFailed,
+      });
+      if (result.ok) router.refresh();
+    });
+  }
+
+  function saveAnswer() {
+    setAnswerNotice(null);
+    startTransition(async () => {
+      const result = await saveQuestionAnswerAction(
+        workspace.rawQuestionId,
+        answerText
+      );
+      setAnswerNotice({
+        ok: result.ok,
+        text: result.ok
+          ? copy.answerSaved
+          : result.error === "forbidden"
+          ? copy.forbidden
+          : copy.actionFailed,
+      });
+      if (result.ok) { setAnswerText(""); router.refresh(); }
+    });
+  }
+
+  function transitionState(newState: string) {
+    setStateNotice(null);
+    startTransition(async () => {
+      const result = await setQuestionStateAction(
+        workspace.rawQuestionId,
+        newState,
+        null
+      );
+      if (result.ok) {
+        setState(newState as typeof state);
+        setStateNotice({ ok: true, text: copy.actionSuccess });
+        router.refresh();
+      } else {
+        setStateNotice({
+          ok: false,
+          text:
+            result.error === "forbidden" ? copy.forbidden : copy.actionFailed,
+        });
+      }
+    });
+  }
+
+  function handlePublish() {
+    if (!displayDraft.trim()) {
+      setPublishNotice({ ok: false, text: copy.publicQuestionRequired });
+      return;
+    }
+    if (!slug.trim() || slug.length < 3) {
+      setPublishNotice({ ok: false, text: copy.slugRequired });
+      return;
+    }
+    const isCritical = workspace.riskLevel === "critical";
+    const confirmMsg = isCritical
+      ? copy.publishCriticalConfirm
+      : copy.publishConfirm;
+    if (!window.confirm(confirmMsg)) return;
+    setPublishNotice(null);
+    startTransition(async () => {
+      const result = await publishQuestionAction(
+        workspace.rawQuestionId,
+        displayDraft,
+        slug,
+        isCritical
+      );
+      if (result.ok) {
+        setState("PUBLISHED");
+        setEditDisplay(displayDraft);
+        setPublishNotice({ ok: true, text: copy.published });
+        router.refresh();
+      } else {
+        const errorKey = result.error as string;
+        const text =
+          errorKey === "forbidden"
+            ? copy.forbidden
+            : errorKey === "question_not_answered"
+            ? copy.whyCannotPublish
+            : errorKey === "critical_risk_requires_override"
+            ? copy.whyCannotPublishCritical
+            : copy.actionFailed;
+        setPublishNotice({ ok: false, text });
+      }
+    });
+  }
+
+  function handleUnpublish() {
+    if (!window.confirm(copy.unpublishConfirm)) return;
+    setUnpublishNotice(null);
+    startTransition(async () => {
+      const result = await unpublishQuestionAction(
+        workspace.rawQuestionId,
+        unpublishNote || undefined
+      );
+      if (result.ok) {
+        setState("ANSWERED");
+        setUnpublishNotice({ ok: true, text: copy.unpublished });
+        setUnpublishNote("");
+        router.refresh();
+      } else {
+        setUnpublishNotice({
+          ok: false,
+          text:
+            result.error === "forbidden" ? copy.forbidden : copy.actionFailed,
+        });
+      }
+    });
+  }
+
+  function handleSavePublished() {
+    if (!editDisplay.trim()) {
+      setEditNotice({ ok: false, text: copy.publicQuestionRequired });
+      return;
+    }
+    if (!editAnswer.trim()) {
+      setEditNotice({ ok: false, text: copy.actionFailed });
+      return;
+    }
+    setEditNotice(null);
+    startTransition(async () => {
+      const result = await updatePublishedQuestionAction(
+        workspace.rawQuestionId,
+        editDisplay,
+        editAnswer,
+        editNote || undefined
+      );
+      if (result.ok) {
+        setEditNote("");
+        setEditNotice({ ok: true, text: copy.publishedSaved });
+        router.refresh();
+      } else {
+        setEditNotice({
+          ok: false,
+          text:
+            result.error === "forbidden" ? copy.forbidden : copy.actionFailed,
+        });
+      }
+    });
+  }
+
+  function handleAssign() {
+    setAssignNotice(null);
+    startTransition(async () => {
+      const result = await assignQuestionAction(
+        workspace.rawQuestionId,
+        assigneeId || null
+      );
+      if (result.ok) {
+        setAssignNotice({ ok: true, text: copy.actionSuccess });
+        router.refresh();
+      } else {
+        setAssignNotice({
+          ok: false,
+          text:
+            result.error === "forbidden" ? copy.forbidden : copy.actionFailed,
+        });
+      }
+    });
+  }
+
+  function handleRelease() {
+    setAssignNotice(null);
+    startTransition(async () => {
+      const result = await assignQuestionAction(workspace.rawQuestionId, null);
+      if (result.ok) {
+        setAssignNotice({ ok: true, text: copy.actionSuccess });
+        router.refresh();
+      } else {
+        setAssignNotice({
+          ok: false,
+          text:
+            result.error === "forbidden" ? copy.forbidden : copy.actionFailed,
+        });
+      }
+    });
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // Render
+  // ─────────────────────────────────────────────────────────────────
+
+  const inputCls =
+    "w-full rounded-lg border border-line bg-canvas px-3 py-2 text-sm text-ink placeholder-ink-muted focus:outline-none focus:ring-2 focus:ring-brand-600 disabled:opacity-50";
+  const labelCls = "mb-1 block text-sm font-semibold text-ink-soft";
+  const primaryBtn =
+    "rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50";
+  const secondaryBtn =
+    "rounded-lg border border-line bg-surface px-4 py-2 text-sm font-semibold text-ink hover:bg-surface-raised disabled:opacity-50";
+  const dangerBtn =
+    "rounded-lg border border-danger/40 bg-danger/5 px-4 py-2 text-sm font-semibold text-danger hover:bg-danger/10 disabled:opacity-50";
+  const publishBtn =
+    "rounded-lg bg-terracotta-600 px-5 py-2 text-sm font-semibold text-white hover:bg-terracotta-700 disabled:opacity-50";
+
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
-      {/* Main column */}
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+      {/* ── Main column ─────────────────────────────────────────── */}
       <div className="space-y-6">
-        {/* Question text */}
-        <section className="rounded-xl border border-line bg-surface p-6">
-          <h2 className="font-display text-xl font-semibold text-ink">{copy.questionText}</h2>
-          <p className="mt-4 whitespace-pre-wrap text-ink">{workspace.questionTextPlain}</p>
+        {/* Original question */}
+        <SectionCard id="qa-original" heading={copy.originalQuestionHeading}>
+          <p className="mb-4 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            {copy.originalQuestionNote}
+          </p>
+          <p className="whitespace-pre-wrap text-ink">{workspace.questionTextPlain}</p>
           <p className="mt-3 text-xs text-ink-soft">
             {workspace.charCount} {copy.chars}
           </p>
-        </section>
+        </SectionCard>
+
+        {/* Public question draft */}
+        {!isTerminal && (
+          <SectionCard id="qa-public" heading={copy.publicQuestionHeading}>
+            <p className="mb-4 rounded-lg bg-brand-50 px-4 py-3 text-sm text-brand-800">
+              {copy.publicQuestionNote}
+            </p>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="qa-display-draft" className={labelCls}>
+                  {copy.publicQuestionLabel}
+                  <span className="ml-1 text-xs font-normal text-ink-soft">
+                    ({displayDraft.length}/2000)
+                  </span>
+                </label>
+                <textarea
+                  id="qa-display-draft"
+                  rows={5}
+                  maxLength={2000}
+                  value={displayDraft}
+                  onChange={(e) => setDisplayDraft(e.target.value)}
+                  placeholder={copy.publicQuestionPlaceholder}
+                  className={inputCls}
+                  disabled={pending}
+                  onBlur={handleSlugSuggest}
+                />
+              </div>
+
+              {/* Slug */}
+              <div>
+                <label htmlFor="qa-slug" className={labelCls}>
+                  {copy.slugLabel}
+                </label>
+                <p className="mb-1 text-xs text-ink-soft">{copy.slugHelp}</p>
+                <div className="flex gap-2">
+                  <input
+                    id="qa-slug"
+                    type="text"
+                    value={slug}
+                    onChange={(e) => setSlug(e.target.value)}
+                    placeholder={copy.slugPlaceholder}
+                    className={inputCls}
+                    maxLength={220}
+                    disabled={pending || isPublished}
+                  />
+                  {!slug && suggestedSlug && !isPublished && (
+                    <button
+                      type="button"
+                      onClick={() => setSlug(suggestedSlug)}
+                      className={secondaryBtn + " whitespace-nowrap"}
+                      disabled={pending}
+                    >
+                      Use suggested
+                    </button>
+                  )}
+                </div>
+                {slug && (
+                  <p className="mt-1 font-mono text-xs text-ink-soft">
+                    /ask/browse/q/{slug.replace(/[^a-z0-9-]/gi, "-").toLowerCase()}
+                  </p>
+                )}
+              </div>
+
+              {/* Save draft button */}
+              {!isPublished && (
+                <div className="flex items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={saveDraft}
+                    className={secondaryBtn}
+                    disabled={pending || !displayDraft.trim()}
+                  >
+                    {copy.publicQuestionSave}
+                  </button>
+                  {draftNotice && <Notice ok={draftNotice.ok} text={draftNotice.text} />}
+                </div>
+              )}
+            </div>
+          </SectionCard>
+        )}
+
+        {/* Preview */}
+        {(displayDraft.trim() || isPublished) && (
+          <SectionCard id="qa-preview" heading={copy.previewHeading}>
+            <p className="mb-4 text-sm text-ink-soft">{copy.previewNote}</p>
+            <div className="rounded-xl border border-line bg-canvas p-5">
+              <blockquote className="text-base font-semibold italic text-ink">
+                {isPublished
+                  ? (workspace.publishedContent?.questionDisplay ?? displayDraft)
+                  : displayDraft}
+              </blockquote>
+              {(workspace.publishedContent?.answerText || answerText) && (
+                <div className="mt-4 border-t border-line pt-4">
+                  <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-soft">
+                    {workspace.publishedContent?.attributionLabel ?? "Muriyar Ta Team"}
+                  </p>
+                  <p className="text-sm text-ink">
+                    {workspace.publishedContent?.answerText ?? answerText}
+                  </p>
+                </div>
+              )}
+            </div>
+          </SectionCard>
+        )}
 
         {/* Answer editor */}
-        {canAnswer && !isTerminal && workspace.currentState !== "PUBLISHED" && (
-          <section className="rounded-xl border border-line bg-surface p-6">
-            <h2 className="font-display text-xl font-semibold text-ink">{copy.answerLabel}</h2>
-            <form action={answerDispatch} className="mt-4 space-y-4">
-              <textarea
-                name="answer_text"
-                rows={10}
-                placeholder={copy.answerPlaceholder}
-                className="w-full rounded-lg border border-line bg-canvas p-3 text-sm text-ink placeholder-ink-muted focus:outline-none focus:ring-2 focus:ring-brand-600"
-                maxLength={10000}
-                required
-              />
+        {canAnswer && !isTerminal && !isPublished && (
+          <SectionCard id="qa-answer" heading={copy.answerLabel}>
+            <div className="space-y-4">
+              <div>
+                <textarea
+                  rows={10}
+                  value={answerText}
+                  onChange={(e) => setAnswerText(e.target.value)}
+                  placeholder={copy.answerPlaceholder}
+                  className={inputCls}
+                  maxLength={10000}
+                  disabled={pending}
+                />
+              </div>
               <div className="flex items-center gap-4">
                 <button
-                  type="submit"
-                  className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
+                  type="button"
+                  onClick={saveAnswer}
+                  disabled={pending || !answerText.trim()}
+                  className={primaryBtn}
                 >
                   {copy.saveAnswer}
                 </button>
-                {answerResult.ok === true && answerResult !== INITIAL && (
-                  <p role="status" className="text-sm text-success">
-                    {copy.answerSaved}
-                  </p>
-                )}
-                {answerResult.ok === false && (
-                  <p role="alert" className="text-sm text-danger">
-                    {answerResult.error === "forbidden" ? copy.forbidden : copy.actionFailed}
-                  </p>
-                )}
+                {answerNotice && <Notice ok={answerNotice.ok} text={answerNotice.text} />}
               </div>
-            </form>
-          </section>
+            </div>
+          </SectionCard>
         )}
 
-        {/* State transitions */}
-        {canDisposition && !isTerminal && (
-          <section className="rounded-xl border border-line bg-surface p-6">
-            <h2 className="font-display text-xl font-semibold text-ink">
-              {copy.rejectReasonLabel}
-            </h2>
-            <form action={setStateDispatch} className="mt-4 space-y-4">
-              <input type="hidden" name="new_state" value="REJECTED" />
-              <label className="flex flex-col gap-1 text-sm font-semibold text-ink-soft">
-                {copy.rejectReasonLabel} {copy.rejectReasonOptional}
-                <input
-                  type="text"
-                  name="reason_code"
-                  maxLength={100}
-                  className="mt-1 rounded-lg border border-line bg-canvas px-3 py-1.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand-600"
+        {/* Edit published content */}
+        {isPublished && canPublish && (
+          <SectionCard id="qa-edit-published" heading={copy.editPublishedHeading}>
+            <p className="mb-4 rounded-lg bg-stone-50 px-4 py-3 text-sm text-ink-soft">
+              {copy.editPublishedNote}
+            </p>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="qa-edit-display" className={labelCls}>
+                  {copy.publicQuestionLabel}
+                </label>
+                <textarea
+                  id="qa-edit-display"
+                  rows={4}
+                  maxLength={2000}
+                  value={editDisplay}
+                  onChange={(e) => setEditDisplay(e.target.value)}
+                  className={inputCls}
+                  disabled={pending}
                 />
-              </label>
-              <div className="flex flex-wrap gap-3">
-                {canReview && workspace.currentState === "PENDING" && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const fd = new FormData();
-                      fd.set("new_state", "IN_REVIEW");
-                      startTransition(() => setStateDispatch(fd));
-                    }}
-                    className="rounded-lg border border-line bg-surface px-4 py-2 text-sm font-semibold text-ink hover:bg-surface-raised"
-                  >
-                    {copy.approveForReview}
-                  </button>
-                )}
-                <button
-                  type="submit"
-                  className="rounded-lg border border-danger/40 bg-danger/5 px-4 py-2 text-sm font-semibold text-danger hover:bg-danger/10"
-                >
-                  {copy.rejectQuestion}
-                </button>
+              </div>
+              <div>
+                <label htmlFor="qa-edit-answer" className={labelCls}>
+                  {copy.answerLabel}
+                </label>
+                <textarea
+                  id="qa-edit-answer"
+                  rows={8}
+                  maxLength={10000}
+                  value={editAnswer}
+                  onChange={(e) => setEditAnswer(e.target.value)}
+                  className={inputCls}
+                  disabled={pending}
+                />
+              </div>
+              <div>
+                <label htmlFor="qa-edit-note" className={labelCls}>
+                  {copy.savePublishedNote}
+                </label>
+                <input
+                  id="qa-edit-note"
+                  type="text"
+                  value={editNote}
+                  onChange={(e) => setEditNote(e.target.value)}
+                  placeholder={copy.savePublishedNotePlaceholder}
+                  className={inputCls}
+                  maxLength={500}
+                  disabled={pending}
+                />
+              </div>
+              <div className="flex items-center gap-4">
                 <button
                   type="button"
-                  onClick={() => {
-                    const fd = new FormData();
-                    fd.set("new_state", "ARCHIVED");
-                    startTransition(() => setStateDispatch(fd));
-                  }}
-                  className="rounded-lg border border-line bg-surface px-4 py-2 text-sm font-semibold text-ink-soft hover:bg-surface-raised"
+                  onClick={handleSavePublished}
+                  disabled={pending || !editDisplay.trim() || !editAnswer.trim()}
+                  className={primaryBtn}
                 >
-                  {copy.archiveQuestion}
+                  {copy.savePublished}
                 </button>
+                {editNotice && <Notice ok={editNotice.ok} text={editNotice.text} />}
               </div>
-              {stateResult.ok === false && (
-                <p role="alert" className="text-sm text-danger">
-                  {stateResult.error === "forbidden" ? copy.forbidden : copy.actionFailed}
-                </p>
-              )}
-              {stateResult.ok === true && stateResult !== INITIAL && (
-                <p role="status" className="text-sm text-success">
-                  {copy.actionSuccess}
-                </p>
-              )}
-            </form>
-          </section>
+            </div>
+          </SectionCard>
         )}
 
-        {/* Publish */}
-        {canPublishNow && (
-          <section className="rounded-xl border border-brand-200 bg-brand-50/20 p-6">
-            <div className="flex items-center justify-between gap-4">
-              <p className="font-semibold text-ink">{copy.publishQuestion}</p>
+        {/* Unpublish */}
+        {isPublished && canPublish && (
+          <SectionCard id="qa-unpublish" heading={copy.unpublishHeading}>
+            <p className="mb-4 text-sm text-ink-soft">{copy.unpublishNote}</p>
+            <div className="space-y-3">
+              <div>
+                <label htmlFor="qa-unpublish-note" className={labelCls}>
+                  {copy.unpublishNoteLabel}
+                </label>
+                <input
+                  id="qa-unpublish-note"
+                  type="text"
+                  value={unpublishNote}
+                  onChange={(e) => setUnpublishNote(e.target.value)}
+                  placeholder={copy.unpublishNotePlaceholder}
+                  className={inputCls}
+                  maxLength={500}
+                  disabled={pending}
+                />
+              </div>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={handleUnpublish}
+                  disabled={pending}
+                  className={dangerBtn}
+                >
+                  {copy.unpublishButton}
+                </button>
+                {unpublishNotice && (
+                  <Notice ok={unpublishNotice.ok} text={unpublishNotice.text} />
+                )}
+              </div>
+            </div>
+          </SectionCard>
+        )}
+
+        {/* Moderation history */}
+        <SectionCard id="qa-history" heading={copy.historyHeading}>
+          {workspace.history.length === 0 ? (
+            <p className="text-sm text-ink-soft">{copy.historyEmpty}</p>
+          ) : (
+            <ol className="space-y-4">
+              {workspace.history.map((entry) => (
+                <li
+                  key={entry.transitionId}
+                  className="border-l-2 border-brand-200 pl-4"
+                >
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <strong className="text-sm text-ink">{entry.actorName}</strong>
+                    <time className="text-xs text-ink-soft">
+                      {new Date(entry.createdAt).toLocaleString()}
+                    </time>
+                  </div>
+                  <p className="mt-1 text-sm font-semibold text-ink">
+                    {entry.fromState} → {entry.toState}
+                  </p>
+                  {entry.note && (
+                    <p className="mt-1 whitespace-pre-wrap text-sm text-ink-soft">
+                      {entry.note}
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ol>
+          )}
+        </SectionCard>
+      </div>
+
+      {/* ── Sidebar ─────────────────────────────────────────────── */}
+      <aside className="space-y-4 xl:sticky xl:top-24 xl:self-start">
+        {/* Status + actions card */}
+        <div className="rounded-xl border border-line bg-surface p-5">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-display text-lg font-semibold text-ink">
+              {copy.publication}
+            </h2>
+            <StateChip state={state} copy={copy} />
+          </div>
+
+          {/* Escalation badge */}
+          {workspace.isEscalated && (
+            <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-800">
+              {copy.escalated}
+            </p>
+          )}
+
+          {/* Why can't publish (informational) */}
+          {!isTerminal && !isPublished && !canPublishNow && canPublish && (
+            <p className="mt-3 rounded-lg bg-stone-50 px-3 py-2 text-xs text-ink-soft">
+              {workspace.riskLevel === "critical"
+                ? copy.whyCannotPublishCritical
+                : copy.whyCannotPublish}
+            </p>
+          )}
+
+          {/* Assignment */}
+          {canDisposition && workspace.moderators.length > 0 && (
+            <div className="mt-4 space-y-2">
+              <label
+                htmlFor="qa-assignee"
+                className="block text-sm font-semibold text-ink-soft"
+              >
+                {copy.assignee}
+              </label>
+              <select
+                id="qa-assignee"
+                value={assigneeId}
+                onChange={(e) => setAssigneeId(e.target.value)}
+                className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
+                disabled={pending}
+              >
+                {workspace.moderators.map((m) => (
+                  <option key={m.userId} value={m.userId}>
+                    {m.displayName}
+                  </option>
+                ))}
+              </select>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleAssign}
+                  disabled={pending}
+                  className={secondaryBtn + " flex-1"}
+                >
+                  {copy.assign}
+                </button>
+                {workspace.assignedModeratorId && (
+                  <button
+                    type="button"
+                    onClick={handleRelease}
+                    disabled={pending}
+                    className={secondaryBtn}
+                  >
+                    {copy.release}
+                  </button>
+                )}
+              </div>
+              {assignNotice && <Notice ok={assignNotice.ok} text={assignNotice.text} />}
+            </div>
+          )}
+
+          {/* Action buttons */}
+          <div className="mt-5 space-y-2">
+            {/* Approve for review */}
+            {canReview && state === "PENDING" && (
+              <button
+                type="button"
+                onClick={() => transitionState("IN_REVIEW")}
+                disabled={pending}
+                className={secondaryBtn + " w-full text-center"}
+              >
+                {copy.approveForReview}
+              </button>
+            )}
+
+            {/* Mark answered */}
+            {canAnswer && state === "IN_REVIEW" && (
+              <button
+                type="button"
+                onClick={() => transitionState("ANSWERED")}
+                disabled={pending}
+                className={secondaryBtn + " w-full text-center"}
+              >
+                {copy.markAnswered}
+              </button>
+            )}
+
+            {/* Publish */}
+            {canPublishNow && (
               <button
                 type="button"
                 onClick={handlePublish}
-                className="rounded-lg bg-terracotta-600 px-5 py-2 text-sm font-semibold text-white hover:bg-terracotta-700"
+                disabled={pending || !displayDraft.trim() || !slug.trim()}
+                className={publishBtn + " w-full text-center"}
               >
-                {copy.publishQuestion}
+                {copy.publish}
               </button>
-            </div>
-            {publishResult.ok === false && (
-              <p role="alert" className="mt-3 text-sm text-danger">
-                {publishResult.error === "forbidden" ? copy.forbidden : copy.actionFailed}
-              </p>
             )}
-            {publishResult.ok === true && publishResult !== INITIAL && (
-              <p role="status" className="mt-3 text-sm text-success">
-                {copy.published}
-              </p>
-            )}
-          </section>
-        )}
-      </div>
 
-      {/* Sidebar */}
-      <aside>
-        <div className="rounded-xl border border-line bg-surface p-5">
-          <h2 className="font-display text-lg font-semibold text-ink">{copy.questionMeta}</h2>
-          <dl className="mt-4 divide-y divide-line">
-            <MetaRow label={copy.columnState}>
-              <StateChip state={workspace.currentState} copy={copy} />
-              {workspace.isEscalated && (
-                <span className="ml-2 inline-block rounded-full bg-danger/10 px-2 py-0.5 text-xs font-semibold text-danger">
-                  {copy.escalated}
-                </span>
+            {/* Reject */}
+            {canDisposition &&
+              !isTerminal &&
+              !isPublished &&
+              (
+                <button
+                  type="button"
+                  onClick={() => transitionState("REJECTED")}
+                  disabled={pending}
+                  className={dangerBtn + " w-full text-center"}
+                >
+                  {copy.rejectQuestion}
+                </button>
               )}
+
+            {/* Archive */}
+            {canDisposition && !isTerminal && (
+              <button
+                type="button"
+                onClick={() => transitionState("ARCHIVED")}
+                disabled={pending}
+                className={secondaryBtn + " w-full text-center text-ink-soft"}
+              >
+                {copy.archiveQuestion}
+              </button>
+            )}
+
+            {/* Restore */}
+            {canDisposition && state === "ARCHIVED" && (
+              <button
+                type="button"
+                onClick={() => transitionState("IN_REVIEW")}
+                disabled={pending}
+                className={secondaryBtn + " w-full text-center"}
+              >
+                {copy.restore}
+              </button>
+            )}
+          </div>
+
+          {publishNotice && (
+            <div className="mt-3">
+              <Notice ok={publishNotice.ok} text={publishNotice.text} />
+            </div>
+          )}
+          {stateNotice && (
+            <div className="mt-3">
+              <Notice ok={stateNotice.ok} text={stateNotice.text} />
+            </div>
+          )}
+        </div>
+
+        {/* Submission metadata card */}
+        <div className="rounded-xl border border-line bg-surface p-5">
+          <h2 className="font-display text-lg font-semibold text-ink">
+            {copy.questionMeta}
+          </h2>
+          <dl className="mt-4 divide-y divide-line">
+            <MetaRow label={copy.submissionDate}>
+              {new Date(workspace.submissionTimestamp).toLocaleDateString()}
             </MetaRow>
-            <MetaRow label={copy.columnLanguage}>{workspace.languageCode.toUpperCase()}</MetaRow>
+            <MetaRow label={copy.consentDate}>
+              {new Date(workspace.consentTimestamp).toLocaleDateString()}
+            </MetaRow>
+            <MetaRow label={copy.columnLanguage}>
+              {workspace.languageCode.toUpperCase()}
+            </MetaRow>
             <MetaRow label={copy.columnLength}>
               {workspace.charCount} {copy.chars}
             </MetaRow>
@@ -259,27 +877,44 @@ export function QuestionReviewEditor({
             )}
             {workspace.followUpTo && (
               <MetaRow label={copy.followUpTo}>
-                <span className="font-mono text-xs">{workspace.followUpTo.slice(0, 8)}</span>
+                <span className="font-mono text-xs">
+                  {workspace.followUpTo.slice(0, 8)}
+                </span>
               </MetaRow>
             )}
-            <MetaRow label={copy.submissionDate}>
-              {new Date(workspace.submissionTimestamp).toLocaleDateString()}
-            </MetaRow>
-            <MetaRow label={copy.consentDate}>
-              {new Date(workspace.consentTimestamp).toLocaleDateString()}
-            </MetaRow>
             <MetaRow label={copy.riskLevel}>{workspace.riskLevel}</MetaRow>
             {workspace.riskFlags.length > 0 && (
-              <MetaRow label={copy.riskFlags}>{workspace.riskFlags.join(", ")}</MetaRow>
+              <MetaRow label={copy.riskFlags}>
+                {workspace.riskFlags.join(", ")}
+              </MetaRow>
             )}
             {workspace.moderationNotes && (
-              <MetaRow label={copy.moderationNotes}>{workspace.moderationNotes}</MetaRow>
+              <MetaRow label={copy.moderationNotes}>
+                {workspace.moderationNotes}
+              </MetaRow>
             )}
             {workspace.rejectionReasonCode && (
-              <MetaRow label={copy.rejectReasonLabel}>{workspace.rejectionReasonCode}</MetaRow>
+              <MetaRow label={copy.rejectReasonLabel}>
+                {workspace.rejectionReasonCode}
+              </MetaRow>
             )}
           </dl>
         </div>
+
+        {/* Published info card */}
+        {isPublished && workspace.publishedContent && (
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50/30 p-5">
+            <h2 className="font-display text-lg font-semibold text-emerald-800">
+              {copy.statePublished}
+            </h2>
+            <p className="mt-2 font-mono text-xs text-ink-soft">
+              /ask/browse/q/{workspace.publishedContent.slug}
+            </p>
+            <p className="mt-2 text-xs text-ink-soft">
+              {new Date(workspace.publishedContent.publishedAt).toLocaleString()}
+            </p>
+          </div>
+        )}
       </aside>
     </div>
   );
