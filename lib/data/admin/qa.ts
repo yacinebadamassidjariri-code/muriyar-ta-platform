@@ -93,13 +93,24 @@ export type DataResult<T> =
 export async function getQaDashboard(): Promise<
   DataResult<Record<string, number>>
 > {
-  if (!(await hasPermission("question.queue.read")))
+  const perm = await hasPermission("question.queue.read");
+  if (!perm) {
+    console.error("[getQaDashboard] forbidden: hasPermission returned false");
     return { ok: false, error: "forbidden" };
+  }
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("raw_questions")
     .select("current_state");
-  if (error) return { ok: false, error: "request_failed" };
+  if (error) {
+    console.error("[getQaDashboard] query failed", {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    });
+    return { ok: false, error: "request_failed" };
+  }
   const totals: Record<string, number> = {};
   for (const row of data ?? []) {
     const s = String(row.current_state);
