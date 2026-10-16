@@ -236,7 +236,8 @@ export async function getQaWorkspace(
 
   // Build history
   const history: QaHistoryEntry[] = (historyRes.data ?? []).map((h) => {
-    const users = h.users as Record<string, unknown> | null;
+    const usersArr = Array.isArray(h.users) ? h.users : [];
+    const users = (usersArr[0] ?? null) as Record<string, unknown> | null;
     const actorName =
       String(users?.display_name ?? users?.email ?? h.moderator_id ?? "Staff");
     return {
