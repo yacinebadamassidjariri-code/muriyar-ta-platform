@@ -46,7 +46,7 @@ export async function assignQuestionAction(
     return { ok: false, error: "invalid_input", requestId: auth.value.requestId };
   const { error } = await auth.value.supabase.rpc("question_assign", {
     p_raw_question_id: rawQuestionId,
-    p_assignee_id: assigneeId,
+    p_moderator_id: assigneeId,
   });
   if (error) return { ok: false, error: dbError(error.message), requestId: auth.value.requestId };
   refreshQuestion(rawQuestionId);
