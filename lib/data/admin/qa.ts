@@ -148,7 +148,15 @@ export async function listQaQueue(options: {
   if (options.language) query = query.eq("language_code", options.language);
 
   const { data, error, count } = await query;
-  if (error) return { ok: false, error: "request_failed" };
+  if (error) {
+    console.error("[listQaQueue] raw_questions query failed", {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    });
+    return { ok: false, error: "request_failed" };
+  }
 
   // Get escalation status from state transitions
   const ids = (data ?? []).map((r) => r.raw_question_id as string);
