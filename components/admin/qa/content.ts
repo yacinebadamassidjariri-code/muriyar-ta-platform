@@ -86,6 +86,8 @@ const en = {
   saveAnswer: "Save answer",
   answerSaved: "Answer saved.",
   answerNotFound: "No saved answer found. Please write and save an answer before publishing.",
+  answerRequired: "An answer must be saved before this question can be marked as Answered.",
+  answerNotSaved: "No answer saved yet — write and save an answer in the Staff answer section below before publishing.",
   savedAnswerHeading: "Saved answer",
 
   // Preview panel
@@ -258,6 +260,8 @@ const fr: typeof en = {
   saveAnswer: "Enregistrer la réponse",
   answerSaved: "Réponse enregistrée.",
   answerNotFound: "Aucune réponse enregistrée. Veuillez rédiger et enregistrer une réponse avant de publier.",
+  answerRequired: "Une réponse doit être enregistrée avant que cette question puisse être marquée comme Répondue.",
+  answerNotSaved: "Aucune réponse enregistrée — rédigez et enregistrez une réponse dans la section Réponse du personnel ci-dessous avant de publier.",
   savedAnswerHeading: "Réponse enregistrée",
 
   // Preview panel

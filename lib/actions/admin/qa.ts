@@ -31,6 +31,7 @@ function dbError(message?: string): string {
     "question_not_answered",
     "critical_risk_requires_override",
     "answer_not_found",
+    "answer_required",
   ].includes(message ?? "")
     ? (message as string)
     : "request_failed";

@@ -157,8 +157,14 @@ export function QuestionReviewEditor({
     workspace.publishedContent?.slug ?? ""
   );
 
-  // Answer — pre-populate from saved answer if available
+  // Answer — pre-populate from saved answer if available; sync when workspace refreshes
   const [answerText, setAnswerText] = useState(workspace.savedAnswerText ?? "");
+
+  // When router.refresh() rehydrates the component with an updated savedAnswerText,
+  // sync the textarea so it reflects the confirmed persisted answer.
+  useEffect(() => {
+    setAnswerText(workspace.savedAnswerText ?? "");
+  }, [workspace.savedAnswerText]);
 
   // Edit-published fields
   const [editDisplay, setEditDisplay] = useState(
@@ -243,7 +249,7 @@ export function QuestionReviewEditor({
           ? copy.forbidden
           : copy.actionFailed,
       });
-      if (result.ok) { setAnswerText(""); router.refresh(); }
+      if (result.ok) { router.refresh(); }
     });
   }
 
@@ -278,6 +284,8 @@ export function QuestionReviewEditor({
               ? copy.invalidTransition
               : err === "note_required"
               ? copy.noteRequired
+              : err === "answer_required"
+              ? copy.answerRequired
               : copy.actionFailed,
         });
       }
@@ -540,13 +548,13 @@ export function QuestionReviewEditor({
                   ? (workspace.publishedContent?.questionDisplay ?? displayDraft)
                   : displayDraft}
               </blockquote>
-              {(workspace.publishedContent?.answerText || workspace.savedAnswerText || answerText) && (
+              {(workspace.publishedContent?.answerText || workspace.savedAnswerText) && (
                 <div className="mt-4 border-t border-line pt-4">
                   <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-soft">
                     {workspace.publishedContent?.attributionLabel ?? "Muriyar Ta Team"}
                   </p>
                   <p className="text-sm text-ink">
-                    {workspace.publishedContent?.answerText ?? workspace.savedAnswerText ?? answerText}
+                    {workspace.publishedContent?.answerText ?? workspace.savedAnswerText}
                   </p>
                 </div>
               )}
@@ -853,12 +861,17 @@ export function QuestionReviewEditor({
                 <button
                   type="button"
                   onClick={handlePublish}
-                  disabled={pending || !displayDraft.trim() || !slug.trim()}
+                  disabled={pending || !displayDraft.trim() || !slug.trim() || !workspace.savedAnswerText}
                   className={publishBtn + " w-full text-center"}
                 >
                   {copy.publish}
                 </button>
-                {(!displayDraft.trim() || !slug.trim()) && (
+                {!workspace.savedAnswerText && (
+                  <p className="text-xs text-danger">
+                    {copy.answerNotSaved}
+                  </p>
+                )}
+                {workspace.savedAnswerText && (!displayDraft.trim() || !slug.trim()) && (
                   <p className="text-xs text-ink-soft">
                     {!displayDraft.trim()
                       ? copy.publicQuestionRequired
