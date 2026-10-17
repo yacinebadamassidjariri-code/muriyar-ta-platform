@@ -75,6 +75,8 @@ export type QaWorkspace = {
   isEscalated: boolean;
   /** Moderator's working draft of the de-identified public question text. */
   questionDisplayDraft: string | null;
+  /** Saved staff answer text (from question_answers). Non-null when an answer has been saved. */
+  savedAnswerText: string | null;
   /** Non-null only when currentState === "PUBLISHED". */
   publishedContent: QaPublishedContent | null;
   /** State-transition history for this question. */
@@ -197,7 +199,7 @@ export async function getQaWorkspace(
     return { ok: false, error: "forbidden" };
   const supabase = await createClient();
 
-  const [workspaceRes, historyRes, moderatorsRes] = await Promise.all([
+  const [workspaceRes, historyRes, moderatorsRes, answerRes] = await Promise.all([
     supabase.rpc("review_get_question", {
       p_raw_question_id: rawQuestionId,
     }),
@@ -209,6 +211,11 @@ export async function getQaWorkspace(
       .eq("raw_question_id", rawQuestionId)
       .order("created_at", { ascending: false }),
     supabase.rpc("qa_list_moderators"),
+    supabase
+      .from("question_answers")
+      .select("answer_text")
+      .eq("raw_question_id", rawQuestionId)
+      .maybeSingle(),
   ]);
 
   if (workspaceRes.error) {
@@ -286,6 +293,9 @@ export async function getQaWorkspace(
       isEscalated: Boolean(row.is_escalated),
       questionDisplayDraft: row.question_display_draft
         ? String(row.question_display_draft)
+        : null,
+      savedAnswerText: answerRes.data?.answer_text
+        ? String(answerRes.data.answer_text)
         : null,
       publishedContent,
       history,

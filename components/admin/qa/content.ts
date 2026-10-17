@@ -85,6 +85,8 @@ const en = {
   answerPlaceholder: "Write a clear, helpful answer here…",
   saveAnswer: "Save answer",
   answerSaved: "Answer saved.",
+  answerNotFound: "No saved answer found. Please write and save an answer before publishing.",
+  savedAnswerHeading: "Saved answer",
 
   // Preview panel
   previewHeading: "Preview",
@@ -255,6 +257,8 @@ const fr: typeof en = {
   answerPlaceholder: "Rédigez ici une réponse claire et utile…",
   saveAnswer: "Enregistrer la réponse",
   answerSaved: "Réponse enregistrée.",
+  answerNotFound: "Aucune réponse enregistrée. Veuillez rédiger et enregistrer une réponse avant de publier.",
+  savedAnswerHeading: "Réponse enregistrée",
 
   // Preview panel
   previewHeading: "Aperçu",

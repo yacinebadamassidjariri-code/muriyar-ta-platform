@@ -157,8 +157,8 @@ export function QuestionReviewEditor({
     workspace.publishedContent?.slug ?? ""
   );
 
-  // Answer
-  const [answerText, setAnswerText] = useState("");
+  // Answer — pre-populate from saved answer if available
+  const [answerText, setAnswerText] = useState(workspace.savedAnswerText ?? "");
 
   // Edit-published fields
   const [editDisplay, setEditDisplay] = useState(
@@ -320,6 +320,8 @@ export function QuestionReviewEditor({
             ? copy.whyCannotPublish
             : errorKey === "critical_risk_requires_override"
             ? copy.whyCannotPublishCritical
+            : errorKey === "answer_not_found"
+            ? copy.answerNotFound
             : copy.actionFailed;
         setPublishNotice({ ok: false, text });
       }
@@ -538,13 +540,13 @@ export function QuestionReviewEditor({
                   ? (workspace.publishedContent?.questionDisplay ?? displayDraft)
                   : displayDraft}
               </blockquote>
-              {(workspace.publishedContent?.answerText || answerText) && (
+              {(workspace.publishedContent?.answerText || workspace.savedAnswerText || answerText) && (
                 <div className="mt-4 border-t border-line pt-4">
                   <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-soft">
                     {workspace.publishedContent?.attributionLabel ?? "Muriyar Ta Team"}
                   </p>
                   <p className="text-sm text-ink">
-                    {workspace.publishedContent?.answerText ?? answerText}
+                    {workspace.publishedContent?.answerText ?? workspace.savedAnswerText ?? answerText}
                   </p>
                 </div>
               )}
@@ -556,6 +558,11 @@ export function QuestionReviewEditor({
         {canAnswer && !isTerminal && !isPublished && (
           <SectionCard id="qa-answer" heading={copy.answerLabel}>
             <div className="space-y-4">
+              {workspace.savedAnswerText && (
+                <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                  ✓ {copy.answerSaved} {copy.savedAnswerHeading} is shown below — edit and save again to update it.
+                </p>
+              )}
               <div>
                 <textarea
                   rows={10}
