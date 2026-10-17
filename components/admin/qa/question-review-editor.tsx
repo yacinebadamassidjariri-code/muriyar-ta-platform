@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useMemo, type ReactNode } from "react";
+import { useState, useTransition, useMemo, useEffect, type ReactNode } from "react";
 import { useRouter } from "@/lib/i18n/navigation";
 import type { QaWorkspace } from "@/lib/data/admin/qa";
 import type { QaAdminCopy } from "./content";
@@ -183,6 +183,13 @@ export function QuestionReviewEditor({
   const [editNotice, setEditNotice] = useState<NoticeState>(null);
   const [stateNotice, setStateNotice] = useState<NoticeState>(null);
   const [assignNotice, setAssignNotice] = useState<NoticeState>(null);
+
+  // Clear stale notices when the server-side workspace state changes
+  // (e.g. after router.refresh() rehydrates the component with new props)
+  useEffect(() => {
+    setStateNotice(null);
+    setPublishNotice(null);
+  }, [workspace.currentState]);
 
   // Derive derived flags from local state
   const isTerminal = ["REJECTED", "ARCHIVED"].includes(state);
@@ -424,7 +431,7 @@ export function QuestionReviewEditor({
   const dangerBtn =
     "rounded-lg border border-danger/40 bg-danger/5 px-4 py-2 text-sm font-semibold text-danger hover:bg-danger/10 disabled:opacity-50";
   const publishBtn =
-    "rounded-lg bg-terracotta-600 px-5 py-2 text-sm font-semibold text-white hover:bg-terracotta-700 disabled:opacity-50";
+    "rounded-lg bg-mt-terracotta px-5 py-2 text-sm font-semibold text-white hover:bg-mt-terracotta-hover disabled:cursor-not-allowed disabled:opacity-60";
 
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
@@ -835,14 +842,23 @@ export function QuestionReviewEditor({
 
             {/* Publish */}
             {canPublishNow && (
-              <button
-                type="button"
-                onClick={handlePublish}
-                disabled={pending || !displayDraft.trim() || !slug.trim()}
-                className={publishBtn + " w-full text-center"}
-              >
-                {copy.publish}
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={handlePublish}
+                  disabled={pending || !displayDraft.trim() || !slug.trim()}
+                  className={publishBtn + " w-full text-center"}
+                >
+                  {copy.publish}
+                </button>
+                {(!displayDraft.trim() || !slug.trim()) && (
+                  <p className="text-xs text-ink-soft">
+                    {!displayDraft.trim()
+                      ? copy.publicQuestionRequired
+                      : copy.slugRequired}
+                  </p>
+                )}
+              </>
             )}
 
             {/* Reject */}

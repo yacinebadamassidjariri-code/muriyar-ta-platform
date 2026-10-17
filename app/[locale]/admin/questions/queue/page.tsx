@@ -76,6 +76,7 @@ export default async function QaQueuePage({
     "IN_REVIEW",
     "NEEDS_EDIT",
     "ANSWERED",
+    "PUBLISHED",
     "REJECTED",
     "ARCHIVED",
   ];
