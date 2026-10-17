@@ -172,6 +172,9 @@ export function QuestionReviewEditor({
   // Unpublish
   const [unpublishNote, setUnpublishNote] = useState("");
 
+  // Note for transitions that require a reason (REJECTED, NEEDS_EDIT)
+  const [transitionNote, setTransitionNote] = useState("");
+
   // Per-section notices
   const [draftNotice, setDraftNotice] = useState<NoticeState>(null);
   const [answerNotice, setAnswerNotice] = useState<NoticeState>(null);
@@ -237,23 +240,38 @@ export function QuestionReviewEditor({
     });
   }
 
+  const noteRequiredStates = ["REJECTED", "NEEDS_EDIT"];
+
   function transitionState(newState: string) {
     setStateNotice(null);
+    // DB requires a non-empty note for REJECTED and NEEDS_EDIT
+    if (noteRequiredStates.includes(newState) && !transitionNote.trim()) {
+      setStateNotice({ ok: false, text: copy.noteRequired });
+      return;
+    }
     startTransition(async () => {
       const result = await setQuestionStateAction(
         workspace.rawQuestionId,
         newState,
-        null
+        noteRequiredStates.includes(newState) ? transitionNote.trim() : null
       );
       if (result.ok) {
         setState(newState as typeof state);
+        setTransitionNote("");
         setStateNotice({ ok: true, text: copy.actionSuccess });
         router.refresh();
       } else {
+        const err = result.error as string;
         setStateNotice({
           ok: false,
           text:
-            result.error === "forbidden" ? copy.forbidden : copy.actionFailed,
+            err === "forbidden"
+              ? copy.forbidden
+              : err === "invalid_transition" || err === "invalid_state"
+              ? copy.invalidTransition
+              : err === "note_required"
+              ? copy.noteRequired
+              : copy.actionFailed,
         });
       }
     });
@@ -761,6 +779,31 @@ export function QuestionReviewEditor({
                 )}
               </div>
               {assignNotice && <Notice ok={assignNotice.ok} text={assignNotice.text} />}
+            </div>
+          )}
+
+          {/* Note for transitions that require a reason */}
+          {canDisposition && !isTerminal && !isPublished && (
+            <div className="mt-4">
+              <label
+                htmlFor="qa-transition-note"
+                className="mb-1 block text-xs font-semibold text-ink-soft"
+              >
+                {copy.rejectReasonLabel}{" "}
+                <span className="font-normal text-ink-muted">
+                  {copy.rejectReasonOptional}
+                </span>
+              </label>
+              <input
+                id="qa-transition-note"
+                type="text"
+                value={transitionNote}
+                onChange={(e) => setTransitionNote(e.target.value)}
+                placeholder="e.g. duplicate, off-topic…"
+                maxLength={500}
+                disabled={pending}
+                className="h-8 w-full rounded-md border border-line bg-canvas px-2 text-xs text-ink placeholder-ink-muted focus:outline-none focus:ring-2 focus:ring-brand-600 disabled:opacity-50"
+              />
             </div>
           )}
 

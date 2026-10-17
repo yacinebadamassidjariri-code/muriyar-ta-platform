@@ -146,6 +146,8 @@ const en = {
   // Shared
   actionSuccess: "Action completed.",
   actionFailed: "Something went wrong. Try again or contact an administrator.",
+  invalidTransition: "This state change is not allowed at this stage of the workflow.",
+  noteRequired: "A reason note is required for this action.",
   forbidden: "You do not have permission to perform this action.",
   notFound: "This question could not be found.",
   backToQueue: "Back to queue",
@@ -315,6 +317,8 @@ const fr: typeof en = {
   // Shared
   actionSuccess: "Action effectuée.",
   actionFailed: "Une erreur s'est produite. Réessayez ou contactez un administrateur.",
+  invalidTransition: "Ce changement d'état n'est pas autorisé à cette étape du flux de travail.",
+  noteRequired: "Une note de raison est requise pour cette action.",
   forbidden: "Vous n'avez pas l'autorisation d'effectuer cette action.",
   notFound: "Cette question est introuvable.",
   backToQueue: "Retour à la file",

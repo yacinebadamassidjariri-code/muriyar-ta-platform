@@ -65,7 +65,7 @@ export async function setQuestionStateAction(
   const { data, error } = await auth.value.supabase.rpc("question_set_state", {
     p_raw_question_id: rawQuestionId,
     p_new_state: newState,
-    p_reason_code: reasonCode ?? null,
+    p_note: reasonCode ?? null,
   });
   if (error) return { ok: false, error: dbError(error.message), requestId: auth.value.requestId };
   refreshQuestion(rawQuestionId);
