@@ -443,7 +443,7 @@ export function QuestionReviewEditor({
     "w-full rounded-lg border border-line bg-canvas px-3 py-2 text-sm text-ink placeholder-ink-muted focus:outline-none focus:ring-2 focus:ring-brand-600 disabled:opacity-50";
   const labelCls = "mb-1 block text-sm font-semibold text-ink-soft";
   const primaryBtn =
-    "rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50";
+    "rounded-lg bg-mt-slate px-4 py-2 text-sm font-semibold text-white hover:bg-mt-slate-deep disabled:opacity-50";
   const secondaryBtn =
     "rounded-lg border border-line bg-surface px-4 py-2 text-sm font-semibold text-ink hover:bg-surface-raised disabled:opacity-50";
   const dangerBtn =
