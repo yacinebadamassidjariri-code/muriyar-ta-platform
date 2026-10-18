@@ -175,6 +175,14 @@ export function QuestionReviewEditor({
   );
   const [editNote, setEditNote] = useState("");
 
+  // When the workspace refreshes (e.g. immediately after publishing or after
+  // a successful update), re-populate the edit fields from the server-confirmed
+  // published content so the editor always reflects what's in the database.
+  useEffect(() => {
+    setEditDisplay(workspace.publishedContent?.questionDisplay ?? "");
+    setEditAnswer(workspace.publishedContent?.answerText ?? "");
+  }, [workspace.publishedContent?.questionDisplay, workspace.publishedContent?.answerText]);
+
   // Unpublish
   const [unpublishNote, setUnpublishNote] = useState("");
 
