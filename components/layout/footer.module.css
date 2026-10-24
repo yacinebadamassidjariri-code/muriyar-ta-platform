@@ -32,8 +32,11 @@
 }
 
 .brandMark {
-  width: 2rem;
+  /* Sized to match the header-lockup natural aspect ratio (365×88 ≈ 4.15:1).
+     width: auto lets the browser derive it from the intrinsic ratio at height 2rem. */
   height: 2rem;
+  width: auto;
+  max-width: 8.5rem;
   flex-shrink: 0;
 }
 

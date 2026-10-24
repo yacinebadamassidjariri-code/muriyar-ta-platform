@@ -33,10 +33,10 @@ export function Footer() {
         <div className={styles.brandCol}>
           <Link href="/" className={styles.brand}>
             <Image
-              src="/muriyar-ta-logo.png"
+              src="/brand/muriyar-ta-header-lockup.png"
               alt="Muriyar Ta"
               height={32}
-              width={128}
+              width={133}
               className={styles.brandMark}
               style={{ objectFit: "contain", objectPosition: "left center", filter: "brightness(0) invert(1)" }}
             />
