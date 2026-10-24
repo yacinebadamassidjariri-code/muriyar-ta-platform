@@ -935,7 +935,10 @@
       "too_long": "Your question is too long. Please keep it under 800 characters.",
       "consent_required": "Please confirm you have read and agree to the terms above.",
       "rate_limited": "You've sent several questions recently. Please wait a little before sending another.",
-      "submit_failed": "Something went wrong. Please try again."
+      "submit_failed": "Something went wrong. Please try again.",
+      "verification_failed": "Please complete the verification above before submitting.",
+      "verification_expired": "The verification has expired. Please try again.",
+      "verification_error": "Verification could not be completed. Please try again."
     },
     "browse": {
       "meta": {

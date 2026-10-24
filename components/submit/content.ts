@@ -50,6 +50,9 @@ const en: SubmitCopy = {
     country_long: "Country must be 100 characters or fewer.", region_long: "Region, state, or province must be 100 characters or fewer.",
     age_invalid: "Please enter a valid age, or leave this blank.",
     consent_required: "Please confirm consent to continue.", submit_failed: "Something went wrong. Please try again.",
+    verification_failed: "Please complete the verification above before submitting.",
+    verification_expired: "The verification has expired. Please try again.",
+    verification_error: "Verification could not be completed. Please try again.",
   },
   success: {
     eyebrow: "Story received", title: "Thank you for sharing.",
@@ -90,6 +93,9 @@ const fr: SubmitCopy = {
     country_long: "Le pays doit comporter 100 caractères maximum.", region_long: "La région, l’État ou la province doit comporter 100 caractères maximum.",
     age_invalid: "Veuillez indiquer un âge valide ou laisser ce champ vide.",
     consent_required: "Veuillez confirmer votre consentement pour continuer.", submit_failed: "Une erreur s'est produite. Veuillez réessayer.",
+    verification_failed: "Merci de compléter la vérification ci-dessus avant de soumettre.",
+    verification_expired: "La vérification a expiré. Merci de réessayer.",
+    verification_error: "La vérification n'a pas pu être effectuée. Merci de réessayer.",
   },
   success: {
     eyebrow: "Récit reçu", title: "Merci pour votre partage.",

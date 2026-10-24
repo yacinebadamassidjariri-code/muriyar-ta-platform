@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { validateSubmission, type SubmissionErrors } from "@/lib/validation/submission";
 import { recordEvent } from "@/lib/actions/record-event";
+import { verifyTurnstileToken } from "@/lib/actions/verify-turnstile";
 
 export type SubmitState = {
   status: "idle" | "success" | "error";
@@ -18,6 +19,26 @@ export async function submitStory(
   _prev: SubmitState,
   formData: FormData,
 ): Promise<SubmitState> {
+  // ── Honeypot check ────────────────────────────────────────────────────────
+  // Bots that fill all fields including the hidden honeypot are rejected
+  // immediately. We do not log its value (it may contain injected content).
+  const honeypot = formData.get("_hp_email");
+  if (honeypot !== null && String(honeypot).length > 0) {
+    // Return success to avoid revealing the check to bots.
+    return { status: "success" };
+  }
+
+  // ── Turnstile verification ────────────────────────────────────────────────
+  // Token must be verified before input validation or any DB call so that
+  // bots cannot brute-force input validation paths.
+  const turnstileToken = formData.get("cf-turnstile-response");
+  const turnstileResult = await verifyTurnstileToken(
+    turnstileToken ? String(turnstileToken) : null,
+  );
+  if (!turnstileResult.ok) {
+    return { status: "error", errors: { form: turnstileResult.code } };
+  }
+
   const input = {
     language: String(formData.get("language") ?? ""),
     story: String(formData.get("story") ?? ""),

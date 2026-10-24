@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useState, useRef, useCallback } from "react";
 import { LifeBuoy } from "lucide-react";
 import { submitStory, type SubmitState } from "@/lib/actions/submit-story";
 import { AGE_MIN, AGE_MAX, GEOGRAPHIC_CONTEXT_MAX, STORY_MIN, STORY_MAX } from "@/lib/validation/submission";
@@ -8,16 +8,37 @@ import { locales, localeLabels } from "@/lib/i18n/routing";
 import type { SubmitCopy } from "@/components/submit/content";
 import { Link } from "@/lib/i18n/navigation";
 import { useSubmissionStart } from "@/lib/hooks/use-submission-start";
+import { TurnstileWidget } from "@/components/turnstile/turnstile-widget";
 import styles from "@/components/submit/submit.module.css";
 
 const initialState: SubmitState = { status: "idle" };
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
 
 export function StoryForm({ copy, locale }: { copy: SubmitCopy; locale: string }) {
   const [state, formAction, isPending] = useActionState(submitStory, initialState);
   const [count, setCount] = useState(0);
   const [consent, setConsent] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileError, setTurnstileError] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
   const err = (key: string | undefined) => key ? copy.errors[key] ?? key : undefined;
   const onStoryStart = useSubmissionStart(locale);
+
+  const handleTurnstileToken = useCallback((token: string) => {
+    setTurnstileToken(token);
+    setTurnstileError(false);
+  }, []);
+
+  const handleTurnstileError = useCallback(() => {
+    setTurnstileToken(null);
+    setTurnstileError(true);
+  }, []);
+
+  const handleTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null);
+    setTurnstileError(false);
+  }, []);
 
   if (state.status === "success") {
     return (
@@ -123,10 +144,41 @@ export function StoryForm({ copy, locale }: { copy: SubmitCopy; locale: string }
         </div>
       </section>
 
+      {/* ── Honeypot field (hidden from real users, filled by bots) ─────────── */}
+      {/* aria-hidden prevents screen readers from announcing it. tabIndex=-1  */}
+      {/* keeps it out of the tab order. position:absolute / left:-9999px      */}
+      {/* moves it off-screen so it is invisible without display:none (which   */}
+      {/* some bots skip). autoComplete="off" prevents browsers from filling   */}
+      {/* it on behalf of real users.                                          */}
+      <input
+        type="text"
+        name="_hp_email"
+        aria-hidden="true"
+        tabIndex={-1}
+        autoComplete="off"
+        className={styles.honeypot}
+      />
+
+      {/* Hidden input carries the Turnstile token into the FormData */}
+      <input type="hidden" name="cf-turnstile-response" value={turnstileToken ?? ""} />
+
       {state.errors?.form ? <p role="alert" className={styles.formError}>{err(state.errors.form)}</p> : null}
 
       <div className={styles.actions}>
-        <button type="submit" disabled={isPending || !consent || count < STORY_MIN}>
+        <TurnstileWidget
+          siteKey={TURNSTILE_SITE_KEY}
+          onToken={handleTurnstileToken}
+          onError={handleTurnstileError}
+          onExpire={handleTurnstileExpire}
+          locale={locale}
+          className={styles.turnstile}
+        />
+        {turnstileError && (
+          <p role="alert" className={styles.formError}>
+            {err("verification_error")}
+          </p>
+        )}
+        <button type="submit" disabled={isPending || !consent || count < STORY_MIN || !turnstileToken}>
           {isPending ? copy.form.submitting : copy.form.submit}
         </button>
         <p className={styles.safety}>

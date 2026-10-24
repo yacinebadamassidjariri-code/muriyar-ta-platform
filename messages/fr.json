@@ -935,7 +935,10 @@
       "too_long": "Ta question est trop longue. Merci de la limiter à 800 caractères.",
       "consent_required": "Merci de confirmer que tu as lu et accepté les conditions ci-dessus.",
       "rate_limited": "Tu as envoyé plusieurs questions récemment. Merci d'attendre un peu avant d'en envoyer une autre.",
-      "submit_failed": "Une erreur s'est produite. Merci de réessayer."
+      "submit_failed": "Une erreur s'est produite. Merci de réessayer.",
+      "verification_failed": "Merci de compléter la vérification ci-dessus avant de soumettre.",
+      "verification_expired": "La vérification a expiré. Merci de réessayer.",
+      "verification_error": "La vérification n’a pas pu être effectuée. Merci de réessayer."
     },
     "browse": {
       "meta": {

@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { verifyTurnstileToken } from "@/lib/actions/verify-turnstile";
 
 const QUESTION_MIN = 50;
 const QUESTION_MAX = 800;
@@ -23,6 +24,22 @@ export async function submitQuestion(
   _prev: QuestionSubmitState,
   formData: FormData,
 ): Promise<QuestionSubmitState> {
+  // ── Honeypot check ────────────────────────────────────────────────────────
+  const honeypot = formData.get("_hp_email");
+  if (honeypot !== null && String(honeypot).length > 0) {
+    // Silent success — do not reveal the check to bots.
+    return { status: "success" };
+  }
+
+  // ── Turnstile verification ────────────────────────────────────────────────
+  const turnstileToken = formData.get("cf-turnstile-response");
+  const turnstileResult = await verifyTurnstileToken(
+    turnstileToken ? String(turnstileToken) : null,
+  );
+  if (!turnstileResult.ok) {
+    return { status: "error", errors: { form: turnstileResult.code } };
+  }
+
   const question = String(formData.get("question") ?? "").trim();
   const languageCode = String(formData.get("language") ?? "en");
   const topicId = formData.get("topic_id");

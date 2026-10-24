@@ -933,7 +933,10 @@
       "too_long": "Tambayarki ta yi tsayi. Don Allah iyakance ta zuwa haruffa 800.",
       "consent_required": "Don Allah tabbatar da cewa ka karanta kuma ka yarda da sharuɗɗa da ke sama.",
       "rate_limited": "Kun aika da tambayoyi da yawa kwanan nan. Don Allah jira kaɗan kafin aika wani.",
-      "submit_failed": "Wani abu ya ɓaci. Don Allah sake gwadawa."
+      "submit_failed": "Wani abu ya ɓaci. Don Allah sake gwadawa.",
+      "verification_failed": "Don Allah kammala tantancewa sama kafin aika.",
+      "verification_expired": "Tantancewa ya ƙare. Don Allah sake gwadawa.",
+      "verification_error": "Ba a iya kammala tantancewa ba. Don Allah sake gwadawa."
     },
     "browse": {
       "meta": {

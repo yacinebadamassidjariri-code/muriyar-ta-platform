@@ -374,6 +374,20 @@
   color: var(--mt-terracotta);
 }
 
+/* ── Honeypot + Turnstile ────────────────────────────────── */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.turnstile {
+  margin-bottom: 1.25rem;
+}
+
 /* ── Form error ──────────────────────────────────────────── */
 .fieldError {
   margin: 0.5rem 0 0;

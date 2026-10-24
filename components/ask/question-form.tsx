@@ -1,17 +1,20 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState, useCallback } from "react";
 import { ShieldCheck } from "lucide-react";
 import { submitQuestion, type QuestionSubmitState } from "@/lib/actions/submit-question";
 import { locales, localeLabels } from "@/lib/i18n/routing";
 import { Link } from "@/lib/i18n/navigation";
 import type { QaTopic } from "@/lib/data/qa";
+import { TurnstileWidget } from "@/components/turnstile/turnstile-widget";
 import styles from "@/components/ask/ask.module.css";
 
 const QUESTION_MIN = 50;
 const QUESTION_MAX = 800;
 
 const initialState: QuestionSubmitState = { status: "idle" };
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
 
 type Props = {
   topics: QaTopic[];
@@ -44,9 +47,26 @@ type Props = {
 
 export function QuestionForm({ topics, locale, copy }: Props) {
   const [state, formAction, isPending] = useActionState(submitQuestion, initialState);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileError, setTurnstileError] = useState(false);
 
   const err = (key: string | undefined) =>
     key ? copy.errors[key] ?? key : undefined;
+
+  const handleTurnstileToken = useCallback((token: string) => {
+    setTurnstileToken(token);
+    setTurnstileError(false);
+  }, []);
+
+  const handleTurnstileError = useCallback(() => {
+    setTurnstileToken(null);
+    setTurnstileError(true);
+  }, []);
+
+  const handleTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null);
+    setTurnstileError(false);
+  }, []);
 
   if (state.status === "success") {
     return (
@@ -147,12 +167,38 @@ export function QuestionForm({ topics, locale, copy }: Props) {
         </p>
       </section>
 
+      {/* ── Honeypot (hidden from real users, filled by bots) ─────────────── */}
+      <input
+        type="text"
+        name="_hp_email"
+        aria-hidden="true"
+        tabIndex={-1}
+        autoComplete="off"
+        className={styles.honeypot}
+      />
+
+      {/* Hidden input carries the Turnstile token into the FormData */}
+      <input type="hidden" name="cf-turnstile-response" value={turnstileToken ?? ""} />
+
       {state.errors?.form ? (
         <p className={styles.formError}>{err(state.errors.form)}</p>
       ) : null}
 
       <div className={styles.actions}>
-        <button type="submit" disabled={isPending}>
+        <TurnstileWidget
+          siteKey={TURNSTILE_SITE_KEY}
+          onToken={handleTurnstileToken}
+          onError={handleTurnstileError}
+          onExpire={handleTurnstileExpire}
+          locale={locale}
+          className={styles.turnstile}
+        />
+        {turnstileError && (
+          <p role="alert" className={styles.formError}>
+            {err("verification_error")}
+          </p>
+        )}
+        <button type="submit" disabled={isPending || !turnstileToken}>
           {isPending ? copy.form.submitting : copy.form.submitButton}
         </button>
       </div>
