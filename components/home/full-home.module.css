@@ -237,23 +237,13 @@
 }
 
 .heroInner {
-  display: grid;
-  gap: 3rem;
   width: min(100%, var(--mt-content-wide));
   margin-inline: auto;
-  padding: clamp(4.5rem, 10vh, 7rem) var(--mt-gutter);
-}
-
-@media (min-width: 64rem) {
-  .heroInner {
-    grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.75fr);
-    align-items: end;
-    gap: 4rem;
-  }
+  padding: clamp(5rem, 12vh, 8rem) var(--mt-gutter);
 }
 
 .heroCopy {
-  max-width: 44rem;
+  max-width: 52rem;
 }
 
 .heroEyebrow {
@@ -300,66 +290,6 @@
   width: 1.05rem;
   height: 1.05rem;
   color: var(--sand);
-}
-
-.quoteCard {
-  position: relative;
-  margin: 0;
-  padding: 1.75rem 1.75rem 1.5rem;
-  border: 1px solid rgb(200 168 122 / 0.35);
-  border-radius: 1.25rem;
-  background: rgb(250 247 240 / 0.95);
-  color: var(--charcoal);
-  box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.6);
-}
-
-.quoteLabel {
-  color: var(--terra);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.quoteText {
-  margin: 0.9rem 0 0;
-  font-family: var(--display);
-  font-size: 1.2rem;
-  font-style: italic;
-  line-height: 1.5;
-}
-
-.quoteLink {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  margin-top: 1.25rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--line);
-  color: var(--charcoal);
-  text-decoration: none;
-}
-
-.quoteTitle {
-  font-weight: 700;
-}
-
-.quoteCta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  color: var(--terra);
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.quoteCta svg {
-  width: 0.95rem;
-  height: 0.95rem;
-}
-
-.quoteLink:hover .quoteCta {
-  color: var(--terra-h);
 }
 
 /* ── 2. What is Muriyar Ta ───────────────────────────────── */

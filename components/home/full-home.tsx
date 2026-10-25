@@ -67,8 +67,6 @@ export async function FullHome({ locale }: { locale: Locale }) {
   const submitBullets = asArray<string>(t.raw("submitInvite.bullets"));
   const principles = asArray<string>(t.raw("insights.principles"));
 
-  // Hero quote: a short excerpt from the newest real published story.
-  const quoteStory = stories[0] ?? null;
   const [featured, ...moreStories] = stories;
 
   return (
@@ -112,30 +110,6 @@ export async function FullHome({ locale }: { locale: Locale }) {
             </p>
           </div>
 
-          {quoteStory ? (
-            <figure className={styles.quoteCard}>
-              <figcaption className={styles.quoteLabel}>
-                {t("hero.quoteLabel")} · {languageName(quoteStory.language_code)}
-              </figcaption>
-              <blockquote
-                className={styles.quoteText}
-                lang={quoteStory.language_code}
-              >
-                “{deriveExcerpt(quoteStory.body_text, 150)}”
-              </blockquote>
-              <Link
-                href={`/stories/${quoteStory.slug}`}
-                className={styles.quoteLink}
-              >
-                <span className={styles.quoteTitle} lang={quoteStory.language_code}>
-                  {quoteStory.title}
-                </span>
-                <span className={styles.quoteCta}>
-                  {t("hero.quoteCta")} <ArrowRight aria-hidden="true" />
-                </span>
-              </Link>
-            </figure>
-          ) : null}
         </div>
       </section>
 
