@@ -16,6 +16,7 @@
 | 3 | `20261103000000_brief_consent_gate.sql` | **NEW — Phase 3B** |
 | 4 | `20261104000000_financial_integrity.sql` | **NEW — Phase 3B** |
 | 5 | `20261105000000_mfa_rpc_hardening.sql` | **NEW — Phase 3B** |
+| 6 | `20261106000000_research_consent_withdrawals.sql` | **NEW — Phase 3B (closes A15)** |
 
 ---
 
@@ -38,8 +39,14 @@
 | A11 | Consent withdrawal propagates to all linked briefs | `propagate_consent_withdrawal()` RPC sets INELIGIBLE + `consent_withdrawn_at` | ✅ IMPLEMENTED |
 | A12 | Admin UI pre-flight check available | `check_brief_consent_status()` returns per-link JSON breakdown | ✅ IMPLEMENTED |
 | A13 | Requires AAL2 + `insight.brief.publish` permission | `require_aal2()` + `has_permission()` in `brief_transition()` | ✅ IMPLEMENTED |
-| A14 | **Staging test results** | See staging test plan §1 | ⬜ NOT TESTED |
-| A15 | **CRITICAL GAP: consent gate reads mutable metadata, not authoritative source** | `assert_brief_consent_cleared()` reads `brief_evidence_links` (staff-editable); must join `raw_submissions.research_consent_given` (immutable) and a new `research_consent_withdrawals` table. Migration 20261106 pending approval. | ⚠️ IMPLEMENTED BUT INCOMPLETE — see below |
+| A14 | **Staging test results** | See staging test plan §1, §7 | ⬜ NOT TESTED |
+| A15 | Consent gate joins authoritative sources (not mutable metadata) | `assert_brief_consent_cleared()` rewritten in 20261106: Layer 1 joins `raw_submissions.research_consent_given` (immutable); Layer 2 checks `research_consent_withdrawals` ledger (immutable); Layer 3 checks `brief_evidence_links` quality metadata. Staff-editable fields cannot override Layers 1 or 2. | ✅ IMPLEMENTED (migration 20261106) |
+| A16 | Withdrawal records are immutable | `enforce_withdrawal_immutability` trigger on `research_consent_withdrawals` raises SQLSTATE 42501 on any UPDATE or DELETE | ✅ IMPLEMENTED (migration 20261106) |
+| A17 | Withdrawal recorded via controlled audited function only | `record_consent_withdrawal()` SECURITY DEFINER RPC — only path to INSERT; direct INSERT revoked from all application roles; `record_consent_withdrawal()` requires AAL2 + `insight.evidence.review` | ✅ IMPLEMENTED (migration 20261106) |
+| A18 | Safeguarding flag set on APPROVED/PUBLISHED briefs when withdrawal occurs | `record_consent_withdrawal()` sets `safeguarding_review_required = true` with reason text on affected briefs; flag blocks all publish/approve transitions | ✅ IMPLEMENTED (migration 20261106) |
+| A19 | Safeguarding flag cleared only by authorized reviewer with documented notes | `clear_safeguarding_review_flag()` requires AAL2 + `insight.brief.publish` + non-empty review notes; audited | ✅ IMPLEMENTED (migration 20261106) |
+| A20 | Evidence link removal does not automatically clear a brief for release | Removing a link does not clear `safeguarding_review_required`; flag must be cleared separately via documented content review | ✅ IMPLEMENTED (by design — flag lives on `institutional_briefs`, not on the link) |
+| A21 | No staff-created reconsent path exists | `research_consent_withdrawals` has no DELETE; staff cannot clear a withdrawal. New consent requires a new `raw_submissions` row from the contributor's own submission (via `submit_story()`). | ✅ IMPLEMENTED (migration 20261106) |
 
 ---
 
@@ -137,65 +144,30 @@
 
 ---
 
-### G. Critical Architectural Gap — Consent Gate Authority (Requires Approval Before Production Deploy)
+### G. Consent Gate Authority — RESOLVED by Migration 20261106
 
-The consent gate implemented in migration 20261103 enforces withdrawal by checking `brief_evidence_links.consent_withdrawn_at`. **This field is staff-editable metadata**, not an immutable contributor record. A staff member with `insight.evidence.review` permission can clear `consent_withdrawn_at` on an evidence link and re-set `eligibility = 'ELIGIBLE'`, `consent_active_at_review = true`, `research_consent_verified_at = now()` — bypassing the withdrawal entirely.
+The gap identified in section A15 has been closed. Migration `20261106000000_research_consent_withdrawals.sql` implements the approved Option A architecture.
 
-The user's requirement is explicit: *"A withdrawal must remain effective unless the contributor independently provides new, valid research consent. Staff must not be able to override it."*
+#### What changed
 
-#### What the authoritative sources are
+| Component | Before (20261103) | After (20261106) |
+|-----------|-------------------|------------------|
+| Withdrawal authority | `brief_evidence_links.consent_withdrawn_at` (staff-editable) | `research_consent_withdrawals` ledger (append-only, immutable) |
+| Original consent authority | Not checked | `raw_submissions.research_consent_given` (immutable, joined in Layer 1) |
+| `assert_brief_consent_cleared()` | Read mutable evidence link metadata only | Layer 1 (raw_submissions) + Layer 2 (withdrawal ledger) + Layer 3 (review quality) |
+| Staff bypass possible | Yes — clear `consent_withdrawn_at`, set `eligibility = 'ELIGIBLE'` | No — layers 1 and 2 cannot be altered by staff; trigger enforces immutability |
+| Post-publication withdrawal handling | None | `safeguarding_review_required` flag on brief; blocks all transitions until cleared by authorized reviewer with documented notes |
+| Withdrawal entry point | `propagate_consent_withdrawal()` (mutable side-effect) | `record_consent_withdrawal()` SECURITY DEFINER RPC (controlled, audited, append-only) |
 
-| Record | Table | Mutable? | Notes |
-|--------|-------|----------|-------|
-| Original research consent | `raw_submissions.research_consent_given` | **No** — protected by `protect_raw_submission_original()` trigger (SQLSTATE 42501 on any change) | Set at submission time; `true` = contributor gave consent |
-| Post-submission withdrawal | *No dedicated table exists yet* | N/A | Currently only `brief_evidence_links.consent_withdrawn_at` (mutable) |
+#### Authoritative sources (post-20261106)
 
-#### Proposed fix (migration 20261106) — pending your approval
+| Record | Table | Mutable? |
+|--------|-------|----------|
+| Original research consent | `raw_submissions.research_consent_given` | **No** — `protect_raw_submission_original()` trigger |
+| Post-submission withdrawal | `research_consent_withdrawals` | **No** — `enforce_withdrawal_immutability` trigger + no application-role DELETE |
+| Review quality metadata | `brief_evidence_links` | Yes (staff-managed) — Layer 3 only; cannot override Layers 1 or 2 |
 
-**Option A — Recommended: add a `research_consent_withdrawals` table**
-
-Create an immutable append-only table:
-```sql
-create table public.research_consent_withdrawals (
-  withdrawal_id uuid primary key default gen_random_uuid(),
-  submission_id uuid not null references public.raw_submissions(submission_id),
-  withdrawn_at timestamptz not null default now(),
-  withdrawn_by uuid references auth.users(id),  -- who processed it (staff on behalf of contributor)
-  reason text,
-  created_at timestamptz not null default now()
-);
--- No UPDATE or DELETE granted to anyone — append-only
-revoke update, delete on public.research_consent_withdrawals from authenticated;
-```
-
-Then `assert_brief_consent_cleared()` joins this table AND checks `raw_submissions.research_consent_given`:
-```sql
--- Block if: original consent was never given
-if not rs.research_consent_given then
-  -- contributor never consented; this evidence link should never have been included
-  raise exception 'consent_gate_failed' ...;
-end if;
-
--- Block if: a withdrawal record exists
-if exists (
-  select 1 from public.research_consent_withdrawals w
-  where w.submission_id = link.submission_id
-) then
-  raise exception 'consent_gate_failed' ...;
-end if;
-```
-
-Re-enabling a brief after a withdrawal would require **deleting the withdrawal record** — which staff cannot do (no DELETE grant). Only a new `raw_submissions` row with `research_consent_given = true` from the contributor themselves could satisfy the gate for new evidence.
-
-**Option B — Minimal: make withdrawal_at non-clearable via DB constraint**
-
-Add a `BEFORE UPDATE` trigger on `brief_evidence_links` that raises an error if `consent_withdrawn_at` is being set from non-null to null. This is simpler but does not address the `research_consent_given` check or provide an audit trail of withdrawals.
-
-#### Recommendation
-
-Option A is the correct approach for data that governs participant consent. Option B is a partial mitigation that could be applied immediately while Option A is planned.
-
-**Action required**: Approve Option A or Option B before production deployment. Without this fix, the consent gate does not meet the stated requirement that "staff must not be able to override" a withdrawal.
+**Status**: IMPLEMENTED — pending staging rehearsal and explicit production authorization.
 
 ---
 
@@ -203,17 +175,17 @@ Option A is the correct approach for data that governs participant consent. Opti
 
 | Area | Implementation | Staging Tests | Build |
 |------|---------------|---------------|-------|
-| A. Consent gate | ⚠️ Implemented but has critical gap (A15) | ⬜ Not tested | N/A |
-| B. Financial integrity | ✅ Complete | ⬜ Not tested | N/A |
-| C. MFA enforcement | ✅ Complete | ⬜ Not tested | N/A |
-| D. Printable invoice | ✅ Complete — relabelled from "PDF" to "Print / Save as PDF" | ⬜ Not tested | N/A |
+| A. Consent gate | ✅ Complete — 3-layer check (raw_submissions + withdrawal ledger + review quality) | ⬜ Not tested (§1, §7) | N/A |
+| B. Financial integrity | ✅ Complete | ⬜ Not tested (§2) | N/A |
+| C. MFA enforcement | ✅ Complete | ⬜ Not tested (§3) | N/A |
+| D. Printable invoice | ✅ Complete — relabelled from "PDF" to "Print / Save as PDF" | ⬜ Not tested (§4) | N/A |
 | E. Build verification | ⚠️ Blocked (DNS in cloud container) | N/A | ⬜ Pending local run |
 | F. Security constraints | ✅ All preserved | ✅ Verified by static analysis | N/A |
-| G. Consent architecture gap | 🔴 **BLOCKS PRODUCTION** — awaiting approval for migration 20261106 | N/A | N/A |
+| G. Consent architecture | ✅ RESOLVED — migration 20261106 implemented | ⬜ Not tested (§7) | N/A |
 
 **Gate criteria for production deploy — all must be met:**
-1. ⬜ **Approve consent architecture fix** (Option A or B in section G above) and implement migration 20261106
-2. ⬜ All staging test scenarios pass (§1–§6 of staging test plan, including revised §6.2)
+1. ✅ Consent architecture fix implemented (migration 20261106)
+2. ⬜ All staging test scenarios pass (§1–§7 of staging test plan)
 3. ⬜ `npm install && npx tsc --noEmit && npm run build` exits 0 (run locally)
 4. ⬜ Explicit production deploy authorization from project owner
 5. ⬜ Migrations applied to production in the correct order (20261101→20261102→20261103→20261104→20261105→20261106)

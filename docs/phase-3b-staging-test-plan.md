@@ -22,6 +22,7 @@ Expected rows (in order):
 - `20261103000000` — brief_consent_gate
 - `20261104000000` — financial_integrity
 - `20261105000000` — mfa_rpc_hardening
+- `20261106000000` — research_consent_withdrawals
 
 If any row is missing or out of order, stop and re-apply.
 
@@ -53,9 +54,9 @@ If any row is missing or out of order, stop and re-apply.
 
 ### 1.3 Negative: approve blocked by withdrawn consent
 
-1. Evidence link with `consent_withdrawn_at = now() - interval '1 day'`.
+1. Evidence link where the submission has a row in `research_consent_withdrawals`.
 2. Call `brief_transition(id, 'approve')`.
-3. **Expected**: exception `consent_gate_failed`.
+3. **Expected**: exception `consent_gate_failed` — gate blocks on the ledger record, not on `brief_evidence_links.consent_withdrawn_at`.
 
 ### 1.4 Negative: approve blocked by ineligible evidence
 
@@ -80,17 +81,21 @@ If any row is missing or out of order, stop and re-apply.
 ### 1.7 Consent withdrawal propagation
 
 1. Evidence link is ELIGIBLE, brief is APPROVED.
-2. Call `propagate_consent_withdrawal(submission_id)` (requires `insight.evidence.review` permission + AAL2).
-3. **Expected**: link `eligibility` → `INELIGIBLE`, `consent_withdrawn_at` set, audit event recorded.
+2. Call `record_consent_withdrawal(submission_id, 'contributor_requested')` (requires `insight.evidence.review` permission + AAL2).
+3. **Expected**:
+   - Row inserted in `research_consent_withdrawals` for this submission.
+   - Link `eligibility` → `INELIGIBLE`, `consent_withdrawn_at` set (informational only).
+   - Audit event `insight.evidence.consent_withdrawn` recorded with no personal data in payload.
+   - Brief (currently APPROVED) gains `safeguarding_review_required = true`.
 4. Attempt `brief_transition(brief_id, 'publish')`.
-5. **Expected**: fails with `consent_gate_failed`.
+5. **Expected**: fails with `consent_gate_failed` (safeguarding flag blocks it).
 
 ### 1.8 `check_brief_consent_status()` JSON response
 
 1. Call `check_brief_consent_status(brief_id)` with a mix of passing and failing links.
-2. **Expected**: `cleared = false`, `blocked_links > 0`, `issues` array contains per-link breakdown.
-3. Call with a fully-cleared brief.
-4. **Expected**: `cleared = true`, `blocked_links = 0`.
+2. **Expected**: `cleared = false`, `blocked_links > 0`, `issues` array contains per-link breakdown including `ledger_withdrawal_at` and `no_original_research_consent` fields where applicable.
+3. Call with a fully-cleared brief (no withdrawal, no safeguarding flag, all layer-3 checks pass).
+4. **Expected**: `cleared = true`, `blocked_links = 0`, `safeguarding_review_required = false`.
 
 ---
 
@@ -285,19 +290,113 @@ select count(*) from public.brief_evidence_links;         -- must fail or return
 7. Record final payment [MFA]
 8. Download invoice PDF — confirm PAID status shown, correct balance ($0.00)
 
-### 6.2 Full brief lifecycle with consent
+### 6.2 Full brief lifecycle with consent (including withdrawal)
 
-1. Create brief (DRAFT)
-2. Add evidence link with all consent fields set (ELIGIBLE, reviewed, fresh)
-3. Submit for review
-4. Check consent status via `check_brief_consent_status()` → cleared: true
-5. Approve [MFA, `insight.brief.publish`]
-6. Withdraw consent for one submission via `propagate_consent_withdrawal()`
-7. Attempt re-publish → **must fail** (consent_gate_failed)
-8. **Verify withdrawal is permanent**: confirm that no staff action (clearing `consent_withdrawn_at`, setting `eligibility = 'ELIGIBLE'`, or updating `research_consent_verified_at`) can re-enable publication of this brief while the withdrawal record stands. **This is a security boundary — staff must not be able to override a contributor's withdrawal.**
-9. To re-enable publication, the affected evidence link must be removed from the brief, OR the contributor must independently provide new valid research consent (a new `raw_submissions` record with `research_consent_given = true`). Neither path may be taken by staff alone.
+1. Create brief (DRAFT).
+2. Add evidence link with all consent fields set (ELIGIBLE, reviewed, fresh, `research_consent_given = true` on the source submission).
+3. Submit for review.
+4. Check consent status via `check_brief_consent_status()` → `cleared: true`, `safeguarding_review_required: false`.
+5. Approve [MFA, `insight.brief.publish`].
+6. Call `record_consent_withdrawal(submission_id, 'contributor_requested')` [MFA, `insight.evidence.review`].
+7. **Expected**: row in `research_consent_withdrawals`; brief gains `safeguarding_review_required = true`.
+8. Attempt `brief_transition(brief_id, 'publish')` → **must fail** with `consent_gate_failed` (safeguarding flag active).
+9. **Verify withdrawal is permanent** (security boundary):
+   - Attempt to UPDATE `brief_evidence_links SET consent_withdrawn_at = NULL, eligibility = 'ELIGIBLE', consent_active_at_review = true` for the affected link.
+   - Call `brief_transition(brief_id, 'publish')` again.
+   - **Expected**: still fails. The gate reads `research_consent_withdrawals`, not `brief_evidence_links` metadata. Clearing the evidence link metadata has no effect on the withdrawal record.
+10. **Verify safeguarding flag blocks transition even after evidence link cleared**:
+    - DELETE the evidence link from the brief entirely.
+    - Call `brief_transition(brief_id, 'publish')`.
+    - **Expected**: fails with `consent_gate_failed` — safeguarding flag is still set. Removing the evidence link alone is not sufficient.
+11. **Unblock via documented content review**:
+    - Call `clear_safeguarding_review_flag(brief_id, 'Content reviewed by [name] on [date]. Confirmed brief no longer contains material derived from withdrawn submission. No redistribution of prior published versions claimed.')` [MFA, `insight.brief.publish`].
+    - **Expected**: `safeguarding_review_required` → false, review notes and reviewer recorded.
+12. Call `brief_transition(brief_id, 'publish')` — **must succeed** (no evidence links remain, no safeguarding flag, no withdrawal blocks).
+13. Verify audit log contains: `insight.evidence.consent_withdrawn`, `insight.brief.safeguarding_review_cleared`, `insight.brief.publish`.
 
-> **Note on step 8**: the current implementation (migration 20261103) enforces withdrawal only through `brief_evidence_links.consent_withdrawn_at`, which is staff-editable metadata. A separate migration (20261106) is pending architectural approval to make withdrawals immutable via a `research_consent_withdrawals` table and to make the consent gate join directly to `raw_submissions`. Until that migration is applied, step 8 above is aspirational for the immutability guarantee. See the deployment readiness report section A15.
+---
+
+---
+
+## 7. Migration 20261106 — Immutable Consent Withdrawal Ledger
+
+### 7.1 Staff cannot clear or delete a withdrawal record
+
+```sql
+-- Attempt UPDATE (must fail with consent_withdrawal_immutable / SQLSTATE 42501)
+update public.research_consent_withdrawals
+set reason_code = 'cleared_by_staff'
+where submission_id = '<test_submission_id>';
+
+-- Attempt DELETE (must fail with the same trigger)
+delete from public.research_consent_withdrawals
+where submission_id = '<test_submission_id>';
+```
+
+**Expected for both**: trigger `enforce_withdrawal_immutability` fires, SQLSTATE 42501.
+
+### 7.2 Original research consent is checked (Layer 1)
+
+1. Create a `raw_submissions` row with `research_consent_given = false`.
+2. Create a brief + evidence link pointing to this submission (insert directly as admin — the gate runs at transition, not at link creation).
+3. Call `brief_transition(brief_id, 'approve')`.
+4. **Expected**: `consent_gate_failed` — Layer 1 blocks it. Message contains `no research consent recorded in the original submission`.
+
+### 7.3 Submission without research consent is rejected
+
+Confirm via `check_brief_consent_status()`:
+
+1. Call with a brief whose evidence link points to a `research_consent_given = false` submission.
+2. **Expected**: `cleared: false`, issue for the link contains `no_original_research_consent`.
+
+### 7.4 Withdrawn submission cannot be reauthorized by editing evidence metadata
+
+1. Record a withdrawal for a submission: `record_consent_withdrawal(submission_id, 'contributor_requested')`.
+2. Update the evidence link: `eligibility = 'ELIGIBLE', consent_active_at_review = true, consent_withdrawn_at = NULL, research_consent_verified_at = now()`.
+3. Call `brief_transition(brief_id, 'approve')`.
+4. **Expected**: `consent_gate_failed` — Layer 2 reads `research_consent_withdrawals` and blocks regardless of layer-3 metadata. Message contains `ledger record`.
+
+### 7.5 Unauthorized users cannot insert withdrawal records
+
+1. Authenticate as a user with `insight.brief.edit` but NOT `insight.evidence.review` (and AAL2).
+2. Call `record_consent_withdrawal(submission_id, 'test')`.
+3. **Expected**: SQLSTATE 42501 (forbidden).
+
+Also verify direct INSERT is blocked:
+
+```sql
+-- As 'authenticated' role (not via the SECURITY DEFINER function)
+insert into public.research_consent_withdrawals (submission_id, reason_code)
+values ('<id>', 'direct_insert_attempt');
+```
+
+**Expected**: RLS denies the insert (no INSERT policy exists for authenticated).
+
+### 7.6 Withdrawal blocks future distribution of affected published briefs
+
+1. Brief is in PUBLISHED status.
+2. Call `record_consent_withdrawal(submission_id, 'contributor_requested')` for a submission linked to this brief.
+3. **Expected**:
+   - Brief gains `safeguarding_review_required = true`, `safeguarding_review_required_since` set.
+   - Calling `brief_transition(brief_id, 'archive')` succeeds (archiving is still allowed — it does not claim recall).
+   - Attempting `brief_transition(brief_id, 'publish')` on a previously APPROVED brief with the flag set → `consent_gate_failed`.
+4. Verify audit record shows `safeguard_flagged` array contains this brief's ID.
+
+### 7.7 No export or publication path bypasses the consent gate
+
+For each release path that produces contributor-derived output:
+
+| Path | Gate enforced? | Test method |
+|------|----------------|-------------|
+| `brief_transition('approve')` | ✅ Layer 1+2+3 | Steps 7.2–7.4 above |
+| `brief_transition('publish')` | ✅ Layer 1+2+3 (re-checked) | Steps 6.2.8–6.2.12 above |
+| `saveBriefAction` (direct table write) | ⚠️ No gate — write only; gate runs at transition | Confirm no publication-state column can be set via this action; it only writes DRAFT content |
+| Any future export RPC | Must call `assert_brief_consent_cleared()` | Add to this table when new export paths are introduced |
+
+Confirm `saveBriefAction` cannot change `status` to PUBLISHED directly:
+
+1. Call `saveBriefAction` with a payload that includes `"status": "PUBLISHED"`.
+2. **Expected**: either the action ignores the status field, or the DB constraint prevents the transition (depends on implementation). Verify status does not become PUBLISHED without going through `brief_transition`.
 
 ---
 
