@@ -343,6 +343,32 @@ export default async function InvoiceDetailPage({
             </dl>
           </section>
 
+          {/* PDF download — opens print-optimised view; user saves via browser Print → Save as PDF */}
+          <a
+            href={`/admin/partnerships/invoices/${invoiceId}/pdf`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-10 items-center justify-center gap-2 rounded-md border border-line bg-surface px-4 text-sm font-semibold text-ink hover:bg-plum-50"
+          >
+            <svg
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Download invoice PDF
+          </a>
+
           <Link
             href={`/admin/partnerships/organizations/${invoice.org_id}`}
             className="flex min-h-10 items-center justify-center rounded-md border border-line bg-surface px-4 text-sm font-semibold text-ink hover:bg-plum-50"

@@ -5,6 +5,7 @@ import { requirePermission } from "@/lib/auth/guards";
 
 // ---------------------------------------------------------------------------
 // Save organization (create or update)
+// Routes through save_organization() RPC — enforces require_aal2() at DB level.
 // ---------------------------------------------------------------------------
 
 export async function saveOrganizationAction(
@@ -25,56 +26,33 @@ export async function saveOrganizationAction(
     ? areasRaw.split(",").map((s) => s.trim()).filter(Boolean)
     : null;
 
-  const fields = {
-    name,
-    org_type: (formData.get("org_type") as string | null)?.trim() || null,
-    country: (formData.get("country") as string | null)?.trim() || null,
-    geographic_focus: (formData.get("geographic_focus") as string | null)?.trim() || null,
-    website: (formData.get("website") as string | null)?.trim() || null,
-    contact_name: (formData.get("contact_name") as string | null)?.trim() || null,
-    contact_email: (formData.get("contact_email") as string | null)?.trim() || null,
-    contact_phone: (formData.get("contact_phone") as string | null)?.trim() || null,
-    areas_of_interest,
-    partnership_status:
-      (formData.get("partnership_status") as string | null) || "PROSPECT",
-    next_followup_date:
-      (formData.get("next_followup_date") as string | null) || null,
-    internal_notes: (formData.get("internal_notes") as string | null)?.trim() || null,
-  };
-
   const supabase = await createClient();
-
-  if (orgId) {
-    const { data, error } = await supabase
-      .from("institutional_organizations")
-      .update(fields)
-      .eq("org_id", orgId)
-      .select("org_id")
-      .single();
-
-    if (error) {
-      if (error.code === "42501") return { ok: false, error: "Permission denied." };
-      return { ok: false, error: "Organization could not be saved. Please try again." };
-    }
-    return { ok: true, value: { org_id: data.org_id } };
-  }
-
-  const { data, error } = await supabase
-    .from("institutional_organizations")
-    .insert(fields)
-    .select("org_id")
-    .single();
+  const { data, error } = await supabase.rpc("save_organization", {
+    p_org_id:             orgId ?? null,
+    p_name:               name,
+    p_org_type:           (formData.get("org_type") as string | null)?.trim() || null,
+    p_country:            (formData.get("country") as string | null)?.trim() || null,
+    p_geographic_focus:   (formData.get("geographic_focus") as string | null)?.trim() || null,
+    p_website:            (formData.get("website") as string | null)?.trim() || null,
+    p_areas_of_interest:  areas_of_interest,
+    p_partnership_status: (formData.get("partnership_status") as string | null) || "PROSPECT",
+    p_next_followup_date: (formData.get("next_followup_date") as string | null) || null,
+    p_internal_notes:     (formData.get("internal_notes") as string | null)?.trim() || null,
+  });
 
   if (error) {
-    if (error.code === "42501") return { ok: false, error: "Permission denied." };
-    if (error.code === "23505") return { ok: false, error: "An organization with this name already exists." };
-    return { ok: false, error: "Organization could not be created. Please try again." };
+    if (error.code === "42501" || error.message.includes("forbidden"))
+      return { ok: false, error: "Permission denied." };
+    if (error.code === "23505")
+      return { ok: false, error: "An organization with this name already exists." };
+    return { ok: false, error: "Organization could not be saved. Please try again." };
   }
-  return { ok: true, value: { org_id: data.org_id } };
+  return { ok: true, value: { org_id: data as string } };
 }
 
 // ---------------------------------------------------------------------------
 // Save opportunity
+// Routes through save_opportunity() RPC — enforces require_aal2() at DB level.
 // ---------------------------------------------------------------------------
 
 export async function saveOpportunityAction(
@@ -94,52 +72,28 @@ export async function saveOpportunityAction(
 
   const estimatedRaw = formData.get("estimated_value_usd") as string | null;
   const estimated_value_usd =
-    estimatedRaw && !isNaN(parseFloat(estimatedRaw))
-      ? parseFloat(estimatedRaw)
-      : null;
-
-  const fields = {
-    title,
-    org_id: orgId,
-    research_theme: (formData.get("research_theme") as string | null)?.trim() || null,
-    estimated_value_usd,
-    expected_close_date:
-      (formData.get("expected_close_date") as string | null) || null,
-    stage: (formData.get("stage") as string | null) || "LEAD",
-    next_followup_date:
-      (formData.get("next_followup_date") as string | null) || null,
-    package_id: (formData.get("package_id") as string | null) || null,
-    internal_notes: (formData.get("internal_notes") as string | null)?.trim() || null,
-  };
+    estimatedRaw && !isNaN(parseFloat(estimatedRaw)) ? parseFloat(estimatedRaw) : null;
 
   const supabase = await createClient();
-
-  if (opportunityId) {
-    const { data, error } = await supabase
-      .from("commercial_opportunities")
-      .update(fields)
-      .eq("opportunity_id", opportunityId)
-      .select("opportunity_id")
-      .single();
-
-    if (error) {
-      if (error.code === "42501") return { ok: false, error: "Permission denied." };
-      return { ok: false, error: "Opportunity could not be saved." };
-    }
-    return { ok: true, value: { opportunity_id: data.opportunity_id } };
-  }
-
-  const { data, error } = await supabase
-    .from("commercial_opportunities")
-    .insert(fields)
-    .select("opportunity_id")
-    .single();
+  const { data, error } = await supabase.rpc("save_opportunity", {
+    p_opportunity_id:      opportunityId ?? null,
+    p_title:               title,
+    p_org_id:              orgId,
+    p_stage:               (formData.get("stage") as string | null) || "LEAD",
+    p_research_theme:      (formData.get("research_theme") as string | null)?.trim() || null,
+    p_estimated_value_usd: estimated_value_usd,
+    p_expected_close_date: (formData.get("expected_close_date") as string | null) || null,
+    p_package_id:          (formData.get("package_id") as string | null) || null,
+    p_next_followup_date:  (formData.get("next_followup_date") as string | null) || null,
+    p_internal_notes:      (formData.get("internal_notes") as string | null)?.trim() || null,
+  });
 
   if (error) {
-    if (error.code === "42501") return { ok: false, error: "Permission denied." };
-    return { ok: false, error: "Opportunity could not be created." };
+    if (error.code === "42501" || error.message.includes("forbidden"))
+      return { ok: false, error: "Permission denied." };
+    return { ok: false, error: "Opportunity could not be saved." };
   }
-  return { ok: true, value: { opportunity_id: data.opportunity_id } };
+  return { ok: true, value: { opportunity_id: data as string } };
 }
 
 // ---------------------------------------------------------------------------
@@ -237,6 +191,7 @@ export async function recordPaymentAction(
 
 // ---------------------------------------------------------------------------
 // Save proposal
+// Routes through save_proposal() RPC — enforces require_aal2() at DB level.
 // ---------------------------------------------------------------------------
 
 export async function saveProposalAction(
@@ -258,50 +213,37 @@ export async function saveProposalAction(
   const quoted_price_usd =
     quotedRaw && !isNaN(parseFloat(quotedRaw)) ? parseFloat(quotedRaw) : null;
 
-  const fields = {
-    title,
-    org_id: orgId,
-    quoted_price_usd,
-    status: (formData.get("status") as string | null) || "DRAFT",
-    opportunity_id: (formData.get("opportunity_id") as string | null) || null,
-    package_id: (formData.get("package_id") as string | null) || null,
-    scope_description:
-      (formData.get("scope_description") as string | null)?.trim() || null,
-    sent_at: (formData.get("sent_at") as string | null) || null,
-  };
+  const timelineRaw = formData.get("timeline_weeks") as string | null;
+  const timeline_weeks =
+    timelineRaw && !isNaN(parseInt(timelineRaw)) ? parseInt(timelineRaw) : null;
 
   const supabase = await createClient();
-
-  if (proposalId) {
-    const { data, error } = await supabase
-      .from("commercial_proposals")
-      .update(fields)
-      .eq("proposal_id", proposalId)
-      .select("proposal_id")
-      .single();
-
-    if (error) {
-      if (error.code === "42501") return { ok: false, error: "Permission denied." };
-      return { ok: false, error: "Proposal could not be saved." };
-    }
-    return { ok: true, value: { proposal_id: data.proposal_id } };
-  }
-
-  const { data, error } = await supabase
-    .from("commercial_proposals")
-    .insert(fields)
-    .select("proposal_id")
-    .single();
+  const { data, error } = await supabase.rpc("save_proposal", {
+    p_proposal_id:       proposalId ?? null,
+    p_title:             title,
+    p_org_id:            orgId,
+    p_status:            (formData.get("status") as string | null) || "DRAFT",
+    p_opportunity_id:    (formData.get("opportunity_id") as string | null) || null,
+    p_package_id:        (formData.get("package_id") as string | null) || null,
+    p_quoted_price_usd:  quoted_price_usd,
+    p_scope_description: (formData.get("scope_description") as string | null)?.trim() || null,
+    p_deliverables:      (formData.get("deliverables") as string | null)?.trim() || null,
+    p_timeline_weeks:    timeline_weeks,
+    p_sent_at:           (formData.get("sent_at") as string | null) || null,
+    p_internal_notes:    (formData.get("internal_notes") as string | null)?.trim() || null,
+  });
 
   if (error) {
-    if (error.code === "42501") return { ok: false, error: "Permission denied." };
-    return { ok: false, error: "Proposal could not be created." };
+    if (error.code === "42501" || error.message.includes("forbidden"))
+      return { ok: false, error: "Permission denied." };
+    return { ok: false, error: "Proposal could not be saved." };
   }
-  return { ok: true, value: { proposal_id: data.proposal_id } };
+  return { ok: true, value: { proposal_id: data as string } };
 }
 
 // ---------------------------------------------------------------------------
 // Save contract (create or update)
+// Routes through save_contract() RPC — enforces require_aal2() at DB level.
 // ---------------------------------------------------------------------------
 
 export async function saveContractAction(
@@ -329,56 +271,37 @@ export async function saveContractAction(
   if (contract_value_usd === null || contract_value_usd < 0)
     return { ok: false, error: "A valid contract value is required." };
 
-  const fields = {
-    title,
-    org_id: orgId,
-    contract_number: contractNumber,
-    contract_value_usd,
-    status: (formData.get("status") as string | null) || "DRAFT",
-    opportunity_id: (formData.get("opportunity_id") as string | null) || null,
-    proposal_id: (formData.get("proposal_id") as string | null) || null,
-    contract_date: (formData.get("contract_date") as string | null) || null,
-    start_date: (formData.get("start_date") as string | null) || null,
-    end_date: (formData.get("end_date") as string | null) || null,
-    deliverables: (formData.get("deliverables") as string | null)?.trim() || null,
-    obligations: (formData.get("obligations") as string | null)?.trim() || null,
-    internal_notes: (formData.get("internal_notes") as string | null)?.trim() || null,
-  };
-
   const supabase = await createClient();
-
-  if (contractId) {
-    const { data, error } = await supabase
-      .from("commercial_contracts")
-      .update(fields)
-      .eq("contract_id", contractId)
-      .select("contract_id")
-      .single();
-
-    if (error) {
-      if (error.code === "42501") return { ok: false, error: "Permission denied." };
-      if (error.code === "23505") return { ok: false, error: "A contract with this number already exists." };
-      return { ok: false, error: "Contract could not be saved." };
-    }
-    return { ok: true, value: { contract_id: data.contract_id } };
-  }
-
-  const { data, error } = await supabase
-    .from("commercial_contracts")
-    .insert(fields)
-    .select("contract_id")
-    .single();
+  const { data, error } = await supabase.rpc("save_contract", {
+    p_contract_id:        contractId ?? null,
+    p_title:              title,
+    p_org_id:             orgId,
+    p_contract_number:    contractNumber,
+    p_contract_value_usd: contract_value_usd,
+    p_status:             (formData.get("status") as string | null) || "DRAFT",
+    p_opportunity_id:     (formData.get("opportunity_id") as string | null) || null,
+    p_proposal_id:        (formData.get("proposal_id") as string | null) || null,
+    p_contract_date:      (formData.get("contract_date") as string | null) || null,
+    p_start_date:         (formData.get("start_date") as string | null) || null,
+    p_end_date:           (formData.get("end_date") as string | null) || null,
+    p_deliverables:       (formData.get("deliverables") as string | null)?.trim() || null,
+    p_obligations:        (formData.get("obligations") as string | null)?.trim() || null,
+    p_internal_notes:     (formData.get("internal_notes") as string | null)?.trim() || null,
+  });
 
   if (error) {
-    if (error.code === "42501") return { ok: false, error: "Permission denied." };
-    if (error.code === "23505") return { ok: false, error: "A contract with this number already exists." };
-    return { ok: false, error: "Contract could not be created." };
+    if (error.code === "42501" || error.message.includes("forbidden"))
+      return { ok: false, error: "Permission denied." };
+    if (error.code === "23505")
+      return { ok: false, error: "A contract with this number already exists." };
+    return { ok: false, error: "Contract could not be saved." };
   }
-  return { ok: true, value: { contract_id: data.contract_id } };
+  return { ok: true, value: { contract_id: data as string } };
 }
 
 // ---------------------------------------------------------------------------
 // Save service package (edit only — packages are pre-seeded, not created ad-hoc)
+// Routes through save_package() RPC — enforces require_aal2() at DB level.
 // Internal cost fields (est_labor_cost_usd, est_overhead_usd) are stored here
 // but MUST NEVER appear in any client-facing output.
 // ---------------------------------------------------------------------------
@@ -413,29 +336,24 @@ export async function savePackageAction(
 
   const deliverablesRaw = (formData.get("deliverables") as string | null)?.trim() || null;
 
-  const fields = {
-    description: (formData.get("description") as string | null)?.trim() || null,
-    deliverables: deliverablesRaw
-      ? deliverablesRaw.split("\n").map((s) => s.trim()).filter(Boolean)
-      : null,
-    base_price_usd,
-    price_is_provisional: formData.get("price_is_provisional") === "true",
-    pricing_notes: (formData.get("pricing_notes") as string | null)?.trim() || null,
-    // Internal cost assumptions — MUST NEVER appear in client-facing materials.
-    est_staff_hours,
-    est_labor_cost_usd,
-    est_overhead_usd,
-    is_active: formData.get("is_active") === "true",
-  };
-
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("service_packages")
-    .update(fields)
-    .eq("package_id", packageId);
+  const { error } = await supabase.rpc("save_package", {
+    p_package_id:          packageId,
+    p_description:         (formData.get("description") as string | null)?.trim() || null,
+    p_deliverables:        deliverablesRaw,
+    p_base_price_usd:      base_price_usd,
+    p_price_is_provisional: formData.get("price_is_provisional") === "true",
+    p_pricing_notes:       (formData.get("pricing_notes") as string | null)?.trim() || null,
+    // Internal cost assumptions — MUST NEVER appear in client-facing materials.
+    p_est_staff_hours:     est_staff_hours,
+    p_est_labor_cost_usd:  est_labor_cost_usd,
+    p_est_overhead_usd:    est_overhead_usd,
+    p_is_active:           formData.get("is_active") === "true",
+  });
 
   if (error) {
-    if (error.code === "42501") return { ok: false, error: "Permission denied." };
+    if (error.code === "42501" || error.message.includes("forbidden"))
+      return { ok: false, error: "Permission denied." };
     return { ok: false, error: "Package could not be saved. Please try again." };
   }
   return { ok: true };
