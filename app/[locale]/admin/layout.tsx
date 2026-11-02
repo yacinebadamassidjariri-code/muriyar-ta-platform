@@ -53,7 +53,14 @@ export default async function AdminLayout({
 
   const items = adminNav
     .filter((item) => profile.permissions.includes(item.permission))
-    .map((item) => ({ href: item.href, label: copy.nav[item.key] }));
+    .map((item) => ({
+      href: item.href,
+      label: copy.nav[item.key],
+      group: item.group,
+      groupLabel: item.group
+        ? copy.navGroup[item.group as keyof typeof copy.navGroup]
+        : undefined,
+    }));
 
   return (
     <AdminShell

@@ -22,6 +22,19 @@ const en = {
     questions: "Ask Muriyar Ta",
     podcast: "Podcasts",
     resources: "Resources",
+    // Phase 3 — Institutional Insights
+    insightsOverview: "Insights Overview",
+    insightsBriefs: "All Briefs",
+    insightsNewBrief: "Create Brief",
+    insightsEvidence: "Evidence Review",
+    // Phase 3 — Partnerships & Commercial
+    partnershipsOverview: "Partnerships Overview",
+    partnershipsOrganizations: "Organizations",
+    partnershipsPipeline: "Pipeline",
+    partnershipsProposals: "Proposals",
+    partnershipsContracts: "Contracts",
+    partnershipsInvoices: "Invoices & Payments",
+    partnershipsPackages: "Service Packages",
   },
   role: {
     super_admin: "Super Admin",
@@ -31,6 +44,10 @@ const en = {
     translator: "Translator",
     researcher: "Researcher",
   } satisfies Record<AppRole, string>,
+  navGroup: {
+    insights: "Institutional Insights",
+    partnerships: "Partnerships & Commercial",
+  },
   deniedTitle: "Permission required",
   deniedBody:
     "Your account is signed in, but it does not have access to this administrative area.",
@@ -92,6 +109,23 @@ const fr: typeof en = {
     questions: "Ask Muriyar Ta",
     podcast: "Podcasts",
     resources: "Ressources",
+    // Phase 3 — Institutional Insights
+    insightsOverview: "Aperçu des synthèses",
+    insightsBriefs: "Toutes les synthèses",
+    insightsNewBrief: "Créer une synthèse",
+    insightsEvidence: "Revue des données probantes",
+    // Phase 3 — Partnerships & Commercial
+    partnershipsOverview: "Aperçu des partenariats",
+    partnershipsOrganizations: "Organisations",
+    partnershipsPipeline: "Pipeline commercial",
+    partnershipsProposals: "Propositions",
+    partnershipsContracts: "Contrats",
+    partnershipsInvoices: "Factures et paiements",
+    partnershipsPackages: "Forfaits de services",
+  },
+  navGroup: {
+    insights: "Synthèses institutionnelles",
+    partnerships: "Partenariats & commercial",
   },
   deniedTitle: "Autorisation requise",
   deniedBody:

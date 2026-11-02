@@ -30,6 +30,14 @@ export const PERMISSIONS = [
   "question.disposition",
   "question.answer",
   "question.publish",
+  // Phase 3 — Institutional Insights
+  "insight.brief.read",
+  "insight.brief.edit",
+  "insight.brief.publish",
+  "insight.evidence.review",
+  // Phase 3 — Commercial Partnerships
+  "commercial.read",
+  "commercial.edit",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
