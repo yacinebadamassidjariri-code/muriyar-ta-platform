@@ -109,7 +109,7 @@ export async function saveOpportunityAction(
     next_followup_date:
       (formData.get("next_followup_date") as string | null) || null,
     package_id: (formData.get("package_id") as string | null) || null,
-    notes: (formData.get("notes") as string | null)?.trim() || null,
+    internal_notes: (formData.get("internal_notes") as string | null)?.trim() || null,
   };
 
   const supabase = await createClient();
@@ -148,6 +148,7 @@ export async function saveOpportunityAction(
 
 export async function createInvoiceAction(
   contractId: string,
+  orgId: string,
   formData: FormData,
 ): Promise<{ ok: true; value: { invoice_id: string } } | { ok: false; error: string }> {
   try {
@@ -156,16 +157,23 @@ export async function createInvoiceAction(
     return { ok: false, error: "You do not have permission to create invoices." };
   }
 
+  if (!orgId) return { ok: false, error: "Organization is required." };
+
   const amountRaw = formData.get("amount_usd") as string | null;
   const amount_usd = amountRaw && !isNaN(parseFloat(amountRaw)) ? parseFloat(amountRaw) : null;
   if (!amount_usd || amount_usd <= 0) {
     return { ok: false, error: "A valid invoice amount is required." };
   }
 
+  const issueDateRaw = (formData.get("issue_date") as string | null) || null;
+  const issue_date = issueDateRaw || new Date().toISOString().slice(0, 10);
+
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("create_invoice", {
-    p_contract_id: contractId,
+    p_org_id: orgId,
+    p_contract_id: contractId || null,
     p_amount_usd: amount_usd,
+    p_issue_date: issue_date,
     p_due_date: (formData.get("due_date") as string | null) || null,
     p_title: (formData.get("title") as string | null)?.trim() || null,
   });
@@ -202,14 +210,17 @@ export async function recordPaymentAction(
     return { ok: false, error: "A valid payment amount is required." };
   }
 
+  const paymentDateRaw = (formData.get("payment_date") as string | null) || null;
+  const payment_date = paymentDateRaw || new Date().toISOString().slice(0, 10);
+
   const supabase = await createClient();
   const { error } = await supabase.rpc("record_invoice_payment", {
     p_invoice_id: invoiceId,
+    p_payment_date: payment_date,
     p_amount_usd: amount_usd,
-    p_payment_date: (formData.get("payment_date") as string | null) || null,
-    p_payment_method:
-      (formData.get("payment_method") as string | null)?.trim() || null,
+    p_currency: "USD",
     p_reference: (formData.get("reference") as string | null)?.trim() || null,
+    p_notes: (formData.get("notes") as string | null)?.trim() || null,
   });
 
   if (error) {
@@ -287,4 +298,81 @@ export async function saveProposalAction(
     return { ok: false, error: "Proposal could not be created." };
   }
   return { ok: true, value: { proposal_id: data.proposal_id } };
+}
+
+// ---------------------------------------------------------------------------
+// Save contract (create or update)
+// ---------------------------------------------------------------------------
+
+export async function saveContractAction(
+  contractId: string | null,
+  formData: FormData,
+): Promise<{ ok: true; value: { contract_id: string } } | { ok: false; error: string }> {
+  try {
+    await requirePermission("commercial.edit");
+  } catch {
+    return { ok: false, error: "You do not have permission to edit contracts." };
+  }
+
+  const title = (formData.get("title") as string | null)?.trim() ?? "";
+  const orgId = (formData.get("org_id") as string | null)?.trim() ?? "";
+  const contractNumber = (formData.get("contract_number") as string | null)?.trim() ?? "";
+  const contractValueRaw = formData.get("contract_value_usd") as string | null;
+  const contract_value_usd =
+    contractValueRaw && !isNaN(parseFloat(contractValueRaw))
+      ? parseFloat(contractValueRaw)
+      : null;
+
+  if (!title) return { ok: false, error: "Contract title is required." };
+  if (!orgId) return { ok: false, error: "Organization is required." };
+  if (!contractNumber) return { ok: false, error: "Contract number is required." };
+  if (contract_value_usd === null || contract_value_usd < 0)
+    return { ok: false, error: "A valid contract value is required." };
+
+  const fields = {
+    title,
+    org_id: orgId,
+    contract_number: contractNumber,
+    contract_value_usd,
+    status: (formData.get("status") as string | null) || "DRAFT",
+    opportunity_id: (formData.get("opportunity_id") as string | null) || null,
+    proposal_id: (formData.get("proposal_id") as string | null) || null,
+    contract_date: (formData.get("contract_date") as string | null) || null,
+    start_date: (formData.get("start_date") as string | null) || null,
+    end_date: (formData.get("end_date") as string | null) || null,
+    deliverables: (formData.get("deliverables") as string | null)?.trim() || null,
+    obligations: (formData.get("obligations") as string | null)?.trim() || null,
+    internal_notes: (formData.get("internal_notes") as string | null)?.trim() || null,
+  };
+
+  const supabase = await createClient();
+
+  if (contractId) {
+    const { data, error } = await supabase
+      .from("commercial_contracts")
+      .update(fields)
+      .eq("contract_id", contractId)
+      .select("contract_id")
+      .single();
+
+    if (error) {
+      if (error.code === "42501") return { ok: false, error: "Permission denied." };
+      if (error.code === "23505") return { ok: false, error: "A contract with this number already exists." };
+      return { ok: false, error: "Contract could not be saved." };
+    }
+    return { ok: true, value: { contract_id: data.contract_id } };
+  }
+
+  const { data, error } = await supabase
+    .from("commercial_contracts")
+    .insert(fields)
+    .select("contract_id")
+    .single();
+
+  if (error) {
+    if (error.code === "42501") return { ok: false, error: "Permission denied." };
+    if (error.code === "23505") return { ok: false, error: "A contract with this number already exists." };
+    return { ok: false, error: "Contract could not be created." };
+  }
+  return { ok: true, value: { contract_id: data.contract_id } };
 }

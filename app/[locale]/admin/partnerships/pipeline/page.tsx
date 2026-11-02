@@ -69,11 +69,19 @@ export default async function PipelinePage({
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="font-display text-4xl font-semibold text-ink">Commercial Pipeline</h1>
-        <p className="mt-1 text-ink-soft">
-          Track institutional opportunities from first contact to won or lost.
-        </p>
+      <header className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-4xl font-semibold text-ink">Commercial Pipeline</h1>
+          <p className="mt-1 text-ink-soft">
+            Track institutional opportunities from first contact to won or lost.
+          </p>
+        </div>
+        <Link
+          href="/admin/partnerships/opportunities/new"
+          className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-md bg-plum-700 px-4 text-sm font-semibold text-white hover:bg-plum-800"
+        >
+          + Add opportunity
+        </Link>
       </header>
 
       {/* Summary bar */}

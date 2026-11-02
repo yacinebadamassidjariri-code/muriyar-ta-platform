@@ -58,11 +58,19 @@ export default async function ProposalsPage({
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="font-display text-4xl font-semibold text-ink">Proposals</h1>
-        <p className="mt-1 text-ink-soft">
-          Commercial proposals sent to institutional partners and prospects.
-        </p>
+      <header className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-4xl font-semibold text-ink">Proposals</h1>
+          <p className="mt-1 text-ink-soft">
+            Commercial proposals sent to institutional partners and prospects.
+          </p>
+        </div>
+        <a
+          href="/admin/partnerships/proposals/new"
+          className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-md bg-plum-700 px-4 text-sm font-semibold text-white hover:bg-plum-800"
+        >
+          + New proposal
+        </a>
       </header>
 
       {/* Filters */}
