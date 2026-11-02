@@ -39,6 +39,7 @@
 | A12 | Admin UI pre-flight check available | `check_brief_consent_status()` returns per-link JSON breakdown | ✅ IMPLEMENTED |
 | A13 | Requires AAL2 + `insight.brief.publish` permission | `require_aal2()` + `has_permission()` in `brief_transition()` | ✅ IMPLEMENTED |
 | A14 | **Staging test results** | See staging test plan §1 | ⬜ NOT TESTED |
+| A15 | **CRITICAL GAP: consent gate reads mutable metadata, not authoritative source** | `assert_brief_consent_cleared()` reads `brief_evidence_links` (staff-editable); must join `raw_submissions.research_consent_given` (immutable) and a new `research_consent_withdrawals` table. Migration 20261106 pending approval. | ⚠️ IMPLEMENTED BUT INCOMPLETE — see below |
 
 ---
 
@@ -94,9 +95,10 @@
 | D11 | XSS protection on all dynamic values | `escHtml()` applied to all user-controlled strings | ✅ IMPLEMENTED |
 | D12 | No-cache header | `Cache-Control: no-store` | ✅ IMPLEMENTED |
 | D13 | Print-optimised CSS (`@media print`) | Hides screen-only UI, sets A4 page margins | ✅ IMPLEMENTED |
-| D14 | Download link on invoice detail page | "Download invoice PDF" `<a>` in sidebar of `[invoiceId]/page.tsx` | ✅ IMPLEMENTED |
-| D15 | No external PDF library required | Pure HTML + browser Print dialog | ✅ IMPLEMENTED |
-| D16 | **Staging browser test** | See staging test plan §4 | ⬜ NOT TESTED |
+| D14 | "Print / Save as PDF" link on invoice detail page | `[invoiceId]/page.tsx` sidebar — renamed from "Download invoice PDF" | ✅ IMPLEMENTED |
+| D15 | Route accurately labelled as printable HTML (not PDF) | Route moved to `/print`, comment updated, `Content-Disposition` updated | ✅ IMPLEMENTED |
+| D16 | No external PDF library required | Pure HTML + browser Print dialog | ✅ IMPLEMENTED |
+| D17 | **Staging browser test** | See staging test plan §4 | ⬜ NOT TESTED |
 
 ---
 
@@ -135,22 +137,86 @@
 
 ---
 
+### G. Critical Architectural Gap — Consent Gate Authority (Requires Approval Before Production Deploy)
+
+The consent gate implemented in migration 20261103 enforces withdrawal by checking `brief_evidence_links.consent_withdrawn_at`. **This field is staff-editable metadata**, not an immutable contributor record. A staff member with `insight.evidence.review` permission can clear `consent_withdrawn_at` on an evidence link and re-set `eligibility = 'ELIGIBLE'`, `consent_active_at_review = true`, `research_consent_verified_at = now()` — bypassing the withdrawal entirely.
+
+The user's requirement is explicit: *"A withdrawal must remain effective unless the contributor independently provides new, valid research consent. Staff must not be able to override it."*
+
+#### What the authoritative sources are
+
+| Record | Table | Mutable? | Notes |
+|--------|-------|----------|-------|
+| Original research consent | `raw_submissions.research_consent_given` | **No** — protected by `protect_raw_submission_original()` trigger (SQLSTATE 42501 on any change) | Set at submission time; `true` = contributor gave consent |
+| Post-submission withdrawal | *No dedicated table exists yet* | N/A | Currently only `brief_evidence_links.consent_withdrawn_at` (mutable) |
+
+#### Proposed fix (migration 20261106) — pending your approval
+
+**Option A — Recommended: add a `research_consent_withdrawals` table**
+
+Create an immutable append-only table:
+```sql
+create table public.research_consent_withdrawals (
+  withdrawal_id uuid primary key default gen_random_uuid(),
+  submission_id uuid not null references public.raw_submissions(submission_id),
+  withdrawn_at timestamptz not null default now(),
+  withdrawn_by uuid references auth.users(id),  -- who processed it (staff on behalf of contributor)
+  reason text,
+  created_at timestamptz not null default now()
+);
+-- No UPDATE or DELETE granted to anyone — append-only
+revoke update, delete on public.research_consent_withdrawals from authenticated;
+```
+
+Then `assert_brief_consent_cleared()` joins this table AND checks `raw_submissions.research_consent_given`:
+```sql
+-- Block if: original consent was never given
+if not rs.research_consent_given then
+  -- contributor never consented; this evidence link should never have been included
+  raise exception 'consent_gate_failed' ...;
+end if;
+
+-- Block if: a withdrawal record exists
+if exists (
+  select 1 from public.research_consent_withdrawals w
+  where w.submission_id = link.submission_id
+) then
+  raise exception 'consent_gate_failed' ...;
+end if;
+```
+
+Re-enabling a brief after a withdrawal would require **deleting the withdrawal record** — which staff cannot do (no DELETE grant). Only a new `raw_submissions` row with `research_consent_given = true` from the contributor themselves could satisfy the gate for new evidence.
+
+**Option B — Minimal: make withdrawal_at non-clearable via DB constraint**
+
+Add a `BEFORE UPDATE` trigger on `brief_evidence_links` that raises an error if `consent_withdrawn_at` is being set from non-null to null. This is simpler but does not address the `research_consent_given` check or provide an audit trail of withdrawals.
+
+#### Recommendation
+
+Option A is the correct approach for data that governs participant consent. Option B is a partial mitigation that could be applied immediately while Option A is planned.
+
+**Action required**: Approve Option A or Option B before production deployment. Without this fix, the consent gate does not meet the stated requirement that "staff must not be able to override" a withdrawal.
+
+---
+
 ## Summary
 
 | Area | Implementation | Staging Tests | Build |
 |------|---------------|---------------|-------|
-| A. Consent gate | ✅ Complete | ⬜ Pending | N/A |
-| B. Financial integrity | ✅ Complete | ⬜ Pending | N/A |
-| C. MFA enforcement | ✅ Complete | ⬜ Pending | N/A |
-| D. PDF invoices | ✅ Complete | ⬜ Pending | N/A |
-| E. Build verification | ⚠️ Blocked (DNS) | N/A | ⬜ Pending |
-| F. Security constraints | ✅ All preserved | ✅ Verified | N/A |
+| A. Consent gate | ⚠️ Implemented but has critical gap (A15) | ⬜ Not tested | N/A |
+| B. Financial integrity | ✅ Complete | ⬜ Not tested | N/A |
+| C. MFA enforcement | ✅ Complete | ⬜ Not tested | N/A |
+| D. Printable invoice | ✅ Complete — relabelled from "PDF" to "Print / Save as PDF" | ⬜ Not tested | N/A |
+| E. Build verification | ⚠️ Blocked (DNS in cloud container) | N/A | ⬜ Pending local run |
+| F. Security constraints | ✅ All preserved | ✅ Verified by static analysis | N/A |
+| G. Consent architecture gap | 🔴 **BLOCKS PRODUCTION** — awaiting approval for migration 20261106 | N/A | N/A |
 
-**Gate criteria for production deploy:**
-1. ⬜ All staging test scenarios pass (§1–§6 of staging test plan)
-2. ⬜ `npm install && npx tsc --noEmit && npm run build` exits 0
-3. ⬜ Explicit approval from project owner
-4. ⬜ Migrations applied to production in the correct order
+**Gate criteria for production deploy — all must be met:**
+1. ⬜ **Approve consent architecture fix** (Option A or B in section G above) and implement migration 20261106
+2. ⬜ All staging test scenarios pass (§1–§6 of staging test plan, including revised §6.2)
+3. ⬜ `npm install && npx tsc --noEmit && npm run build` exits 0 (run locally)
+4. ⬜ Explicit production deploy authorization from project owner
+5. ⬜ Migrations applied to production in the correct order (20261101→20261102→20261103→20261104→20261105→20261106)
 
 ---
 

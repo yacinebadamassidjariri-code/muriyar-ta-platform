@@ -1,9 +1,9 @@
 /**
- * Invoice PDF route — GET /[locale]/admin/partnerships/invoices/[invoiceId]/pdf
+ * Printable invoice route — GET /[locale]/admin/partnerships/invoices/[invoiceId]/print
  *
- * Returns a print-optimised HTML document.  The browser's native Print dialog
- * (File → Print → Save as PDF, or Cmd/Ctrl+P) converts it to a professional
- * PDF without any server-side PDF library.
+ * Returns a print-optimised HTML document (Content-Type: text/html).
+ * This is NOT a PDF endpoint — it does not return application/pdf.
+ * To save as PDF, use the browser's native Print dialog (Cmd/Ctrl+P → Save as PDF).
  *
  * Security constraints enforced here:
  *   - Requires an authenticated session with commercial.read permission.
@@ -322,7 +322,8 @@ export async function GET(
     headers: {
       "Content-Type": "text/html; charset=utf-8",
       // Suggest a filename when the browser's save-as dialog is used.
-      "Content-Disposition": `inline; filename="invoice-${invoice.invoice_number}.html"`,
+      // NOTE: This is HTML, not PDF. Use browser Print → Save as PDF to get a .pdf file.
+      "Content-Disposition": `inline; filename="invoice-${invoice.invoice_number}-printable.html"`,
       // Never cache — invoice state changes.
       "Cache-Control": "no-store",
     },

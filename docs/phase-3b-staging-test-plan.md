@@ -235,11 +235,12 @@ If a payment has `notes` set (e.g. "internal payment note"), confirm the notes t
 2. Invoke print preview (Cmd/Ctrl+P).
 3. **Expected**: "Save as PDF / Print" button hidden, layout fits A4 page, no clipped content.
 
-### 4.7 Download link on invoice detail page
+### 4.7 Print link on invoice detail page
 
 1. Navigate to `/admin/partnerships/invoices/[invoiceId]`.
-2. **Expected**: "Download invoice PDF" button visible in sidebar with download icon.
-3. Click it — should open PDF view in new tab.
+2. **Expected**: "Print / Save as PDF" button visible in sidebar with printer icon.
+3. Click it — should open the printable invoice view in a new tab at `/print`.
+4. **Confirm**: browser tab address ends with `/print`, not `/pdf`.
 
 ---
 
@@ -293,8 +294,10 @@ select count(*) from public.brief_evidence_links;         -- must fail or return
 5. Approve [MFA, `insight.brief.publish`]
 6. Withdraw consent for one submission via `propagate_consent_withdrawal()`
 7. Attempt re-publish → **must fail** (consent_gate_failed)
-8. Re-verify consent (set `research_consent_verified_at = now()`, `consent_active_at_review = true`, `eligibility = 'ELIGIBLE'`, clear `consent_withdrawn_at`)
-9. Publish → **must succeed**
+8. **Verify withdrawal is permanent**: confirm that no staff action (clearing `consent_withdrawn_at`, setting `eligibility = 'ELIGIBLE'`, or updating `research_consent_verified_at`) can re-enable publication of this brief while the withdrawal record stands. **This is a security boundary — staff must not be able to override a contributor's withdrawal.**
+9. To re-enable publication, the affected evidence link must be removed from the brief, OR the contributor must independently provide new valid research consent (a new `raw_submissions` record with `research_consent_given = true`). Neither path may be taken by staff alone.
+
+> **Note on step 8**: the current implementation (migration 20261103) enforces withdrawal only through `brief_evidence_links.consent_withdrawn_at`, which is staff-editable metadata. A separate migration (20261106) is pending architectural approval to make withdrawals immutable via a `research_consent_withdrawals` table and to make the consent gate join directly to `raw_submissions`. Until that migration is applied, step 8 above is aspirational for the immutability guarantee. See the deployment readiness report section A15.
 
 ---
 

@@ -343,9 +343,9 @@ export default async function InvoiceDetailPage({
             </dl>
           </section>
 
-          {/* PDF download — opens print-optimised view; user saves via browser Print → Save as PDF */}
+          {/* Printable invoice view — opens a print-optimised HTML page; user saves via browser Print → Save as PDF */}
           <a
-            href={`/admin/partnerships/invoices/${invoiceId}/pdf`}
+            href={`/admin/partnerships/invoices/${invoiceId}/print`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex min-h-10 items-center justify-center gap-2 rounded-md border border-line bg-surface px-4 text-sm font-semibold text-ink hover:bg-plum-50"
@@ -362,11 +362,11 @@ export default async function InvoiceDetailPage({
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
+              <path d="M6 9V2h12v7" />
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+              <path d="M6 14h12v8H6z" />
             </svg>
-            Download invoice PDF
+            Print / Save as PDF
           </a>
 
           <Link
