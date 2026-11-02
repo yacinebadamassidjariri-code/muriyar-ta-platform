@@ -376,3 +376,67 @@ export async function saveContractAction(
   }
   return { ok: true, value: { contract_id: data.contract_id } };
 }
+
+// ---------------------------------------------------------------------------
+// Save service package (edit only — packages are pre-seeded, not created ad-hoc)
+// Internal cost fields (est_labor_cost_usd, est_overhead_usd) are stored here
+// but MUST NEVER appear in any client-facing output.
+// ---------------------------------------------------------------------------
+
+export async function savePackageAction(
+  packageId: string,
+  formData: FormData,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    await requirePermission("commercial.edit");
+  } catch {
+    return { ok: false, error: "You do not have permission to edit service packages." };
+  }
+
+  if (!packageId) return { ok: false, error: "Package ID is required." };
+
+  const basePriceRaw = formData.get("base_price_usd") as string | null;
+  const base_price_usd =
+    basePriceRaw && !isNaN(parseFloat(basePriceRaw)) ? parseFloat(basePriceRaw) : null;
+
+  const laborRaw = formData.get("est_labor_cost_usd") as string | null;
+  const est_labor_cost_usd =
+    laborRaw && !isNaN(parseFloat(laborRaw)) ? parseFloat(laborRaw) : null;
+
+  const overheadRaw = formData.get("est_overhead_usd") as string | null;
+  const est_overhead_usd =
+    overheadRaw && !isNaN(parseFloat(overheadRaw)) ? parseFloat(overheadRaw) : null;
+
+  const staffHoursRaw = formData.get("est_staff_hours") as string | null;
+  const est_staff_hours =
+    staffHoursRaw && !isNaN(parseInt(staffHoursRaw)) ? parseInt(staffHoursRaw) : null;
+
+  const deliverablesRaw = (formData.get("deliverables") as string | null)?.trim() || null;
+
+  const fields = {
+    description: (formData.get("description") as string | null)?.trim() || null,
+    deliverables: deliverablesRaw
+      ? deliverablesRaw.split("\n").map((s) => s.trim()).filter(Boolean)
+      : null,
+    base_price_usd,
+    price_is_provisional: formData.get("price_is_provisional") === "true",
+    pricing_notes: (formData.get("pricing_notes") as string | null)?.trim() || null,
+    // Internal cost assumptions — MUST NEVER appear in client-facing materials.
+    est_staff_hours,
+    est_labor_cost_usd,
+    est_overhead_usd,
+    is_active: formData.get("is_active") === "true",
+  };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("service_packages")
+    .update(fields)
+    .eq("package_id", packageId);
+
+  if (error) {
+    if (error.code === "42501") return { ok: false, error: "Permission denied." };
+    return { ok: false, error: "Package could not be saved. Please try again." };
+  }
+  return { ok: true };
+}

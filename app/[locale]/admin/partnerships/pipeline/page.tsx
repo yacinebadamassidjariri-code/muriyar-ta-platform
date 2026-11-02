@@ -167,7 +167,12 @@ export default async function PipelinePage({
               {items.map((opp) => (
                 <tr key={opp.opportunity_id} className="hover:bg-cream-50">
                   <td className="px-4 py-3">
-                    <p className="font-semibold text-ink">{opp.title}</p>
+                    <Link
+                      href={`/admin/partnerships/opportunities/${opp.opportunity_id}`}
+                      className="font-semibold text-ink hover:text-plum-700 hover:underline"
+                    >
+                      {opp.title}
+                    </Link>
                     {opp.research_theme && (
                       <p className="mt-0.5 text-xs text-ink-soft">{opp.research_theme}</p>
                     )}

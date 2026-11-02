@@ -62,11 +62,19 @@ export default async function ContractsPage({
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="font-display text-4xl font-semibold text-ink">Contracts</h1>
-        <p className="mt-1 text-ink-soft">
-          Signed agreements and active service contracts with institutional partners.
-        </p>
+      <header className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-4xl font-semibold text-ink">Contracts</h1>
+          <p className="mt-1 text-ink-soft">
+            Signed agreements and active service contracts with institutional partners.
+          </p>
+        </div>
+        <a
+          href="/admin/partnerships/contracts/new"
+          className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-md bg-plum-700 px-4 text-sm font-semibold text-white hover:bg-plum-800"
+        >
+          + New contract
+        </a>
       </header>
 
       {result.ok && totalValue > 0 && (
@@ -141,7 +149,12 @@ export default async function ContractsPage({
               {items.map((c) => (
                 <tr key={c.contract_id} className="hover:bg-cream-50">
                   <td className="px-4 py-3">
-                    <p className="font-semibold text-ink">{c.title}</p>
+                    <a
+                      href={`/admin/partnerships/contracts/${c.contract_id}`}
+                      className="font-semibold text-ink hover:text-plum-700 hover:underline"
+                    >
+                      {c.title}
+                    </a>
                     <p className="mt-0.5 text-xs font-mono text-ink-soft">{c.contract_number}</p>
                   </td>
                   <td className="hidden px-4 py-3 text-ink-soft sm:table-cell">

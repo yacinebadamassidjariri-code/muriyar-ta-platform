@@ -138,7 +138,12 @@ export default async function ProposalsPage({
               {items.map((p) => (
                 <tr key={p.proposal_id} className="hover:bg-cream-50">
                   <td className="px-4 py-3">
-                    <p className="font-semibold text-ink">{p.title}</p>
+                    <a
+                      href={`/admin/partnerships/proposals/${p.proposal_id}`}
+                      className="font-semibold text-ink hover:text-plum-700 hover:underline"
+                    >
+                      {p.title}
+                    </a>
                     <p className="mt-0.5 text-xs font-mono text-ink-soft">{p.proposal_number}</p>
                   </td>
                   <td className="hidden px-4 py-3 text-ink-soft sm:table-cell">

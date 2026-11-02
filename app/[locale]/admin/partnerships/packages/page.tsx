@@ -84,7 +84,7 @@ export default async function ServicePackagesPage({
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <h2 className="font-display text-xl font-semibold text-ink">{pkg.name}</h2>
                       <code className="rounded bg-stone-100 px-1.5 py-0.5 text-xs text-stone-600">
                         {pkg.package_code}
@@ -99,13 +99,19 @@ export default async function ServicePackagesPage({
                       <p className="mt-1 text-sm text-ink-soft">{pkg.description}</p>
                     )}
                   </div>
-                  <div className="shrink-0 text-right">
+                  <div className="shrink-0 text-right space-y-1">
                     <p className="font-display text-2xl font-semibold text-ink">
                       {usd(pkg.base_price_usd)}
                     </p>
                     {pkg.price_is_provisional && (
                       <p className="text-xs text-amber-700">Provisional pricing</p>
                     )}
+                    <a
+                      href={`/admin/partnerships/packages/${pkg.package_id}/edit`}
+                      className="inline-flex items-center rounded-md border border-line bg-white px-3 py-1 text-xs font-semibold text-ink hover:bg-plum-50"
+                    >
+                      Edit
+                    </a>
                   </div>
                 </div>
 

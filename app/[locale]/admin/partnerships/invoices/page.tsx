@@ -66,11 +66,19 @@ export default async function InvoicesPage({
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="font-display text-4xl font-semibold text-ink">Invoices</h1>
-        <p className="mt-1 text-ink-soft">
-          All invoices issued to institutional partners, with payment status.
-        </p>
+      <header className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-4xl font-semibold text-ink">Invoices</h1>
+          <p className="mt-1 text-ink-soft">
+            All invoices issued to institutional partners, with payment status.
+          </p>
+        </div>
+        <a
+          href="/admin/partnerships/invoices/new"
+          className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-md bg-plum-700 px-4 text-sm font-semibold text-white hover:bg-plum-800"
+        >
+          + New invoice
+        </a>
       </header>
 
       {result.ok && items.length > 0 && (
@@ -158,7 +166,12 @@ export default async function InvoicesPage({
               {items.map((inv) => (
                 <tr key={inv.invoice_id} className="hover:bg-cream-50">
                   <td className="px-4 py-3">
-                    <p className="font-semibold text-ink">{inv.title ?? inv.invoice_number}</p>
+                    <a
+                      href={`/admin/partnerships/invoices/${inv.invoice_id}`}
+                      className="font-semibold text-ink hover:text-plum-700 hover:underline"
+                    >
+                      {inv.title ?? inv.invoice_number}
+                    </a>
                     <p className="mt-0.5 text-xs font-mono text-ink-soft">{inv.invoice_number}</p>
                     <p className="mt-0.5 text-xs text-ink-soft">
                       Issued {new Date(inv.issue_date).toLocaleDateString()}

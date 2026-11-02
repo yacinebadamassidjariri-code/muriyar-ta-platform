@@ -438,8 +438,300 @@ export async function listInvoices(opts: {
 }
 
 // ---------------------------------------------------------------------------
+// Single-record getters
+// ---------------------------------------------------------------------------
+
+export async function getOpportunity(id: string): Promise<
+  | { ok: true; value: OpportunityListItem & {
+      internal_notes: string | null;
+      stage_history: { stage: string; changed_at: string; changed_by: string | null }[];
+    } }
+  | { ok: false; error: string }
+> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("commercial_opportunities")
+    .select(
+      `opportunity_id, org_id, title, research_theme, estimated_value_usd,
+       expected_close_date, stage, next_followup_date, package_id, assigned_to,
+       internal_notes, created_at, updated_at,
+       institutional_organizations(name),
+       service_packages(name),
+       opportunity_stage_history(stage, changed_at, changed_by)`,
+    )
+    .eq("opportunity_id", id)
+    .single();
+
+  if (error) {
+    if (error.code === "PGRST116") return { ok: false, error: "Opportunity not found." };
+    return { ok: false, error: error.message };
+  }
+
+  const row = data as Record<string, unknown>;
+  const stageHistory = (
+    (row.opportunity_stage_history as { stage: string; changed_at: string; changed_by: string | null }[]) ?? []
+  ).sort((a, b) => b.changed_at.localeCompare(a.changed_at));
+
+  return {
+    ok: true,
+    value: {
+      opportunity_id: row.opportunity_id as string,
+      org_id: row.org_id as string,
+      org_name: (row.institutional_organizations as { name: string } | null)?.name ?? "—",
+      title: row.title as string,
+      research_theme: row.research_theme as string | null,
+      estimated_value_usd: row.estimated_value_usd as number | null,
+      expected_close_date: row.expected_close_date as string | null,
+      stage: row.stage as PipelineStage,
+      next_followup_date: row.next_followup_date as string | null,
+      package_name: (row.service_packages as { name: string } | null)?.name ?? null,
+      assigned_to: row.assigned_to as string | null,
+      internal_notes: row.internal_notes as string | null,
+      created_at: row.created_at as string,
+      updated_at: row.updated_at as string,
+      stage_history: stageHistory,
+    },
+  };
+}
+
+export async function getProposal(id: string): Promise<
+  | { ok: true; value: {
+      proposal_id: string;
+      proposal_number: string;
+      title: string;
+      org_id: string;
+      org_name: string;
+      opportunity_id: string | null;
+      package_id: string | null;
+      package_name: string | null;
+      quoted_price_usd: number | null;
+      status: ProposalStatus;
+      scope_description: string | null;
+      deliverables: string | null;
+      timeline_weeks: number | null;
+      sent_at: string | null;
+      expires_at: string | null;
+      internal_notes: string | null;
+      created_at: string;
+      updated_at: string;
+    } }
+  | { ok: false; error: string }
+> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("commercial_proposals")
+    .select(
+      `proposal_id, proposal_number, title, org_id, opportunity_id, package_id,
+       quoted_price_usd, status, scope_description, deliverables, timeline_weeks,
+       sent_at, expires_at, internal_notes, created_at, updated_at,
+       institutional_organizations(name),
+       service_packages(name)`,
+    )
+    .eq("proposal_id", id)
+    .single();
+
+  if (error) {
+    if (error.code === "PGRST116") return { ok: false, error: "Proposal not found." };
+    return { ok: false, error: error.message };
+  }
+
+  const row = data as Record<string, unknown>;
+  return {
+    ok: true,
+    value: {
+      proposal_id: row.proposal_id as string,
+      proposal_number: row.proposal_number as string,
+      title: row.title as string,
+      org_id: row.org_id as string,
+      org_name: (row.institutional_organizations as { name: string } | null)?.name ?? "—",
+      opportunity_id: row.opportunity_id as string | null,
+      package_id: row.package_id as string | null,
+      package_name: (row.service_packages as { name: string } | null)?.name ?? null,
+      quoted_price_usd: row.quoted_price_usd as number | null,
+      status: row.status as ProposalStatus,
+      scope_description: row.scope_description as string | null,
+      deliverables: row.deliverables as string | null,
+      timeline_weeks: row.timeline_weeks as number | null,
+      sent_at: row.sent_at as string | null,
+      expires_at: row.expires_at as string | null,
+      internal_notes: row.internal_notes as string | null,
+      created_at: row.created_at as string,
+      updated_at: row.updated_at as string,
+    },
+  };
+}
+
+export async function getContract(id: string): Promise<
+  | { ok: true; value: {
+      contract_id: string;
+      contract_number: string;
+      title: string;
+      org_id: string;
+      org_name: string;
+      opportunity_id: string | null;
+      proposal_id: string | null;
+      contract_value_usd: number;
+      status: ContractStatus;
+      contract_date: string | null;
+      start_date: string | null;
+      end_date: string | null;
+      signed_at: string | null;
+      deliverables: string | null;
+      obligations: string | null;
+      internal_notes: string | null;
+      created_at: string;
+      updated_at: string;
+    } }
+  | { ok: false; error: string }
+> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("commercial_contracts")
+    .select(
+      `contract_id, contract_number, title, org_id, opportunity_id, proposal_id,
+       contract_value_usd, status, contract_date, start_date, end_date, signed_at,
+       deliverables, obligations, internal_notes, created_at, updated_at,
+       institutional_organizations(name)`,
+    )
+    .eq("contract_id", id)
+    .single();
+
+  if (error) {
+    if (error.code === "PGRST116") return { ok: false, error: "Contract not found." };
+    return { ok: false, error: error.message };
+  }
+
+  const row = data as Record<string, unknown>;
+  return {
+    ok: true,
+    value: {
+      contract_id: row.contract_id as string,
+      contract_number: row.contract_number as string,
+      title: row.title as string,
+      org_id: row.org_id as string,
+      org_name: (row.institutional_organizations as { name: string } | null)?.name ?? "—",
+      opportunity_id: row.opportunity_id as string | null,
+      proposal_id: row.proposal_id as string | null,
+      contract_value_usd: row.contract_value_usd as number,
+      status: row.status as ContractStatus,
+      contract_date: row.contract_date as string | null,
+      start_date: row.start_date as string | null,
+      end_date: row.end_date as string | null,
+      signed_at: row.signed_at as string | null,
+      deliverables: row.deliverables as string | null,
+      obligations: row.obligations as string | null,
+      internal_notes: row.internal_notes as string | null,
+      created_at: row.created_at as string,
+      updated_at: row.updated_at as string,
+    },
+  };
+}
+
+export interface InvoicePayment {
+  payment_id: string;
+  payment_date: string;
+  amount_usd: number;
+  currency: string;
+  reference: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export async function getInvoice(id: string): Promise<
+  | { ok: true; value: {
+      invoice_id: string;
+      invoice_number: string;
+      title: string | null;
+      org_id: string;
+      org_name: string;
+      contract_id: string | null;
+      amount_usd: number;
+      currency: string;
+      status: InvoiceStatus;
+      issue_date: string;
+      due_date: string | null;
+      internal_notes: string | null;
+      created_at: string;
+      updated_at: string;
+      payments: InvoicePayment[];
+      paid_total: number;
+      balance_usd: number;
+    } }
+  | { ok: false; error: string }
+> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("commercial_invoices")
+    .select(
+      `invoice_id, invoice_number, title, org_id, contract_id, amount_usd, currency,
+       status, issue_date, due_date, internal_notes, created_at, updated_at,
+       institutional_organizations(name),
+       invoice_payments(payment_id, payment_date, amount_usd, currency, reference, notes, created_at)`,
+    )
+    .eq("invoice_id", id)
+    .single();
+
+  if (error) {
+    if (error.code === "PGRST116") return { ok: false, error: "Invoice not found." };
+    return { ok: false, error: error.message };
+  }
+
+  const row = data as Record<string, unknown>;
+  const payments: InvoicePayment[] = (
+    (row.invoice_payments as InvoicePayment[] | null) ?? []
+  ).sort((a, b) => b.payment_date.localeCompare(a.payment_date));
+
+  const paid_total = payments.reduce((sum, p) => sum + (p.amount_usd ?? 0), 0);
+  const amount_usd = row.amount_usd as number;
+
+  return {
+    ok: true,
+    value: {
+      invoice_id: row.invoice_id as string,
+      invoice_number: row.invoice_number as string,
+      title: row.title as string | null,
+      org_id: row.org_id as string,
+      org_name: (row.institutional_organizations as { name: string } | null)?.name ?? "—",
+      contract_id: row.contract_id as string | null,
+      amount_usd,
+      currency: row.currency as string,
+      status: row.status as InvoiceStatus,
+      issue_date: row.issue_date as string,
+      due_date: row.due_date as string | null,
+      internal_notes: row.internal_notes as string | null,
+      created_at: row.created_at as string,
+      updated_at: row.updated_at as string,
+      payments,
+      paid_total,
+      balance_usd: Math.max(0, amount_usd - paid_total),
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Service packages
 // ---------------------------------------------------------------------------
+
+export async function getServicePackage(id: string): Promise<
+  { ok: true; value: ServicePackage } | { ok: false; error: string }
+> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("service_packages")
+    .select(
+      `package_id, package_code, name, description, deliverables,
+       base_price_usd, price_is_provisional, pricing_notes,
+       est_staff_hours, est_labor_cost_usd, est_overhead_usd, is_active`,
+    )
+    .eq("package_id", id)
+    .single();
+
+  if (error) {
+    if (error.code === "PGRST116") return { ok: false, error: "Package not found." };
+    return { ok: false, error: error.message };
+  }
+  return { ok: true, value: data as ServicePackage };
+}
 
 export async function listServicePackages(): Promise<
   { ok: true; value: ServicePackage[] } | { ok: false; error: string }

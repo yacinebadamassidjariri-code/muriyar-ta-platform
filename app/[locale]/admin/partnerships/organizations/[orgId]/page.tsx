@@ -68,14 +68,21 @@ export default async function OrgDetailPage({
           </Link>
           <h1 className="mt-1 font-display text-4xl font-semibold text-ink">{org.name}</h1>
         </div>
-        {/* Edit is handled via partnership server actions — placeholder */}
-        <span
-          className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
-            STATUS_CLASSES[org.partnership_status] ?? "bg-stone-100 text-stone-700"
-          }`}
-        >
-          {org.partnership_status.replace("_", " ")}
-        </span>
+        <div className="flex items-center gap-3 shrink-0">
+          <span
+            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
+              STATUS_CLASSES[org.partnership_status] ?? "bg-stone-100 text-stone-700"
+            }`}
+          >
+            {org.partnership_status.replace("_", " ")}
+          </span>
+          <Link
+            href={`/admin/partnerships/organizations/${org.org_id}/edit`}
+            className="inline-flex min-h-9 items-center justify-center rounded-md border border-line bg-surface px-4 text-sm font-semibold text-ink hover:bg-plum-50"
+          >
+            Edit
+          </Link>
+        </div>
       </header>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
