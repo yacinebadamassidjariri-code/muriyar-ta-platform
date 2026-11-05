@@ -663,11 +663,22 @@ grant execute on function public.check_brief_consent_status(uuid)
 
 -- ============================================================================
 -- 7. Replace propagate_consent_withdrawal()
---    Now delegates to record_consent_withdrawal() for the ledger insert.
---    This function is kept as a compatibility shim — callers that used the
---    old propagate_consent_withdrawal() should migrate to calling
---    record_consent_withdrawal() directly, but the shim ensures existing
---    code does not silently become a no-op.
+--    Replaced with a shim that raises an error directing callers to use
+--    record_consent_withdrawal() instead.
+--
+--    The old function updated only brief_evidence_links metadata — a mutable,
+--    staff-editable table — without writing to the authoritative withdrawal
+--    ledger. Keeping it callable would provide an alternative path that does
+--    NOT write an immutable withdrawal record, silently failing the security
+--    requirement.
+--
+--    Authenticated callers receive a clear error. The function body is
+--    replaced rather than dropped to prevent "function does not exist" errors
+--    in any code that still calls it — those callers will get an actionable
+--    message rather than a confusing 42883.
+--
+--    EXECUTE is revoked from authenticated. No application code in this
+--    codebase calls propagate_consent_withdrawal() (confirmed by audit).
 -- ============================================================================
 
 create or replace function public.propagate_consent_withdrawal(
@@ -679,22 +690,22 @@ security definer
 set search_path = public
 as $$
 begin
-  -- Delegate entirely to record_consent_withdrawal() with a default reason code.
-  -- The caller should use record_consent_withdrawal() directly for full control
-  -- over the reason_code and operational_notes.
-  return public.record_consent_withdrawal(
-    p_submission_id,
-    'contributor_requested',
-    'Processed via propagate_consent_withdrawal() compatibility shim. '
-    'Caller should migrate to record_consent_withdrawal() for full audit detail.'
-  );
+  -- This function has been retired. It no longer updates only evidence-link
+  -- metadata; all withdrawals must be recorded in the authoritative immutable
+  -- ledger via record_consent_withdrawal().
+  raise exception 'propagate_consent_withdrawal_retired'
+    using errcode = '42501',
+          detail  = 'Use record_consent_withdrawal(submission_id, reason_code, notes) instead. '
+                    'propagate_consent_withdrawal() has been retired because it updated only '
+                    'mutable evidence-link metadata without writing to the authoritative '
+                    'research_consent_withdrawals ledger.';
 end;
 $$;
 
+-- Revoke from authenticated — no direct callable path remains.
+-- The function body raises an error as belt-and-suspenders.
 revoke all on function public.propagate_consent_withdrawal(uuid)
   from public, anon, authenticated;
-grant execute on function public.propagate_consent_withdrawal(uuid)
-  to authenticated;
 
 -- ============================================================================
 -- 8. Update brief_transition() to enforce safeguarding review flag

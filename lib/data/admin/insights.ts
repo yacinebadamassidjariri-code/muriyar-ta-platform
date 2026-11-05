@@ -29,6 +29,13 @@ export type BriefListItem = {
   updated_at: string;
   published_at: string | null;
   org_name: string | null;
+  // Safeguarding review flag — set by record_consent_withdrawal() when a
+  // contributor withdraws consent from an APPROVED or PUBLISHED brief.
+  // When true, the brief cannot be transitioned or distributed until
+  // clear_safeguarding_review_flag() is called by an authorized reviewer.
+  safeguarding_review_required: boolean;
+  safeguarding_review_required_since: string | null;
+  safeguarding_review_reason: string | null;
 };
 
 export type BriefDetail = BriefListItem & {
@@ -44,12 +51,21 @@ export type BriefDetail = BriefListItem & {
   submitted_for_review_at: string | null;
   approved_at: string | null;
   archived_at: string | null;
+  // Storage paths are present for admin reference only.
+  // These paths must NOT be used to generate signed URLs or serve file content
+  // when safeguarding_review_required = true. The Storage RLS policies and
+  // the brief_transition() consent gate are the enforcement layers; this
+  // data layer surfaces the flag so the UI can warn before any action is attempted.
   uploaded_pdf_storage_path: string | null;
   generated_pdf_storage_path: string | null;
   created_by: string | null;
   updated_by: string | null;
   approved_by: string | null;
   published_by: string | null;
+  // Safeguarding cleared fields (for display when review has been completed)
+  safeguarding_review_cleared_at: string | null;
+  safeguarding_review_cleared_by: string | null;
+  safeguarding_review_notes: string | null;
 };
 
 export type InsightsDashboardStats = {
@@ -134,6 +150,8 @@ export async function listBriefs(filter: BriefListFilter = {}): Promise<
     .select(
       `brief_id, title, subtitle, language_code, research_theme, status,
        is_sample, created_at, updated_at, published_at,
+       safeguarding_review_required, safeguarding_review_required_since,
+       safeguarding_review_reason,
        institutional_organizations(name)`,
       { count: "exact" },
     )
@@ -169,6 +187,9 @@ export async function listBriefs(filter: BriefListFilter = {}): Promise<
     published_at: row.published_at as string | null,
     org_name:
       (row.institutional_organizations as { name: string } | null)?.name ?? null,
+    safeguarding_review_required: (row.safeguarding_review_required as boolean) ?? false,
+    safeguarding_review_required_since: row.safeguarding_review_required_since as string | null,
+    safeguarding_review_reason: row.safeguarding_review_reason as string | null,
   }));
 
   const total = count ?? 0;
@@ -196,6 +217,9 @@ export async function getBrief(
        references_text, submitted_for_review_at, approved_at, archived_at,
        uploaded_pdf_storage_path, generated_pdf_storage_path,
        created_by, updated_by, approved_by, published_by,
+       safeguarding_review_required, safeguarding_review_required_since,
+       safeguarding_review_reason, safeguarding_review_cleared_at,
+       safeguarding_review_cleared_by, safeguarding_review_notes,
        institutional_organizations(name)`,
     )
     .eq("brief_id", briefId)

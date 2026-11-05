@@ -58,6 +58,43 @@ export default async function BriefDetailPage({
         </div>
       </header>
 
+      {brief.safeguarding_review_required && (
+        <div className="rounded-xl border border-red-300 bg-red-50 p-4">
+          <p className="text-sm font-semibold text-red-900">
+            ⛔ Safeguarding review required — this brief cannot be distributed
+          </p>
+          <p className="mt-1 text-sm text-red-800">
+            A contributor has withdrawn their research consent after this brief
+            was approved or published. This brief is now under mandatory
+            safeguarding review and{" "}
+            <strong>cannot be transitioned, exported, or distributed</strong>{" "}
+            until an authorized reviewer completes the safeguarding review and
+            clears this flag with documented review notes.
+          </p>
+          {brief.safeguarding_review_reason && (
+            <p className="mt-2 text-sm text-red-700">
+              <strong>Reason recorded:</strong>{" "}
+              {brief.safeguarding_review_reason}
+            </p>
+          )}
+          {brief.safeguarding_review_required_since && (
+            <p className="mt-1 text-xs text-red-600">
+              Flag set:{" "}
+              {new Date(brief.safeguarding_review_required_since).toLocaleString()}
+            </p>
+          )}
+          <p className="mt-3 text-xs text-red-600 font-medium">
+            To clear this flag: call{" "}
+            <code className="rounded bg-red-100 px-1 font-mono text-red-800">
+              clear_safeguarding_review_flag()
+            </code>{" "}
+            via the DB console or the evidence management RPC, providing
+            documented review notes. This action requires AAL2 authentication
+            and the <code className="rounded bg-red-100 px-1 font-mono text-red-800">insight.brief.publish</code> permission.
+          </p>
+        </div>
+      )}
+
       {brief.is_sample && (
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
           <p className="text-sm font-semibold text-amber-900">

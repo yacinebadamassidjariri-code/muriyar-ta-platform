@@ -95,13 +95,20 @@ export async function briefTransitionAction(
   });
 
   if (error) {
-    const msg = error.message.includes("invalid_transition")
-      ? "This transition is not allowed from the current status."
-      : error.message.includes("forbidden")
-        ? "You do not have permission to perform this action."
-        : error.message.includes("title_required")
-          ? "A title is required before publishing."
-          : "The transition could not be applied. Please try again.";
+    // Surface specific consent gate failures so staff understand the blocker.
+    // These messages must not expose raw submission content or contributor details.
+    const msg = error.message.includes("consent_gate_failed")
+      ? "This brief cannot be approved or published: one or more evidence links failed the research consent check. " +
+        "Review the consent status panel for each linked submission — withdrawn consent is permanent and cannot be overridden by staff."
+      : error.message.includes("safeguarding_review_required")
+        ? "This brief is under safeguarding review and cannot be transitioned until a reviewer clears the flag with documented review notes."
+        : error.message.includes("invalid_transition")
+          ? "This transition is not allowed from the current status."
+          : error.message.includes("forbidden")
+            ? "You do not have permission to perform this action."
+            : error.message.includes("title_required")
+              ? "A title is required before publishing."
+              : "The transition could not be applied. Please try again.";
     return { ok: false, error: msg };
   }
 

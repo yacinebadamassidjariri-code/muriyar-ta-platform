@@ -1,7 +1,7 @@
 # Phase 3B Staging Test Plan
 
 **Environment**: Disposable Supabase branch (never production)  
-**Prerequisite**: All five migrations applied in order on the branch before testing begins  
+**Prerequisite**: All six migrations applied in order on the branch before testing begins  
 **Constraint**: MFA (AAL2) is required for all write operations — tests marked [MFA] require a real TOTP session
 
 ---
@@ -199,9 +199,9 @@ Repeat 3.3 pattern for: `save_opportunity`, `save_proposal`, `save_contract`, `s
 
 ## 4. PDF Invoice Generation
 
-### 4.1 Happy path: authenticated user downloads PDF view
+### 4.1 Happy path: authenticated user opens printable invoice view
 
-1. Navigate to `/[locale]/admin/partnerships/invoices/[invoiceId]/pdf` in browser (AAL1 sufficient — read-only).
+1. Navigate to `/[locale]/admin/partnerships/invoices/[invoiceId]/print` in browser (AAL1 sufficient — read-only).
 2. **Expected**: browser renders an HTML invoice page with:
    - Invoice number, organization name, issue date, due date visible
    - Invoice amount, total received, balance due visible
@@ -397,6 +397,97 @@ Confirm `saveBriefAction` cannot change `status` to PUBLISHED directly:
 
 1. Call `saveBriefAction` with a payload that includes `"status": "PUBLISHED"`.
 2. **Expected**: either the action ignores the status field, or the DB constraint prevents the transition (depends on implementation). Verify status does not become PUBLISHED without going through `brief_transition`.
+
+---
+
+## 8. Negative Tests: Safeguarding Gate and Retired Shim (Migration 20261106 additions)
+
+These tests verify the two security boundaries added or tightened after the initial §7 requirement set.
+
+### 8.1 Safeguarding flag blocks all brief distribution paths
+
+Verify that a brief with `safeguarding_review_required = true` cannot be distributed
+through any path — even paths that previously succeeded before the flag was set.
+
+1. Bring a brief to APPROVED status with all consent checks passing.
+2. Record a withdrawal: `record_consent_withdrawal(submission_id, 'contributor_requested')` → brief gains `safeguarding_review_required = true`.
+3. **Test each distribution-adjacent path**:
+
+   | Path | Expected result |
+   |------|----------------|
+   | `brief_transition(brief_id, 'publish')` | Fails: `consent_gate_failed` (safeguarding flag check at top of `assert_brief_consent_cleared`) |
+   | `brief_transition(brief_id, 'approve')` on a re-opened DRAFT | Fails: same gate |
+   | Attempt to call `assert_brief_consent_cleared(brief_id)` directly | Fails: `consent_gate_failed` |
+   | `check_brief_consent_status(brief_id)` | Returns `safeguarding_review_required: true`; `cleared: false` |
+   | Admin UI loads brief detail page | Loads without error; red safeguarding banner visible |
+   | `saveBriefAction` to save content changes | Succeeds (saves as DRAFT only — does not change distribution status) |
+
+4. **Verify that clearing the safeguarding flag does NOT republish** the prior version:
+   - Call `clear_safeguarding_review_flag(brief_id, 'Reviewed by staff on [date]. Verified withdrawn content removed.')` [MFA, `insight.brief.publish`].
+   - **Expected**: `safeguarding_review_required` → false, reviewer and notes recorded, brief status unchanged (still APPROVED or whatever it was — not re-published).
+   - The brief is now eligible for a NEW publish transition, but the act of clearing the flag alone does not trigger one.
+   - Confirm brief status in DB did not change as a side-effect of `clear_safeguarding_review_flag()`.
+
+5. Confirm audit log contains:
+   - `insight.evidence.consent_withdrawn`
+   - `insight.brief.safeguarding_flag_set` (on the affected brief)
+   - `insight.brief.safeguarding_review_cleared` (after step 4)
+
+### 8.2 propagate_consent_withdrawal() shim is retired and raises an error
+
+Verify that the legacy `propagate_consent_withdrawal()` function can no longer be
+called by authenticated users, and that its body raises a clear error directing
+callers to use `record_consent_withdrawal()` instead.
+
+1. **Permission check** — confirm EXECUTE has been revoked:
+
+   ```sql
+   select grantee, privilege_type, routine_name
+   from information_schema.routine_privileges
+   where routine_name = 'propagate_consent_withdrawal'
+     and grantee = 'authenticated';
+   ```
+
+   **Expected**: 0 rows (EXECUTE revoked from authenticated).
+
+2. **Runtime error check** — attempt to call the function as a superuser or service_role:
+
+   ```sql
+   select public.propagate_consent_withdrawal('<any_uuid>'::uuid);
+   ```
+
+   **Expected**: raises SQLSTATE 42501 with message containing `propagate_consent_withdrawal_retired`
+   and directing the caller to use `record_consent_withdrawal()`.
+
+3. **Application code audit** — confirm no application code calls the retired function:
+
+   ```bash
+   grep -r "propagate_consent_withdrawal" lib/ app/ components/ --include="*.ts" --include="*.tsx"
+   ```
+
+   **Expected**: 0 matches.
+
+4. **Withdrawal still works via the authoritative path** — confirm `record_consent_withdrawal()` is callable and writes the ledger:
+   - Authenticate with AAL2 + `insight.evidence.review`.
+   - Call `record_consent_withdrawal('<submission_id>', 'contributor_requested')`.
+   - **Expected**: row in `research_consent_withdrawals`, audit event recorded.
+
+### 8.3 Brief Storage paths do not produce public distribution
+
+Verify that `uploaded_pdf_storage_path` and `generated_pdf_storage_path` on
+`institutional_briefs` cannot be used to bypass the safeguarding gate.
+
+1. Query a brief with `safeguarding_review_required = true` and non-null storage paths.
+2. **Expected**: no application route handler exists that generates a signed URL
+   or public URL for these storage paths. Confirm:
+   ```bash
+   grep -r "createSignedUrl\|getPublicUrl\|uploaded_pdf_storage_path\|generated_pdf_storage_path" \
+     app/ lib/actions/ lib/data/ --include="*.ts" --include="*.tsx" | grep -v "insights.ts"
+   ```
+   **Expected**: 0 matches outside `lib/data/admin/insights.ts` (where the field is selected for admin display only).
+3. No brief PDF Storage bucket is configured — confirm by listing Supabase Storage buckets:
+   - **Expected**: no bucket named `brief-pdfs`, `institutional-briefs`, or similar.
+4. Storage paths are inert data: they cannot be served until a route handler and bucket are deliberately configured.
 
 ---
 
