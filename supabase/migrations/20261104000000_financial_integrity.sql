@@ -141,6 +141,10 @@ grant execute on function public.record_invoice_payment(uuid, date, numeric, tex
 --    The advisory-lock logic from 20261102 is preserved verbatim.
 -- ============================================================================
 
+-- DROP required: 20261101 defined this function with parameter name p_notes;
+-- PostgreSQL cannot rename parameters with CREATE OR REPLACE FUNCTION.
+drop function if exists public.create_invoice(uuid, uuid, text, date, date, numeric, text, text);
+
 create or replace function public.create_invoice(
   p_org_id        uuid,
   p_contract_id   uuid    default null,
