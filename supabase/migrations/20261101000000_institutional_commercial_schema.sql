@@ -817,7 +817,7 @@ create policy ib_write on public.institutional_briefs
   with check (
     case
       -- Only publishers can transition to APPROVED / PUBLISHED / ARCHIVED
-      when new.status in ('APPROVED','PUBLISHED','ARCHIVED')
+      when status in ('APPROVED','PUBLISHED','ARCHIVED')
         then (select public.has_permission('insight.brief.publish'))
       else (select public.has_permission('insight.brief.edit'))
         or (select public.has_permission('insight.brief.publish'))

@@ -14,9 +14,27 @@
 -- for review in the TRANSLATIONS_NEEDED tracker.
 --
 -- On conflict: update the label (allows corrections without schema changes).
+--
+-- SEED-ORDERING NOTE:
+-- supabase db reset runs seed.sql AFTER all migrations. The
+-- qa_topic_translations table has a FK on supported_languages.language_code,
+-- so the four required language rows are seeded here (idempotent) rather
+-- than relying on seed.sql to be applied first.
 -- =====================================================================
 
 begin;
+
+-- ============================================================
+-- 0. Ensure required supported_languages rows exist
+--    (idempotent — ON CONFLICT DO NOTHING is safe on re-run)
+-- ============================================================
+insert into public.supported_languages (language_code, name, is_active, is_rtl)
+values
+  ('en',  'English', true, false),
+  ('fr',  'French',  true, false),
+  ('ha',  'Hausa',   true, false),
+  ('zar', 'Zarma',   true, false)
+on conflict (language_code) do nothing;
 
 insert into public.qa_topic_translations (topic_id, language_code, label)
 values
